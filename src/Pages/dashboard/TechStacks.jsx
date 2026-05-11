@@ -10,6 +10,7 @@ import {
     X,
     Eye,
     EyeOff,
+    GripVertical,
 } from 'lucide-react'
 
 const Card = ({ children, className = '' }) => (
@@ -48,6 +49,7 @@ const InputField = ({ label, value, onChange, placeholder, type = 'text', requir
             onChange={onChange}
             placeholder={placeholder}
             required={required}
+            min={type === 'number' ? '0' : undefined}
             className="w-full bg-[#0d0d22] border border-white/10 rounded-xl px-4 py-2.5 text-gray-200 placeholder-gray-600 text-sm outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/20 transition-all"
         />
     </div>
@@ -99,6 +101,11 @@ const TechStackCard = ({ item, onEdit, onDelete, onToggleActive }) => (
                 </div>
             </div>
 
+            <div className="flex items-center gap-2 text-[11px] text-gray-500 uppercase tracking-widest">
+                <GripVertical className="w-4 h-4 text-gray-600" />
+                Drag to reorder
+            </div>
+
             <div className="flex items-center gap-4">
                 <div className="w-20 h-20 rounded-xl border border-white/10 bg-white/5 overflow-hidden flex items-center justify-center">
                     {item.icon_url ? (
@@ -124,11 +131,12 @@ const TechStackForm = ({ initial, onSubmit, onCancel, uploading }) => {
         slug: initial?.slug || '',
         category: initial?.category || '',
         description: initial?.description || '',
-        sort_order: initial?.sort_order ?? 0,
+        sort_order: initial?.sort_order ?? '',
         is_active: initial?.is_active ?? true,
     })
     const [iconFile, setIconFile] = useState(null)
     const [preview, setPreview] = useState(initial?.icon_url || null)
+    const [autoGenerateSlug, setAutoGenerateSlug] = useState(!initial)
 
     const set = (key) => (event) => {
         const value = key === 'is_active' ? event.target.checked : event.target.value
@@ -137,8 +145,20 @@ const TechStackForm = ({ initial, onSubmit, onCancel, uploading }) => {
             setForm((current) => ({
                 ...current,
                 name: value,
-                slug: current.slug || toSlug(value),
+                slug: autoGenerateSlug ? toSlug(value) : current.slug,
             }))
+            return
+        }
+
+        if (key === 'slug') {
+            setForm((current) => ({ ...current, slug: value }))
+            setAutoGenerateSlug(!value)
+            return
+        }
+
+        if (key === 'sort_order') {
+            const numValue = value === '' ? '' : Math.max(0, Number(value) || 0)
+            setForm((current) => ({ ...current, [key]: numValue }))
             return
         }
 
@@ -162,9 +182,13 @@ const TechStackForm = ({ initial, onSubmit, onCancel, uploading }) => {
         >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <InputField label="Name" value={form.name} onChange={set('name')} placeholder="e.g. ReactJS" required />
-                <InputField label="Slug" value={form.slug} onChange={set('slug')} placeholder="e.g. reactjs" required />
+                <div className="space-y-1.5">
+                    <InputField label="Slug" value={form.slug} onChange={set('slug')} placeholder="Auto-generated from name" />
+                    <p className="text-[11px] text-gray-500">Optional. If left empty, slug will be generated from the name.</p>
+                </div>
                 <InputField label="Category" value={form.category} onChange={set('category')} placeholder="e.g. frontend" />
-                <InputField label="Sort Order" type="number" value={form.sort_order} onChange={set('sort_order')} placeholder="0" />
+                <InputField label="Sort Order" type="number" value={form.sort_order} onChange={set('sort_order')} placeholder="Leave empty to place at the bottom" />
+                <p className="-mt-2 text-[11px] text-gray-500 sm:col-span-2">Optional. If left empty, the new tech stack will be placed after the current last order.</p>
 
                 <div className="sm:col-span-2 space-y-1.5">
                     <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">Description</label>
@@ -223,6 +247,8 @@ export default function TechStacks() {
     const [showCreate, setShowCreate] = useState(false)
     const [editItem, setEditItem] = useState(null)
     const [uploading, setUploading] = useState(false)
+    const [draggingId, setDraggingId] = useState(null)
+    const [dropTargetId, setDropTargetId] = useState(null)
 
     const fetchItems = async () => {
         setLoading(true)
@@ -252,18 +278,124 @@ export default function TechStacks() {
         return data.publicUrl
     }
 
+    const checkSlugUnique = async (slug, currentId = null) => {
+        const normalizedSlug = toSlug(slug)
+        if (!normalizedSlug) {
+            throw new Error('Slug is required')
+        }
+
+        let query = supabase
+            .from('tech_stacks')
+            .select('id, slug')
+            .eq('slug', normalizedSlug)
+
+        if (currentId) {
+            query = query.neq('id', currentId)
+        }
+
+        const { data, error } = await query.limit(1)
+
+        if (error) throw error
+        if ((data || []).length > 0) {
+            throw new Error('Slug already used. Please choose another one.')
+        }
+
+        return normalizedSlug
+    }
+
+    const getNextSortOrder = () => {
+        const highestSortOrder = items.reduce((highest, item) => {
+            const currentSortOrder = Number(item.sort_order || 0)
+            return currentSortOrder > highest ? currentSortOrder : highest
+        }, 0)
+
+        return highestSortOrder + 1
+    }
+
+    const resolveSortOrder = (value) => {
+        if (value === '' || value === null || value === undefined) {
+            return getNextSortOrder()
+        }
+
+        const parsedSortOrder = Number(value)
+        return Number.isNaN(parsedSortOrder) ? getNextSortOrder() : parsedSortOrder
+    }
+
+    const persistOrder = async (orderedItems) => {
+        const updates = orderedItems.map((item, index) =>
+            supabase
+                .from('tech_stacks')
+                .update({ sort_order: index + 1 })
+                .eq('id', item.id)
+        )
+
+        const results = await Promise.all(updates)
+        const failed = results.find((result) => result.error)
+        if (failed?.error) {
+            throw failed.error
+        }
+
+        setItems(orderedItems.map((item, index) => ({ ...item, sort_order: index + 1 })))
+    }
+
+    const handleDragStart = (id) => setDraggingId(id)
+
+    const handleDragOver = (event) => {
+        event.preventDefault()
+    }
+
+    const handleDragEnter = (id) => {
+        if (draggingId && draggingId !== id) {
+            setDropTargetId(id)
+        }
+    }
+
+    const handleDragLeave = (id, event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+            if (dropTargetId === id) {
+                setDropTargetId(null)
+            }
+        }
+    }
+
+    const handleDrop = async (targetId) => {
+        if (!draggingId || draggingId === targetId) return
+
+        const currentItems = [...items]
+        const sourceIndex = currentItems.findIndex((item) => item.id === draggingId)
+        const targetIndex = currentItems.findIndex((item) => item.id === targetId)
+
+        if (sourceIndex === -1 || targetIndex === -1) return
+
+        const nextItems = [...currentItems]
+        const [movedItem] = nextItems.splice(sourceIndex, 1)
+        nextItems.splice(targetIndex, 0, movedItem)
+
+        try {
+            await persistOrder(nextItems)
+        } catch (error) {
+            console.error('Error reordering tech stacks:', error)
+            alert(error.message || 'Failed to reorder tech stacks')
+        } finally {
+            setDraggingId(null)
+            setDropTargetId(null)
+        }
+    }
+
     const handleCreate = async (form, iconFile) => {
         setUploading(true)
         try {
+            const slug = await checkSlugUnique(form.slug || form.name)
             const iconUrl = iconFile ? await uploadIcon(iconFile) : null
+            const sortOrder = resolveSortOrder(form.sort_order)
 
             const { error } = await supabase.from('tech_stacks').insert({
                 name: form.name,
-                slug: toSlug(form.slug || form.name),
+                slug,
                 category: form.category || null,
                 description: form.description || null,
                 icon_url: iconUrl,
-                sort_order: Number(form.sort_order || 0),
+                sort_order: sortOrder,
                 is_active: form.is_active,
             })
 
@@ -283,17 +415,19 @@ export default function TechStacks() {
         if (!editItem) return
         setUploading(true)
         try {
+            const slug = await checkSlugUnique(form.slug || form.name, editItem.id)
             const iconUrl = iconFile ? await uploadIcon(iconFile) : editItem.icon_url
+            const sortOrder = resolveSortOrder(form.sort_order)
 
             const { error } = await supabase
                 .from('tech_stacks')
                 .update({
                     name: form.name,
-                    slug: toSlug(form.slug || form.name),
+                    slug,
                     category: form.category || null,
                     description: form.description || null,
                     icon_url: iconUrl,
-                    sort_order: Number(form.sort_order || 0),
+                    sort_order: sortOrder,
                     is_active: form.is_active,
                 })
                 .eq('id', editItem.id)
@@ -388,13 +522,29 @@ export default function TechStacks() {
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                     {items.map((item) => (
-                        <TechStackCard
+                        <div
                             key={item.id}
-                            item={item}
-                            onEdit={setEditItem}
-                            onDelete={deleteItem}
-                            onToggleActive={toggleActive}
-                        />
+                            draggable
+                            onDragStart={() => handleDragStart(item.id)}
+                            onDragOver={handleDragOver}
+                            onDrop={() => handleDrop(item.id)}
+                            onDragEnd={() => setDraggingId(null)}
+                            onDragEnter={() => handleDragEnter(item.id)}
+                            onDragLeave={(event) => handleDragLeave(item.id, event)}
+                            className={`relative ${draggingId === item.id ? 'opacity-60 scale-[0.99]' : ''} ${dropTargetId === item.id ? 'ring-2 ring-indigo-400/70 ring-offset-2 ring-offset-transparent shadow-[0_0_0_1px_rgba(129,140,248,0.25)]' : ''}`}
+                        >
+                            {dropTargetId === item.id && draggingId !== item.id && (
+                                <div className="absolute -inset-1 rounded-2xl border-2 border-dashed border-indigo-400/70 bg-indigo-500/10 pointer-events-none flex items-center justify-center text-indigo-200 text-xs font-medium tracking-widest uppercase">
+                                    Drop to place here
+                                </div>
+                            )}
+                            <TechStackCard
+                                item={item}
+                                onEdit={setEditItem}
+                                onDelete={deleteItem}
+                                onToggleActive={toggleActive}
+                            />
+                        </div>
                     ))}
                 </div>
             )}

@@ -29,6 +29,10 @@ export default [
       ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
       'react/jsx-no-target-blank': 'off',
+      // Disable prop-types rule project-wide (we prefer TypeScript or manual checks)
+      'react/prop-types': 'off',
+      // Ignore unused React import warnings (using new JSX runtime)
+      'no-unused-vars': ['error', { 'varsIgnorePattern': '^React$' }],
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },

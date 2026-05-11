@@ -32,7 +32,7 @@ const CertCard = ({ cert, onDelete }) => {
           <div className="w-full aspect-[16/11.5] bg-white/5 animate-pulse" />
         )}
         <img
-          src={cert.Img}
+          src={cert.img}
           alt="Certificate"
           onLoad={() => setImgLoaded(true)}
           className={`w-full aspect-[16/11.5] object-cover group-hover:scale-105 transition-transform duration-500 ${imgLoaded ? 'block' : 'hidden'}`}
@@ -81,7 +81,8 @@ export default function Certificates() {
     const fileName = `cert-${Date.now()}-${file.name}`
     await supabase.storage.from('certificate-images').upload(fileName, file)
     const { data } = supabase.storage.from('certificate-images').getPublicUrl(fileName)
-    await supabase.from('certificates').insert({ Img: data.publicUrl })
+    // Use lowercase 'img' to match typical DB column names (avoid PGRST204 schema cache error)
+    await supabase.from('certificates').insert({ img: data.publicUrl })
     setFile(null); setPreview(null); setUploading(false)
     fetchCerts()
   }
@@ -121,9 +122,8 @@ export default function Certificates() {
             onDragOver={e => { e.preventDefault(); setDragOver(true) }}
             onDragLeave={() => setDragOver(false)}
             onDrop={e => { e.preventDefault(); setDragOver(false); handleFile(e.dataTransfer.files[0]) }}
-            className={`flex flex-col items-center justify-center w-full min-h-[160px] rounded-xl border-2 border-dashed cursor-pointer transition-all duration-300 ${
-              dragOver ? 'border-indigo-400/60 bg-indigo-500/10' : 'border-white/12 bg-white/4 hover:border-indigo-500/35 hover:bg-white/7'
-            }`}
+            className={`flex flex-col items-center justify-center w-full min-h-[160px] rounded-xl border-2 border-dashed cursor-pointer transition-all duration-300 ${dragOver ? 'border-indigo-400/60 bg-indigo-500/10' : 'border-white/12 bg-white/4 hover:border-indigo-500/35 hover:bg-white/7'
+              }`}
           >
             {preview ? (
               <img src={preview} alt="preview" className="max-h-40 object-contain rounded-lg p-2" />

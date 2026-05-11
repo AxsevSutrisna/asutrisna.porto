@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -122,7 +122,7 @@ const ProjectDetails = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
+
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -182,7 +182,7 @@ const ProjectDetails = () => {
         />
         <meta property="og:url" content={projectUrl} />
         <meta property="og:type" content="website" />
-        {project.Img && <meta property="og:image" content={project.Img} />}
+        {(project.img || project.Img) && <meta property="og:image" content={project.img || project.Img} />}
         <script type="application/ld+json">{`
           {
             "@context": "https://schema.org",
@@ -278,9 +278,9 @@ const ProjectDetails = () => {
                     <Code2 className="w-4 h-4 md:w-5 md:h-5 text-blue-400" />
                     Technologies Used
                   </h3>
-                  {project.TechStack.length > 0 ? (
+                  {project.TechStack?.length > 0 ? (
                     <div className="flex flex-wrap gap-2 md:gap-3">
-                      {project.TechStack.map((tech, index) => (
+                      {(project.TechStack || []).map((tech, index) => (
                         <TechBadge key={index} tech={tech} />
                       ))}
                     </div>
@@ -296,10 +296,9 @@ const ProjectDetails = () => {
                 <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl group">
                   <div className="absolute inset-0 bg-gradient-to-t from-[#030014] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <img
-                    src={project.Img}
-                    alt={project.Title}
+                    src={project.img || project.Img}
+                    alt={project.Title || project.title}
                     className="w-full object-cover transform transition-transform duration-700 will-change-transform group-hover:scale-105"
-                    onLoad={() => setIsImageLoaded(true)}
                   />
                   <div className="absolute inset-0 border-2 border-white/0 group-hover:border-white/10 transition-colors duration-300 rounded-2xl" />
                 </div>
@@ -309,9 +308,9 @@ const ProjectDetails = () => {
                     <Star className="w-5 h-5 text-yellow-400 group-hover:rotate-[20deg] transition-transform duration-300" />
                     Key Features
                   </h3>
-                  {project.Features.length > 0 ? (
+                  {project.Features?.length > 0 ? (
                     <ul className="list-none space-y-2">
-                      {project.Features.map((feature, index) => (
+                      {(project.Features || []).map((feature, index) => (
                         <FeatureItem key={index} feature={feature} />
                       ))}
                     </ul>
@@ -326,7 +325,7 @@ const ProjectDetails = () => {
           </div>
         </div>
 
-        <style jsx>{`
+        <style>{`
           @keyframes blob {
             0% {
               transform: translate(0px, 0px) scale(1);

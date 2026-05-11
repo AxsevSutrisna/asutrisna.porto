@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, memo } from "react"
+import { useState, useEffect, useCallback, memo } from "react"
 import { Helmet } from "react-helmet-async"
 import { Github, Linkedin, Mail, ExternalLink, Instagram, Sparkles } from "lucide-react"
 import AOS from 'aos'
@@ -17,6 +17,7 @@ const StatusBadge = memo(() => (
     </div>
   </div>
 ));
+StatusBadge.displayName = 'StatusBadge';
 
 const MainTitle = memo(() => (
   <div className="space-y-2" data-aos="fade-up" data-aos-delay="600">
@@ -37,12 +38,14 @@ const MainTitle = memo(() => (
     </h1>
   </div>
 ));
+MainTitle.displayName = 'MainTitle';
 
 const TechStack = memo(({ tech }) => (
   <div className="px-4 py-2 hidden sm:block rounded-full bg-white/5 backdrop-blur-sm border border-white/10 text-sm text-gray-300 hover:bg-white/10 transition-colors">
     {tech}
   </div>
 ));
+TechStack.displayName = 'TechStack';
 
 const CTAButton = memo(({ href, text, icon: Icon }) => (
   <a href={href}>
@@ -60,6 +63,7 @@ const CTAButton = memo(({ href, text, icon: Icon }) => (
     </button>
   </a>
 ));
+CTAButton.displayName = 'CTAButton';
 
 const SocialLink = memo(({ icon: Icon, link, label }) => (
   <a href={link} target="_blank" rel="noopener noreferrer" aria-label={label}>
@@ -72,6 +76,7 @@ const SocialLink = memo(({ icon: Icon, link, label }) => (
     </button>
   </a>
 ));
+SocialLink.displayName = 'SocialLink';
 
 const TYPING_SPEED = 100;
 const ERASING_SPEED = 50;
@@ -142,10 +147,10 @@ const Home = () => {
       <Helmet>
         <title>Eki Zulfar Rachman — Frontend Web Developer</title>
         <meta name="description" content="Website resmi Eki Zulfar Rachman, Front-End Web Developer. Saya berfokus pada penciptaan pengalaman digital yang menarik dan selalu berupaya memberikan solusi terbaik dalam setiap proyek yang saya kerjakan." />
-     <meta name="robots" content="index, follow" />
+        <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://ekizr.com" />
         <meta property="og:title" content="Eki Zulfar Rachman — Frontend Web Developer" />
-     <meta property="og:description" content="Website resmi dan portofolio Eki Zulfar Rachman, Front-End Web Developer." />
+        <meta property="og:description" content="Website resmi dan portofolio Eki Zulfar Rachman, Front-End Web Developer." />
         <meta property="og:url" content="https://ekizr.com" />
         <meta property="og:type" content="website" />
         <script type="application/ld+json">{`
@@ -220,31 +225,26 @@ const Home = () => {
                 data-aos="fade-left"
                 data-aos-delay="600">
                 <div className="relative w-full opacity-90">
-                  <div className={`absolute inset-0 bg-gradient-to-r from-[#6366f1]/10 to-[#a855f7]/10 rounded-3xl blur-3xl transition-all duration-700 ease-in-out ${
-                    isHovering ? "opacity-50 scale-105" : "opacity-20 scale-100"
-                  }`}>
+                  <div className={`absolute inset-0 bg-gradient-to-r from-[#6366f1]/10 to-[#a855f7]/10 rounded-3xl blur-3xl transition-all duration-700 ease-in-out ${isHovering ? "opacity-50 scale-105" : "opacity-20 scale-100"
+                    }`}>
                   </div>
 
-                  <div className={`relative lg:left-12 z-10 w-full opacity-90 transform transition-transform duration-500 ${
-                    isHovering ? "scale-105" : "scale-100"
-                  }`}>
+                  <div className={`relative lg:left-12 z-10 w-full opacity-90 transform transition-transform duration-500 ${isHovering ? "scale-105" : "scale-100"
+                    }`}>
                     <img
                       src="Animation1.gif"
                       alt="Developer Animation"
-                      className={`w-full h-full object-contain transition-all duration-500 ${
-                        isHovering 
-                          ? "scale-[95%] sm:scale-[90%] md:scale-[90%] lg:scale-[90%] rotate-2" 
+                      className={`w-full h-full object-contain transition-all duration-500 ${isHovering
+                          ? "scale-[95%] sm:scale-[90%] md:scale-[90%] lg:scale-[90%] rotate-2"
                           : "scale-[90%] sm:scale-[80%] md:scale-[80%] lg:scale-[80%]"
-                      }`}
+                        }`}
                     />
                   </div>
 
-                  <div className={`absolute inset-0 pointer-events-none transition-all duration-700 ${
-                    isHovering ? "opacity-50" : "opacity-20"
-                  }`}>
-                    <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-gradient-to-br from-indigo-500/10 to-purple-500/10 blur-3xl animate-[pulse_6s_cubic-bezier(0.4,0,0.6,1)_infinite] transition-all duration-700 ${
-                      isHovering ? "scale-110" : "scale-100"
+                  <div className={`absolute inset-0 pointer-events-none transition-all duration-700 ${isHovering ? "opacity-50" : "opacity-20"
                     }`}>
+                    <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-gradient-to-br from-indigo-500/10 to-purple-500/10 blur-3xl animate-[pulse_6s_cubic-bezier(0.4,0,0.6,1)_infinite] transition-all duration-700 ${isHovering ? "scale-110" : "scale-100"
+                      }`}>
                     </div>
                   </div>
                 </div>
@@ -257,4 +257,5 @@ const Home = () => {
   );
 };
 
+Home.displayName = 'Home';
 export default memo(Home);

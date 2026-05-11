@@ -1,4 +1,3 @@
-import React from 'react';
 import { Home, ArrowLeft } from 'lucide-react';
 
 export default function NotFoundPage() {
@@ -48,7 +47,7 @@ export default function NotFoundPage() {
             <ArrowLeft size={20} />
             Kembali
           </button>
-          
+
           <button
             onClick={handleGoHome}
             className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 shadow-md hover:shadow-lg"
@@ -58,7 +57,7 @@ export default function NotFoundPage() {
           </button>
         </div>
 
-       
+
 
       </div>
     </div>

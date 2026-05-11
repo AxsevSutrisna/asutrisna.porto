@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Share2, User, Mail, MessageSquare, Send } from "lucide-react";
-import { Link } from "react-router-dom";
 import SocialLinks from "../components/SocialLinks";
 import Komentar from "../components/Commentar";
 import Swal from "sweetalert2";
@@ -46,7 +45,7 @@ const ContactPage = () => {
     try {
       // Ganti dengan email Anda di FormSubmit
       const formSubmitUrl = 'https://formsubmit.co/ekizulfarrachman@gmail.com';
-      
+
       // Siapkan data form untuk FormSubmit
       const submitData = new FormData();
       submitData.append('name', formData.name);
@@ -62,7 +61,7 @@ const ContactPage = () => {
         },
       });
 
-     
+
       Swal.fire({
         title: 'Berhasil!',
         text: 'Pesan Anda telah berhasil terkirim!',
@@ -143,7 +142,7 @@ const ContactPage = () => {
       >
         <div className="container px-[1%] grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-[45%_55%] 2xl:grid-cols-[35%_65%] gap-12" >
           <div
-        
+
             className="bg-white/5 backdrop-blur-xl rounded-3xl shadow-2xl p-5 py-10 sm:p-10 transform transition-all duration-500 hover:shadow-[#6366f1]/10"
           >
             <div className="flex justify-between items-start mb-8">
@@ -158,7 +157,7 @@ const ContactPage = () => {
               <Share2 className="w-10 h-10 text-[#6366f1] opacity-50" />
             </div>
 
-            <form 
+            <form
               onSubmit={handleSubmit}
               className="space-y-6"
             >

@@ -77,30 +77,30 @@ const ProjectCard = ({ project, onDelete, onEdit }) => {
   return (
     <Card>
       <div className="p-4 flex flex-col h-full">
-        {project.Img && (
+        {(project.img || project.Img) && (
           <div className="w-full aspect-[16/8] rounded-xl mb-4 border border-white/8 overflow-hidden bg-white/5">
             {!imgLoaded && (
               <div className="w-full h-full animate-pulse bg-white/5" />
             )}
             <img
-              src={project.Img}
-              alt={project.Title}
+              src={project.img || project.Img}
+              alt={project.Title || project.title}
               onLoad={() => setImgLoaded(true)}
               className={`w-full h-full object-cover transition-opacity duration-300 ${imgLoaded ? "opacity-100" : "opacity-0 absolute"}`}
             />
           </div>
         )}
         <h3 className="font-semibold text-white text-sm mb-1">
-          {project.Title}
+          {project.Title || project.title}
         </h3>
-        {project.Description && (
+        {(project.Description || project.description) && (
           <p className="text-gray-400 text-xs mb-3 line-clamp-2 leading-relaxed">
-            {project.Description}
+            {project.Description || project.description}
           </p>
         )}
-        {project.TechStack?.length > 0 && (
+        {(project.TechStack || project.techstack || project.tech_stack)?.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-3">
-            {project.TechStack.map((t) => (
+            {(project.TechStack || project.techstack || project.tech_stack).map((t) => (
               <span
                 key={t}
                 className="px-2 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-500/25 text-indigo-300 text-xs"
@@ -191,19 +191,23 @@ const ProjectForm = ({
   uploading,
 }) => {
   const [form, setForm] = useState({
-    Title: initial?.Title || "",
-    Description: initial?.Description || "",
-    TechStack: Array.isArray(initial?.TechStack)
-      ? initial.TechStack.join(", ")
-      : initial?.TechStack || "",
-    Features: Array.isArray(initial?.Features)
-      ? initial.Features.join(", ")
-      : initial?.Features || "",
-    Link: initial?.Link || "",
-    Github: initial?.Github || "",
+    title: initial?.title || initial?.Title || "",
+    description: initial?.description || initial?.Description || "",
+    techstack: Array.isArray(initial?.techstack)
+      ? initial.techstack.join(", ")
+      : Array.isArray(initial?.TechStack)
+        ? initial.TechStack.join(", ")
+        : initial?.techstack || initial?.TechStack || "",
+    features: Array.isArray(initial?.features)
+      ? initial.features.join(", ")
+      : Array.isArray(initial?.Features)
+        ? initial.Features.join(", ")
+        : initial?.features || initial?.Features || "",
+    link: initial?.link || initial?.Link || "",
+    github: initial?.github || initial?.Github || "",
   });
   const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(initial?.Img || null);
+  const [preview, setPreview] = useState(initial?.img || initial?.Img || null);
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
@@ -226,8 +230,8 @@ const ProjectForm = ({
         <div className="sm:col-span-2">
           <InputField
             label="Project Title"
-            value={form.Title}
-            onChange={set("Title")}
+            value={form.title}
+            onChange={set("title")}
             placeholder="e.g. My Portfolio Website"
             required
           />
@@ -238,8 +242,8 @@ const ProjectForm = ({
             Description
           </label>
           <textarea
-            value={form.Description}
-            onChange={set("Description")}
+            value={form.description}
+            onChange={set("description")}
             placeholder="Describe what this project does, its purpose, and impact..."
             rows={3}
             className="w-full bg-[#0d0d22] border border-white/10 rounded-xl px-4 py-2.5 text-gray-200 placeholder-gray-600 text-sm outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/20 transition-all resize-none"
@@ -248,26 +252,26 @@ const ProjectForm = ({
 
         <InputField
           label="Tech Stack (comma separated)"
-          value={form.TechStack}
-          onChange={set("TechStack")}
+          value={form.techstack}
+          onChange={set("techstack")}
           placeholder="e.g. React, Tailwind, Supabase"
         />
         <InputField
           label="Key Features (comma separated)"
-          value={form.Features}
-          onChange={set("Features")}
+          value={form.features}
+          onChange={set("features")}
           placeholder="e.g. Auth, Dark mode, REST API"
         />
         <InputField
           label="Live URL"
-          value={form.Link}
-          onChange={set("Link")}
+          value={form.link}
+          onChange={set("link")}
           placeholder="https://yourproject.com"
         />
         <InputField
           label="GitHub URL"
-          value={form.Github}
-          onChange={set("Github")}
+          value={form.github}
+          onChange={set("github")}
           placeholder="https://github.com/username/repo"
         />
 
@@ -366,17 +370,13 @@ export default function Projects() {
     let imgUrl = "";
     if (file) imgUrl = await uploadImage(file);
     await supabase.from("projects").insert({
-      Title: form.Title,
-      Description: form.Description,
-      Img: imgUrl,
-      TechStack: form.TechStack.split(",")
-        .map((s) => s.trim())
-        .filter(Boolean),
-      Features: form.Features.split(",")
-        .map((s) => s.trim())
-        .filter(Boolean),
-      Link: form.Link,
-      Github: form.Github,
+      title: form.title,
+      description: form.description,
+      img: imgUrl,
+      tech_stack: form.techstack.split(",").map((s) => s.trim()).filter(Boolean),
+      features: form.features.split(",").map((s) => s.trim()).filter(Boolean),
+      link: form.link,
+      github: form.github,
     });
     setShowCreate(false);
     setUploading(false);
@@ -385,22 +385,18 @@ export default function Projects() {
 
   const handleEdit = async (form, file) => {
     setUploading(true);
-    let imgUrl = editProject.Img || "";
+    let imgUrl = editProject.img || editProject.Img || "";
     if (file) imgUrl = await uploadImage(file);
     await supabase
       .from("projects")
       .update({
-        Title: form.Title,
-        Description: form.Description,
-        Img: imgUrl,
-        TechStack: form.TechStack.split(",")
-          .map((s) => s.trim())
-          .filter(Boolean),
-        Features: form.Features.split(",")
-          .map((s) => s.trim())
-          .filter(Boolean),
-        Link: form.Link,
-        Github: form.Github,
+        title: form.title,
+        description: form.description,
+        img: imgUrl,
+        tech_stack: form.techstack.split(",").map((s) => s.trim()).filter(Boolean),
+        features: form.features.split(",").map((s) => s.trim()).filter(Boolean),
+        link: form.link,
+        github: form.github,
       })
       .eq("id", editProject.id);
     setEditProject(null);

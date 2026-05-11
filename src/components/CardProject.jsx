@@ -1,4 +1,5 @@
-import React from "react";
+// import React from "react";
+import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { ExternalLink, ArrowRight } from "lucide-react";
 import { toSlug } from "../utils/slug";
@@ -83,6 +84,14 @@ const CardProject = ({ Img, Title, Description, Link: ProjectLink, id }) => {
       </div>
     </div>
   );
+};
+
+CardProject.propTypes = {
+  Img: PropTypes.string.isRequired,
+  Title: PropTypes.string.isRequired,
+  Description: PropTypes.string,
+  Link: PropTypes.string,
+  id: PropTypes.number.isRequired,
 };
 
 export default CardProject;

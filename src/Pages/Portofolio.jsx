@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 
-import { supabase } from "../supabase"; 
+import { supabase } from "../supabase";
 
 import PropTypes from "prop-types";
 import SwipeableViews from "react-swipeable-views";
@@ -140,7 +140,7 @@ export default function FullWidthTabs() {
       // Mengambil data dari Supabase secara paralel
       const [projectsResponse, certificatesResponse] = await Promise.all([
         supabase.from("projects").select("*").order('id', { ascending: false }),
-        supabase.from("certificates").select("*").order('id', { ascending: false }), 
+        supabase.from("certificates").select("*").order('id', { ascending: false }),
       ]);
 
       // Error handling untuk setiap request
@@ -170,10 +170,10 @@ export default function FullWidthTabs() {
     const cachedCertificates = localStorage.getItem('certificates');
 
     if (cachedProjects && cachedCertificates) {
-        setProjects(JSON.parse(cachedProjects));
-        setCertificates(JSON.parse(cachedCertificates));
+      setProjects(JSON.parse(cachedProjects));
+      setCertificates(JSON.parse(cachedCertificates));
     }
-    
+
     fetchData(); // Tetap panggil fetchData untuk sinkronisasi data terbaru
   }, [fetchData]);
 
@@ -209,7 +209,7 @@ export default function FullWidthTabs() {
           </span>
         </h2>
         <p className="text-slate-400 max-w-2xl mx-auto text-sm md:text-base mt-2">
-          Explore my journey through projects, certifications, and technical expertise. 
+          Explore my journey through projects, certifications, and technical expertise.
           Each section represents a milestone in my continuous learning path.
         </p>
       </div>
@@ -316,10 +316,10 @@ export default function FullWidthTabs() {
                     data-aos-duration={index % 3 === 0 ? "1000" : index % 3 === 1 ? "1200" : "1000"}
                   >
                     <CardProject
-                      Img={project.Img}
-                      Title={project.Title}
-                      Description={project.Description}
-                      Link={project.Link}
+                      Img={project.img || project.Img}
+                      Title={project.title || project.Title}
+                      Description={project.description || project.Description}
+                      Link={project.link || project.Link}
                       id={project.id}
                     />
                   </div>

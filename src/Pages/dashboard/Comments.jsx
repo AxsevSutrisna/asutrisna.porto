@@ -124,19 +124,17 @@ export default function Comments() {
             <button
               key={tab.value}
               onClick={() => setFilter(tab.value)}
-              className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm transition-all duration-200 ${
-                filter === tab.value
+              className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm transition-all duration-200 ${filter === tab.value
                   ? "bg-gradient-to-r from-indigo-500/25 to-purple-500/20 border border-indigo-500/35 text-white font-medium"
                   : "text-gray-500 hover:text-gray-300"
-              }`}
+                }`}
             >
               {tab.label}
               <span
-                className={`px-1.5 py-0.5 rounded-full text-xs ${
-                  filter === tab.value
+                className={`px-1.5 py-0.5 rounded-full text-xs ${filter === tab.value
                     ? "bg-indigo-500/25 text-indigo-300"
                     : "bg-white/8 text-gray-500"
-                }`}
+                  }`}
               >
                 {tab.count}
               </span>
@@ -190,8 +188,7 @@ export default function Comments() {
       {/* Result count when searching */}
       {search && (
         <p className="text-xs text-gray-500 -mt-3">
-          {filtered.length} result{filtered.length !== 1 ? "s" : ""} for "
-          {search}"
+          {filtered.length} result{filtered.length !== 1 ? "s" : ""} for &quot;{search}&quot;
         </p>
       )}
 
@@ -221,11 +218,10 @@ export default function Comments() {
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-[#6366f1] to-[#a855f7] rounded-2xl blur opacity-15 pointer-events-none" />
               )}
               <div
-                className={`relative bg-white/5 backdrop-blur-xl border rounded-2xl px-4 py-4 sm:px-5 transition-all duration-200 ${
-                  comment.is_pinned
+                className={`relative bg-white/5 backdrop-blur-xl border rounded-2xl px-4 py-4 sm:px-5 transition-all duration-200 ${comment.is_pinned
                     ? "border-indigo-500/30"
                     : "border-white/10 hover:border-white/18"
-                }`}
+                  }`}
               >
                 <div className="flex items-start gap-3 sm:gap-4">
                   {/* Avatar */}
@@ -267,11 +263,10 @@ export default function Comments() {
                     <button
                       onClick={() => pin(comment.id, !comment.is_pinned)}
                       title={comment.is_pinned ? "Unpin" : "Pin"}
-                      className={`p-2 rounded-lg border transition-all duration-200 ${
-                        comment.is_pinned
+                      className={`p-2 rounded-lg border transition-all duration-200 ${comment.is_pinned
                           ? "border-indigo-500/30 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20"
                           : "border-white/10 text-gray-500 hover:text-indigo-400 hover:border-indigo-500/25"
-                      }`}
+                        }`}
                     >
                       {comment.is_pinned ? (
                         <PinOff className="w-3.5 h-3.5" />
@@ -331,11 +326,10 @@ export default function Comments() {
                   <button
                     key={p}
                     onClick={() => setPage(p)}
-                    className={`min-w-[32px] h-8 px-2 rounded-lg text-xs border transition-all duration-200 ${
-                      page === p
+                    className={`min-w-[32px] h-8 px-2 rounded-lg text-xs border transition-all duration-200 ${page === p
                         ? "bg-indigo-500/20 border-indigo-500/40 text-indigo-300 font-medium"
                         : "border-white/10 text-gray-400 hover:text-white hover:border-white/20"
-                    }`}
+                      }`}
                   >
                     {p}
                   </button>

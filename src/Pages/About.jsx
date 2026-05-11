@@ -1,10 +1,39 @@
-import { useEffect, memo, useMemo } from "react"
+import { useEffect, useState, memo, useMemo } from "react"
 import { FileText, Code, Award, Globe, ArrowUpRight, Sparkles } from "lucide-react"
 import AOS from 'aos'
 import 'aos/dist/aos.css'
+import { supabase } from "../supabase"
+
+const ABOUT_FALLBACK = {
+  name: "Asep Sutrisna Suhada Putra",
+  description:
+    "Saya adalah mahasiswa Teknik Informatika yang berfokus pada pengembangan Front-End. Saya berfokus pada penciptaan pengalaman digital yang menarik dan selalu berupaya memberikan solusi terbaik dalam setiap proyek yang saya kerjakan.",
+  quote: "Leveraging AI as a professional tool, not a replacement.",
+  photo_url: "/Photo.jpg",
+  cv_url: "https://drive.google.com/file/d/14D0m6vlfyBZ3VZB2q66yCtnVf54iTc3E/view?usp=sharing",
+}
+
+const normalizeCvPath = (value) => {
+  if (!value) return ''
+  if (!value.startsWith('http')) return value
+
+  try {
+    const url = new URL(value)
+    const segments = url.pathname.split('/').filter(Boolean)
+    const bucketIndex = segments.findIndex((segment) => segment === 'about-cv')
+
+    if (bucketIndex >= 0) {
+      return segments.slice(bucketIndex + 1).join('/')
+    }
+
+    return ''
+  } catch {
+    return ''
+  }
+}
 
 // Memoized Components
-const Header = memo(() => (
+const Header = memo(({ name }) => (
   <div className="text-center lg:mb-8 mb-2 px-[5%]">
     <div className="inline-block relative group">
       <h2
@@ -21,14 +50,14 @@ const Header = memo(() => (
       data-aos-duration="800"
     >
       <Sparkles className="w-5 h-5 text-purple-400" />
-      Transforming ideas into digital experiences
+      Transforming ideas into digital experiences for {name || ABOUT_FALLBACK.name}
       <Sparkles className="w-5 h-5 text-purple-400" />
     </p>
   </div>
 ));
 Header.displayName = 'Header';
 
-const ProfileImage = memo(() => (
+const ProfileImage = memo(({ photoUrl }) => (
   <div className="flex justify-end items-center sm:p-12 sm:py-0 sm:pb-0 p-0 py-2 pb-2">
     <div
       className="relative group"
@@ -51,10 +80,13 @@ const ProfileImage = memo(() => (
           <div className="absolute inset-0 bg-gradient-to-t from-purple-500/20 via-transparent to-blue-500/20 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 hidden sm:block" />
 
           <img
-            src="/Photo.jpg"
+            src={photoUrl || ABOUT_FALLBACK.photo_url}
             alt="Profile"
             className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-2"
             loading="lazy"
+            onError={(event) => {
+              event.currentTarget.src = ABOUT_FALLBACK.photo_url
+            }}
           />
 
           {/* Advanced hover effects - desktop only */}
@@ -116,6 +148,9 @@ const StatCard = memo(({ icon: Icon, color, value, label, description, animation
 StatCard.displayName = 'StatCard';
 
 const AboutPage = () => {
+  const [aboutContent, setAboutContent] = useState(null)
+  const [cvDownloadUrl, setCvDownloadUrl] = useState('')
+
   // Memoized calculations
   const { totalProjects, totalCertificates, YearExperience } = useMemo(() => {
     const storedProjects = JSON.parse(localStorage.getItem("projects") || "[]");
@@ -132,6 +167,69 @@ const AboutPage = () => {
       YearExperience: experience
     };
   }, []);
+
+  useEffect(() => {
+    const fetchAboutContent = async () => {
+      const { data, error } = await supabase
+        .from("about_contents")
+        .select("*")
+        .eq("is_published", true)
+        .order("version", { ascending: false })
+        .limit(1)
+
+      if (error) {
+        console.error("Error fetching about content:", error)
+        return
+      }
+
+      setAboutContent(data?.[0] || null)
+    }
+
+    fetchAboutContent()
+  }, [])
+
+  const content = aboutContent || ABOUT_FALLBACK
+
+  useEffect(() => {
+    const resolveCvDownloadUrl = async () => {
+      const cvValue = content.cv_url || ABOUT_FALLBACK.cv_url
+
+      if (!cvValue) {
+        setCvDownloadUrl('')
+        return
+      }
+
+      if (!cvValue.startsWith('http')) {
+        const { data, error } = await supabase.storage
+          .from('about-cv')
+          .createSignedUrl(cvValue, 60 * 60)
+
+        if (!error && data?.signedUrl) {
+          setCvDownloadUrl(data.signedUrl)
+          return
+        }
+
+        setCvDownloadUrl('')
+        return
+      }
+
+      const normalizedPath = normalizeCvPath(cvValue)
+      if (normalizedPath) {
+        const { data, error } = await supabase.storage
+          .from('about-cv')
+          .createSignedUrl(normalizedPath, 60 * 60)
+
+        if (!error && data?.signedUrl) {
+          setCvDownloadUrl(data.signedUrl)
+          return
+        }
+      }
+
+      setCvDownloadUrl(cvValue)
+    }
+
+    resolveCvDownloadUrl()
+  }, [content.cv_url])
 
   // Optimized AOS initialization
   useEffect(() => {
@@ -193,7 +291,7 @@ const AboutPage = () => {
       itemType="https://schema.org/Person"
 
     >
-      <Header />
+      <Header name={content.name} />
 
       <div className="w-full mx-auto pt-8 sm:pt-12 relative">
         <div className="flex flex-col-reverse lg:grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
@@ -212,7 +310,7 @@ const AboutPage = () => {
                 data-aos-duration="1300"
                 itemProp="name"
               >
-                Eki Zulfar Rachman
+                {content.name}
               </span>
             </h2>
 
@@ -221,8 +319,7 @@ const AboutPage = () => {
               data-aos="fade-right"
               data-aos-duration="1500"
             >
-              Saya adalah mahasiswa Teknik Informatika yang berfokus pada pengembangan Front-End.
-              Saya berfokus pada penciptaan pengalaman digital yang menarik dan selalu berupaya memberikan solusi terbaik dalam setiap proyek yang saya kerjakan.
+              {content.description}
             </p>
 
             {/* Quote Section */}
@@ -243,12 +340,12 @@ const AboutPage = () => {
               </div>
 
               <blockquote className="text-gray-300 text-center lg:text-left italic font-medium text-sm relative z-10 pl-6">
-                &quot;Leveraging AI as a professional tool, not a replacement.&quot;
+                &quot;{content.quote || ABOUT_FALLBACK.quote}&quot;
               </blockquote>
             </div>
 
             <div className="flex flex-col lg:flex-row items-center lg:items-start gap-4 lg:gap-4 lg:px-0 w-full">
-              <a href="https://drive.google.com/drive/folders/1BOm51Grsabb3zj6Xk27K-iRwI1zITcpo" className="w-full lg:w-auto">
+              <a href={cvDownloadUrl || content.cv_url || ABOUT_FALLBACK.cv_url} className="w-full lg:w-auto" target="_blank" rel="noopener noreferrer">
                 <button
                   data-aos="fade-up"
                   data-aos-duration="800"
@@ -269,7 +366,7 @@ const AboutPage = () => {
             </div>
           </div>
 
-          <ProfileImage />
+          <ProfileImage photoUrl={content.photo_url} />
         </div>
 
         <a href="#Portofolio">

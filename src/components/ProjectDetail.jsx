@@ -200,20 +200,20 @@ const ProjectDetails = () => {
   return (
     <>
       <Helmet>
-        <title>{project.Title} — Eki Zulfar Rachman</title>
+        <title>{project.Title} — Asep Sutrisna Suhada Putra</title>
         <meta
           name="description"
           content={
             project.Description
               ? project.Description.slice(0, 155)
-              : `Project ${project.Title} oleh Eki Zulfar Rachman — Frontend Web Developer.`
+              : `Project ${project.Title} oleh Asep Sutrisna Suhada Putra — Full-Stack Web Developer.`
           }
         />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href={projectUrl} />
         <meta
           property="og:title"
-          content={`${project.Title} — Eki Zulfar Rachman`}
+          content={`${project.Title} — Asep Sutrisna Suhada Putra`}
         />
         <meta
           property="og:description"
@@ -231,8 +231,8 @@ const ProjectDetails = () => {
             "url": "${projectUrl}",
             "author": {
               "@type": "Person",
-              "name": "Eki Zulfar Rachman",
-              "url": "https://ekizr.com"
+              "name": "Asep Sutrisna Suhada Putra",
+              "url": "https://asutrisna.dev"
             }
           }
         `}</script>

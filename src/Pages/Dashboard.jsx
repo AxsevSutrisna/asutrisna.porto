@@ -4,10 +4,12 @@ import { supabase } from '../supabase'
 import Projects from './dashboard/Projects'
 import Certificates from './dashboard/Certificates'
 import Comments from './dashboard/Comments'
-import { FolderGit2, Award, MessageSquare, LogOut, LayoutDashboard, Menu } from 'lucide-react'
+import About from './dashboard/About'
+import { FolderGit2, Award, MessageSquare, LogOut, LayoutDashboard, Menu, Sparkles } from 'lucide-react'
 
 const NAV_ITEMS = [
   { to: 'projects', label: 'Projects', icon: FolderGit2 },
+  { to: 'about', label: 'About', icon: Sparkles },
   { to: 'certificates', label: 'Certificates', icon: Award },
   { to: 'comments', label: 'Comments', icon: MessageSquare },
 ]
@@ -54,11 +56,10 @@ export default function Dashboard() {
               key={to}
               to={to}
               onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-sm font-medium shrink-0 ${
-                active
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-sm font-medium shrink-0 ${active
                   ? 'bg-gradient-to-r from-indigo-500/20 to-purple-500/15 border border-indigo-500/30 text-white'
                   : 'text-gray-400 hover:text-gray-200 hover:bg-white/5 border border-transparent'
-              }`}
+                }`}
             >
               <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-indigo-400' : ''}`} />
               {label}
@@ -100,9 +101,8 @@ export default function Dashboard() {
 
       {/* Sidebar - mobile drawer */}
       <aside
-        className={`fixed inset-y-0 left-0 z-30 w-60 flex flex-col border-r border-white/8 bg-[#0a0a1a] backdrop-blur-xl transition-transform duration-300 lg:hidden ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed inset-y-0 left-0 z-30 w-60 flex flex-col border-r border-white/8 bg-[#0a0a1a] backdrop-blur-xl transition-transform duration-300 lg:hidden ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
       >
         <SidebarContent />
       </aside>
@@ -125,6 +125,7 @@ export default function Dashboard() {
           <Routes>
             <Route index element={<Navigate to="projects" replace />} />
             <Route path="projects" element={<Projects />} />
+            <Route path="about" element={<About />} />
             <Route path="certificates" element={<Certificates />} />
             <Route path="comments" element={<Comments />} />
           </Routes>

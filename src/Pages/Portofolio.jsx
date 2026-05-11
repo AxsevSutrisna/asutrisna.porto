@@ -102,8 +102,8 @@ function a11yProps(index) {
   };
 }
 
-// techStacks tetap sama
-const techStacks = [
+// Fallback static data if DB is empty/unavailable
+const fallbackTechStacks = [
   { icon: "html.svg", language: "HTML" },
   { icon: "css.svg", language: "CSS" },
   { icon: "javascript.svg", language: "JavaScript" },
@@ -123,6 +123,7 @@ export default function FullWidthTabs() {
   const [value, setValue] = useState(0);
   const [projects, setProjects] = useState([]);
   const [certificates, setCertificates] = useState([]);
+  const [techStacks, setTechStacks] = useState([]);
   const [showAllProjects, setShowAllProjects] = useState(false);
   const [showAllCertificates, setShowAllCertificates] = useState(false);
   const isMobile = window.innerWidth < 768;
@@ -138,25 +139,30 @@ export default function FullWidthTabs() {
   const fetchData = useCallback(async () => {
     try {
       // Mengambil data dari Supabase secara paralel
-      const [projectsResponse, certificatesResponse] = await Promise.all([
+      const [projectsResponse, certificatesResponse, techStacksResponse] = await Promise.all([
         supabase.from("projects").select("*").order('id', { ascending: false }),
         supabase.from("certificates").select("*").order('id', { ascending: false }),
+        supabase.from("tech_stacks").select("*").eq('is_active', true).order('sort_order', { ascending: true }).order('name', { ascending: true }),
       ]);
 
       // Error handling untuk setiap request
       if (projectsResponse.error) throw projectsResponse.error;
       if (certificatesResponse.error) throw certificatesResponse.error;
+      if (techStacksResponse.error) throw techStacksResponse.error;
 
       // Supabase mengembalikan data dalam properti 'data'
       const projectData = projectsResponse.data || [];
       const certificateData = certificatesResponse.data || [];
+      const techStackData = techStacksResponse.data || [];
 
       setProjects(projectData);
       setCertificates(certificateData);
+      setTechStacks(techStackData);
 
       // Store in localStorage (fungsionalitas ini tetap dipertahankan)
       localStorage.setItem("projects", JSON.stringify(projectData));
       localStorage.setItem("certificates", JSON.stringify(certificateData));
+      localStorage.setItem("techStacks", JSON.stringify(techStackData));
     } catch (error) {
       console.error("Error fetching data from Supabase:", error.message);
     }
@@ -168,10 +174,14 @@ export default function FullWidthTabs() {
     // Coba ambil dari localStorage dulu untuk laod lebih cepat
     const cachedProjects = localStorage.getItem('projects');
     const cachedCertificates = localStorage.getItem('certificates');
+    const cachedTechStacks = localStorage.getItem('techStacks');
 
     if (cachedProjects && cachedCertificates) {
       setProjects(JSON.parse(cachedProjects));
       setCertificates(JSON.parse(cachedCertificates));
+      if (cachedTechStacks) {
+        setTechStacks(JSON.parse(cachedTechStacks));
+      }
     }
 
     fetchData(); // Tetap panggil fetchData untuk sinkronisasi data terbaru
@@ -191,6 +201,7 @@ export default function FullWidthTabs() {
 
   const displayedProjects = showAllProjects ? projects : projects.slice(0, initialItems);
   const displayedCertificates = showAllCertificates ? certificates : certificates.slice(0, initialItems);
+  const displayedTechStacks = techStacks.length > 0 ? techStacks : fallbackTechStacks;
 
   // Sisa dari komponen (return statement) tidak ada perubahan
   return (
@@ -363,13 +374,16 @@ export default function FullWidthTabs() {
           <TabPanel value={value} index={2} dir={theme.direction}>
             <div className="container mx-auto flex justify-center items-center overflow-hidden pb-[5%]">
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 lg:gap-8 gap-5">
-                {techStacks.map((stack, index) => (
+                {displayedTechStacks.map((stack, index) => (
                   <div
-                    key={index}
+                    key={stack.id || stack.slug || index}
                     data-aos={index % 3 === 0 ? "fade-up-right" : index % 3 === 1 ? "fade-up" : "fade-up-left"}
                     data-aos-duration={index % 3 === 0 ? "1000" : index % 3 === 1 ? "1200" : "1000"}
                   >
-                    <TechStackIcon TechStackIcon={stack.icon} Language={stack.language} />
+                    <TechStackIcon
+                      TechStackIcon={stack.icon_url || stack.icon}
+                      Language={stack.name || stack.language}
+                    />
                   </div>
                 ))}
               </div>

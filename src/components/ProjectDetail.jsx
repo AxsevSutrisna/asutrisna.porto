@@ -122,28 +122,50 @@ const ProjectDetails = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
+  const [isResolved, setIsResolved] = useState(false);
 
 
   useEffect(() => {
     window.scrollTo(0, 0);
     const storedProjects = JSON.parse(localStorage.getItem("projects")) || [];
-    // Cari project berdasarkan slug yang di-generate dari Title
+    // Cari project berdasarkan slug dari field baru/legacy
     const selectedProject = storedProjects.find(
-      (p) => toSlug(p.Title) === slug,
+      (p) => toSlug(p?.title || p?.Title) === slug,
     );
 
     if (selectedProject) {
+      const normalizedTitle = selectedProject.title || selectedProject.Title || "Untitled Project";
+      const normalizedDescription = selectedProject.description || selectedProject.Description || "";
+      const normalizedFeatures = Array.isArray(selectedProject.features)
+        ? selectedProject.features
+        : Array.isArray(selectedProject.Features)
+          ? selectedProject.Features
+          : [];
+      const normalizedTechStack = Array.isArray(selectedProject.tech_stack)
+        ? selectedProject.tech_stack
+        : Array.isArray(selectedProject.TechStack)
+          ? selectedProject.TechStack
+          : [];
+
       const enhancedProject = {
         ...selectedProject,
-        Features: selectedProject.Features || [],
-        TechStack: selectedProject.TechStack || [],
-        Github: selectedProject.Github || "https://github.com/EkiZR",
+        Title: normalizedTitle,
+        Description: normalizedDescription,
+        Img: selectedProject.img || selectedProject.Img || "",
+        Link: selectedProject.link || selectedProject.Link || "#",
+        Github: selectedProject.github || selectedProject.Github || "https://github.com/EkiZR",
+        Features: normalizedFeatures,
+        TechStack: normalizedTechStack,
       };
       setProject(enhancedProject);
+    } else {
+      setProject(null);
     }
+
+    setIsResolved(true);
   }, [slug]);
 
-  if (!project) {
+  if (!isResolved) {
     return (
       <div className="min-h-screen bg-[#030014] flex items-center justify-center">
         <div className="text-center space-y-6 animate-fadeIn">
@@ -151,6 +173,23 @@ const ProjectDetails = () => {
           <h2 className="text-xl md:text-3xl font-bold text-white">
             Loading Project...
           </h2>
+        </div>
+      </div>
+    );
+  }
+
+  if (!project) {
+    return (
+      <div className="min-h-screen bg-[#030014] flex items-center justify-center px-4">
+        <div className="text-center space-y-4">
+          <h2 className="text-2xl md:text-3xl font-bold text-white">Project not found</h2>
+          <p className="text-gray-400">Data project tidak ditemukan atau slug tidak valid.</p>
+          <button
+            onClick={() => navigate(-1)}
+            className="px-4 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
+          >
+            Go Back
+          </button>
         </div>
       </div>
     );

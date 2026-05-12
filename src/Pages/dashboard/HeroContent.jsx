@@ -536,7 +536,7 @@ export default function HeroContentDashboard() {
                                                 onClick={handleSave}
                                                 disabled={uploading}
                                                 style={{ width: '100%', maxWidth: dockDims && dockDims.width && dockDims.width > 240 ? Math.min(dockDims.width, 680) : 680 }}
-                                                className="flex items-center justify-center gap-2 px-4 py-2 bg-transparent rounded-lg text-gray-200 font-medium whitespace-nowrap text-sm"
+                                                className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500/5 to-purple-500/5 rounded-lg text-gray-200 font-medium whitespace-nowrap text-sm transition-all duration-300 hover:scale-105 hover:text-white hover:shadow-lg hover:shadow-indigo-500/20 active:scale-95 hover:from-indigo-500/25 hover:to-purple-500/25"
                                             >
                                                 {uploading ? (
                                                     <>
@@ -558,11 +558,11 @@ export default function HeroContentDashboard() {
                                     <button
                                         onClick={handleSave}
                                         disabled={uploading}
-                                        className="relative group rounded-full px-3 py-2 shadow-lg text-sm"
+                                        className="relative group rounded-full px-3 py-2 shadow-lg text-sm transition-all duration-200 hover:shadow-xl hover:shadow-indigo-500/30 active:scale-95"
                                         style={{ minHeight: 40 }}
                                     >
-                                        <div className="absolute -inset-0.5 bg-gradient-to-r from-[#4f52c9] to-[#8644c5] rounded-full opacity-60 blur group-hover:opacity-100 transition duration-300" />
-                                        <div className="relative flex items-center justify-center gap-2 bg-[#030014] rounded-full border border-white/10 text-gray-200 font-medium px-3 py-1.5">
+                                        <div className="absolute -inset-0.5 bg-gradient-to-r from-[#4f52c9] to-[#8644c5] rounded-full opacity-60 blur group-hover:opacity-100 group-hover:shadow-lg transition duration-300" />
+                                        <div className="relative flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500/5 to-purple-500/5 rounded-full border border-white/10 text-gray-200 font-medium px-3 py-1.5 transition-all duration-300 group-hover:border-indigo-500/50 group-hover:from-indigo-500/30 group-hover:to-purple-500/30">
                                             {uploading ? (
                                                 <>
                                                     <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin" />

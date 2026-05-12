@@ -328,6 +328,7 @@ export default function FullWidthTabs() {
                   >
                     <CardProject
                       Img={project.img || project.Img}
+                      Images={project.images || project.Images}
                       Title={project.title || project.Title}
                       Description={project.description || project.Description}
                       Link={project.link || project.Link}

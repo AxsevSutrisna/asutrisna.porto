@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { supabase } from "../supabase";
 import { Helmet } from "react-helmet-async";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -127,42 +128,134 @@ const ProjectDetails = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    const storedProjects = JSON.parse(localStorage.getItem("projects")) || [];
-    // Cari project berdasarkan slug dari field baru/legacy
-    const selectedProject = storedProjects.find(
-      (p) => toSlug(p?.title || p?.Title) === slug,
-    );
+    let mounted = true
 
-    if (selectedProject) {
-      const normalizedTitle = selectedProject.title || selectedProject.Title || "Untitled Project";
-      const normalizedDescription = selectedProject.description || selectedProject.Description || "";
-      const normalizedFeatures = Array.isArray(selectedProject.features)
-        ? selectedProject.features
-        : Array.isArray(selectedProject.Features)
-          ? selectedProject.Features
-          : [];
-      const normalizedTechStack = Array.isArray(selectedProject.tech_stack)
-        ? selectedProject.tech_stack
-        : Array.isArray(selectedProject.TechStack)
-          ? selectedProject.TechStack
-          : [];
+    const fetchProjectFromDb = async () => {
+      try {
+        const { data, error } = await supabase.from('projects').select('*')
+        if (error) throw error
 
-      const enhancedProject = {
-        ...selectedProject,
-        Title: normalizedTitle,
-        Description: normalizedDescription,
-        Img: selectedProject.img || selectedProject.Img || "",
-        Link: selectedProject.link || selectedProject.Link || "#",
-        Github: selectedProject.github || selectedProject.Github || "https://github.com/EkiZR",
-        Features: normalizedFeatures,
-        TechStack: normalizedTechStack,
-      };
-      setProject(enhancedProject);
-    } else {
-      setProject(null);
+        const projects = data || []
+        // cari by slug
+        const found = projects.find((p) => toSlug(p?.title || p?.Title) === slug)
+        if (found && mounted) {
+          const normalizedTitle = found.title || found.Title || "Untitled Project"
+          const normalizedDescription = found.description || found.Description || ""
+          const normalizedFeatures = Array.isArray(found.features)
+            ? found.features
+            : (typeof found.features === 'string' && found.features.length > 0)
+              ? found.features.split(',').map((s) => s.trim()).filter(Boolean)
+              : Array.isArray(found.Features)
+                ? found.Features
+                : (typeof found.Features === 'string' && found.Features.length > 0)
+                  ? found.Features.split(',').map((s) => s.trim()).filter(Boolean)
+                  : []
+          const normalizedTechStack = Array.isArray(found.tech_stack)
+            ? found.tech_stack
+            : Array.isArray(found.techstack)
+              ? found.techstack
+              : (typeof found.techstack === 'string' && found.techstack.length > 0)
+                ? found.techstack.split(',').map((s) => s.trim()).filter(Boolean)
+                : Array.isArray(found.TechStack)
+                  ? found.TechStack
+                  : (typeof found.TechStack === 'string' && found.TechStack.length > 0)
+                    ? found.TechStack.split(',').map((s) => s.trim()).filter(Boolean)
+                    : []
+
+          const enhanced = {
+            ...found,
+            Title: normalizedTitle,
+            Description: normalizedDescription,
+            Img: found.img || found.Img || "",
+            Link: found.link || found.Link || "#",
+            Github: found.github || found.Github || "",
+            Features: normalizedFeatures,
+            TechStack: normalizedTechStack,
+          }
+
+          setProject(enhanced)
+          setIsResolved(true)
+          return
+        }
+
+        // fallback to localStorage if not found in DB
+        const storedProjects = JSON.parse(localStorage.getItem("projects")) || []
+        const selectedProject = storedProjects.find(
+          (p) => toSlug(p?.title || p?.Title) === slug,
+        )
+
+        if (selectedProject && mounted) {
+          const normalizedTitle = selectedProject.title || selectedProject.Title || "Untitled Project"
+          const normalizedDescription = selectedProject.description || selectedProject.Description || ""
+          const normalizedFeatures = Array.isArray(selectedProject.features)
+            ? selectedProject.features
+            : Array.isArray(selectedProject.Features)
+              ? selectedProject.Features
+              : []
+          const normalizedTechStack = Array.isArray(selectedProject.tech_stack)
+            ? selectedProject.tech_stack
+            : Array.isArray(selectedProject.TechStack)
+              ? selectedProject.TechStack
+              : []
+
+          const enhancedProject = {
+            ...selectedProject,
+            Title: normalizedTitle,
+            Description: normalizedDescription,
+            Img: selectedProject.img || selectedProject.Img || "",
+            Link: selectedProject.link || selectedProject.Link || "#",
+            Github: selectedProject.github || selectedProject.Github || "",
+            Features: normalizedFeatures,
+            TechStack: normalizedTechStack,
+          }
+          setProject(enhancedProject)
+        } else {
+          setProject(null)
+        }
+
+        setIsResolved(true)
+      } catch (err) {
+        console.error('Error fetching project:', err.message || err)
+        // try localStorage fallback
+        const storedProjects = JSON.parse(localStorage.getItem("projects")) || []
+        const selectedProject = storedProjects.find(
+          (p) => toSlug(p?.title || p?.Title) === slug,
+        )
+        if (selectedProject && mounted) {
+          const normalizedTitle = selectedProject.title || selectedProject.Title || "Untitled Project"
+          const normalizedDescription = selectedProject.description || selectedProject.Description || ""
+          const normalizedFeatures = Array.isArray(selectedProject.features)
+            ? selectedProject.features
+            : Array.isArray(selectedProject.Features)
+              ? selectedProject.Features
+              : []
+          const normalizedTechStack = Array.isArray(selectedProject.tech_stack)
+            ? selectedProject.tech_stack
+            : Array.isArray(selectedProject.TechStack)
+              ? selectedProject.TechStack
+              : []
+
+          const enhancedProject = {
+            ...selectedProject,
+            Title: normalizedTitle,
+            Description: normalizedDescription,
+            Img: selectedProject.img || selectedProject.Img || "",
+            Link: selectedProject.link || selectedProject.Link || "#",
+            Github: selectedProject.github || selectedProject.Github || "",
+            Features: normalizedFeatures,
+            TechStack: normalizedTechStack,
+          }
+          setProject(enhancedProject)
+        } else if (mounted) {
+          setProject(null)
+        }
+        if (mounted) setIsResolved(true)
+      }
     }
 
-    setIsResolved(true);
+    fetchProjectFromDb()
+
+    return () => { mounted = false }
   }, [slug]);
 
   if (!isResolved) {
@@ -195,7 +288,7 @@ const ProjectDetails = () => {
     );
   }
 
-  const projectUrl = `https://ekizr.com/project/${toSlug(project.Title)}`;
+  const projectUrl = `https://AxsevSutrisna.com/project/${toSlug(project.Title)}`;
 
   return (
     <>

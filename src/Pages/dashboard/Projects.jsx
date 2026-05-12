@@ -193,11 +193,13 @@ const ProjectForm = ({
   const [form, setForm] = useState({
     title: initial?.title || initial?.Title || "",
     description: initial?.description || initial?.Description || "",
-    techstack: Array.isArray(initial?.techstack)
-      ? initial.techstack.join(", ")
-      : Array.isArray(initial?.TechStack)
-        ? initial.TechStack.join(", ")
-        : initial?.techstack || initial?.TechStack || "",
+    techstack: Array.isArray(initial?.tech_stack)
+      ? initial.tech_stack.join(", ")
+      : Array.isArray(initial?.techstack)
+        ? initial.techstack.join(", ")
+        : Array.isArray(initial?.TechStack)
+          ? initial.TechStack.join(", ")
+          : initial?.techstack || initial?.TechStack || initial?.tech_stack || "",
     features: Array.isArray(initial?.features)
       ? initial.features.join(", ")
       : Array.isArray(initial?.Features)

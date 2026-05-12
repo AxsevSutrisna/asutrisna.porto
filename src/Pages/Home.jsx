@@ -95,10 +95,10 @@ const HERO_FALLBACK = {
   typing_words: ['Network & Telecom Student', 'Tech Enthusiast'],
   description: 'Menciptakan Website Yang Inovatif, Fungsional, dan User-Friendly untuk Solusi Digital.',
   tech_badges: ['React', 'Javascript', 'Node.js', 'Tailwind'],
-  primary_cta_label: 'Projects',
-  primary_cta_url: '/#Portofolio',
-  secondary_cta_label: 'Contact',
-  secondary_cta_url: '/#Contact',
+  cta_buttons: [
+    { label: 'Projects', url: '/#Portofolio' },
+    { label: 'Contact', url: '/#Contact' },
+  ],
   hero_image_url: '/Animation1.gif',
   hero_image_alt: 'Developer illustration',
   accent_from: '#6366f1',
@@ -307,8 +307,9 @@ const Home = () => {
 
                   {/* CTA Buttons */}
                   <div className="flex flex-row gap-3 w-full justify-start" data-aos="fade-up" data-aos-delay="1400">
-                    <CTAButton href={hero?.primary_cta_url || HERO_FALLBACK.primary_cta_url} text={hero?.primary_cta_label || HERO_FALLBACK.primary_cta_label} icon={ExternalLink} />
-                    <CTAButton href={hero?.secondary_cta_url || HERO_FALLBACK.secondary_cta_url} text={hero?.secondary_cta_label || HERO_FALLBACK.secondary_cta_label} icon={Mail} />
+                    {(hero?.cta_buttons || HERO_FALLBACK.cta_buttons).map((cta, index) => (
+                      <CTAButton key={index} href={cta.url} text={cta.label} icon={index === 0 ? ExternalLink : Mail} />
+                    ))}
                   </div>
 
                   {/* Social Links */}

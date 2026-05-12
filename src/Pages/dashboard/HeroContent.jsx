@@ -17,10 +17,10 @@ const HERO_FALLBACK = {
     typing_words: ['Network & Telecom Student', 'Tech Enthusiast'],
     description: 'Menciptakan Website Yang Inovatif, Fungsional, dan User-Friendly untuk Solusi Digital.',
     tech_badges: ['React', 'Javascript', 'Node.js', 'Tailwind'],
-    primary_cta_label: 'Projects',
-    primary_cta_url: '/#Portofolio',
-    secondary_cta_label: 'Contact',
-    secondary_cta_url: '/#Contact',
+    cta_buttons: [
+        { label: 'Projects', url: '/#Portofolio' },
+        { label: 'Contact', url: '/#Contact' },
+    ],
     hero_image_url: '/Animation1.gif',
     hero_image_alt: 'Developer illustration',
     accent_from: '#6366f1',
@@ -214,10 +214,7 @@ export default function HeroContentDashboard() {
             typing_words: Array.isArray(heroData.typing_words) ? heroData.typing_words.join(', ') : '',
             description: heroData.description,
             tech_badges: Array.isArray(heroData.tech_badges) ? heroData.tech_badges.join(', ') : '',
-            primary_cta_label: heroData.primary_cta_label,
-            primary_cta_url: heroData.primary_cta_url,
-            secondary_cta_label: heroData.secondary_cta_label,
-            secondary_cta_url: heroData.secondary_cta_url,
+            cta_buttons: Array.isArray(heroData.cta_buttons) ? heroData.cta_buttons : [],
             hero_image_url: heroData.hero_image_url,
             hero_image_alt: heroData.hero_image_alt,
             accent_from: heroData.accent_from,
@@ -287,10 +284,10 @@ export default function HeroContentDashboard() {
                 typing_words: normalizeList(form.typing_words),
                 description: form.description.trim(),
                 tech_badges: normalizeList(form.tech_badges),
-                primary_cta_label: form.primary_cta_label.trim(),
-                primary_cta_url: form.primary_cta_url.trim(),
-                secondary_cta_label: form.secondary_cta_label.trim(),
-                secondary_cta_url: form.secondary_cta_url.trim(),
+                cta_buttons: (form.cta_buttons || []).map((cta) => ({
+                    label: cta.label.trim(),
+                    url: cta.url.trim(),
+                })).filter((cta) => cta.label && cta.url),
                 hero_image_url: heroImageUrl,
                 hero_image_alt: form.hero_image_alt.trim(),
                 accent_from: form.accent_from.trim(),
@@ -432,17 +429,76 @@ export default function HeroContentDashboard() {
 
                     {/* Call-to-Action Buttons */}
                     <div className="rounded-lg border border-white/10 bg-[#0a0a1a] p-6 space-y-4">
-                        <h2 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Call-to-Action Buttons</h2>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <InputField label="Primary Button Label" value={form.primary_cta_label} onChange={set('primary_cta_label')} placeholder="Projects" required />
-                            <InputField label="Primary Button URL" value={form.primary_cta_url} onChange={set('primary_cta_url')} placeholder="/#Portofolio" required />
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Call-to-Action Buttons</h2>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setForm((current) => ({
+                                        ...current,
+                                        cta_buttons: [...(current.cta_buttons || []), { label: '', url: '' }],
+                                    }))
+                                }}
+                                className="px-3 py-1 text-xs bg-indigo-500/20 border border-indigo-500/40 rounded-lg text-indigo-300 hover:bg-indigo-500/30 transition-all"
+                            >
+                                + Add CTA
+                            </button>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <InputField label="Secondary Button Label" value={form.secondary_cta_label} onChange={set('secondary_cta_label')} placeholder="Contact" required />
-                            <InputField label="Secondary Button URL" value={form.secondary_cta_url} onChange={set('secondary_cta_url')} placeholder="/#Contact" required />
-                        </div>
+                        {form.cta_buttons && form.cta_buttons.length > 0 ? (
+                            <div className="space-y-4">
+                                {form.cta_buttons.map((cta, idx) => (
+                                    <div key={idx} className="p-4 rounded-lg bg-[#0d0d22] border border-white/5 space-y-3">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="text-xs text-gray-400">Button {idx + 1}</span>
+                                            {form.cta_buttons.length > 1 && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setForm((current) => ({
+                                                            ...current,
+                                                            cta_buttons: current.cta_buttons.filter((_, i) => i !== idx),
+                                                        }))
+                                                    }}
+                                                    className="text-red-400 hover:text-red-300 transition-colors"
+                                                >
+                                                    <X className="w-4 h-4" />
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            <InputField
+                                                label="Button Label"
+                                                value={cta.label}
+                                                onChange={(e) => {
+                                                    const newCtaButtons = [...form.cta_buttons]
+                                                    newCtaButtons[idx].label = e.target.value
+                                                    setForm((current) => ({ ...current, cta_buttons: newCtaButtons }))
+                                                }}
+                                                placeholder="Projects"
+                                                required
+                                            />
+                                            <InputField
+                                                label="Button URL"
+                                                value={cta.url}
+                                                onChange={(e) => {
+                                                    const newCtaButtons = [...form.cta_buttons]
+                                                    newCtaButtons[idx].url = e.target.value
+                                                    setForm((current) => ({ ...current, cta_buttons: newCtaButtons }))
+                                                }}
+                                                placeholder="/#Portofolio"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="p-4 rounded-lg bg-[#0d0d22] border border-white/5 text-center text-gray-500 text-sm">
+                                {`No CTA buttons yet. Click "+ Add CTA" to add one.`}
+                            </div>
+                        )}
                     </div>
 
                     {/* Image & Styling */}
@@ -625,13 +681,26 @@ export default function HeroContentDashboard() {
                                     )}
                                 </div>
 
-                                <div className="flex gap-2 pt-2">
-                                    <span className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-[10px] text-white">
-                                        {form.primary_cta_label || 'Primary'}
-                                    </span>
-                                    <span className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-[10px] text-white">
-                                        {form.secondary_cta_label || 'Secondary'}
-                                    </span>
+                                <div className="flex gap-2 pt-2 flex-wrap">
+                                    {(form.cta_buttons && form.cta_buttons.length > 0)
+                                        ? form.cta_buttons.slice(0, 3).map((cta, idx) => (
+                                            <span key={idx} className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-[10px] text-white">
+                                                {cta.label || 'Button'}
+                                            </span>
+                                        ))
+                                        : (
+                                            <>
+                                                <span className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-[10px] text-white">
+                                                    Primary
+                                                </span>
+                                                <span className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-[10px] text-white">
+                                                    Secondary
+                                                </span>
+                                            </>
+                                        )}
+                                    {form.cta_buttons && form.cta_buttons.length > 3 && (
+                                        <span className="px-3 py-1.5 text-[10px] text-gray-400">+{form.cta_buttons.length - 3}</span>
+                                    )}
                                 </div>
                             </div>
                         </div>

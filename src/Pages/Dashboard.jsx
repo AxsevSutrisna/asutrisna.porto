@@ -7,10 +7,12 @@ import Comments from './dashboard/Comments'
 import About from './dashboard/About'
 import TechStacks from './dashboard/TechStacks'
 import SocialLinks from './dashboard/SocialLinks'
-import { FolderGit2, Award, MessageSquare, LogOut, LayoutDashboard, Menu, Sparkles, Boxes, Link2 } from 'lucide-react'
+import HeroContent from './dashboard/HeroContent'
+import { FolderGit2, Award, MessageSquare, LogOut, LayoutDashboard, Menu, Sparkles, Boxes, Link2, Paintbrush } from 'lucide-react'
 
 const NAV_ITEMS = [
   { to: 'projects', label: 'Projects', icon: FolderGit2 },
+  { to: 'hero-content', label: 'Hero Content', icon: Paintbrush },
   { to: 'about', label: 'About', icon: Sparkles },
   { to: 'tech-stacks', label: 'Tech Stack', icon: Boxes },
   { to: 'social-links', label: 'Social Media', icon: Link2 },
@@ -124,11 +126,12 @@ export default function Dashboard() {
           <span className="text-sm font-medium text-white">Dashboard</span>
         </div>
 
-        {/* Hanya main yang overflow-y-auto — scrollbar bisa diklik normal */}
+        {/* Hanya main yang overflow-y-auto ï¿½ scrollbar bisa diklik normal */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           <Routes>
             <Route index element={<Navigate to="projects" replace />} />
             <Route path="projects" element={<Projects />} />
+            <Route path="hero-content" element={<HeroContent />} />
             <Route path="about" element={<About />} />
             <Route path="tech-stacks" element={<TechStacks />} />
             <Route path="social-links" element={<SocialLinks />} />

@@ -3,15 +3,16 @@ import { Helmet } from "react-helmet-async"
 import { Github, Linkedin, Mail, ExternalLink, Instagram, Sparkles } from "lucide-react"
 import AOS from 'aos'
 import 'aos/dist/aos.css'
+import { supabase } from '../supabase'
 
-const StatusBadge = memo(() => (
+const StatusBadge = memo(({ badge = 'Ready to Innovate' }) => (
   <div className="inline-block animate-float lg:mx-0" data-aos="zoom-in" data-aos-delay="400">
     <div className="relative group">
       <div className="absolute -inset-0.5 bg-gradient-to-r from-[#6366f1] to-[#a855f7] rounded-full blur opacity-30 group-hover:opacity-50 transition duration-1000"></div>
       <div className="relative px-3 sm:px-4 py-2 rounded-full bg-black/40 backdrop-blur-xl border border-white/10">
         <span className="bg-gradient-to-r from-[#6366f1] to-[#a855f7] text-transparent bg-clip-text sm:text-sm text-[0.7rem] font-medium flex items-center">
           <Sparkles className="sm:w-4 sm:h-4 w-3 h-3 mr-2 text-blue-400" />
-          Ready to Innovate
+          {badge}
         </span>
       </div>
     </div>
@@ -19,20 +20,20 @@ const StatusBadge = memo(() => (
 ));
 StatusBadge.displayName = 'StatusBadge';
 
-const MainTitle = memo(() => (
+const MainTitle = memo(({ title1 = 'Frontend', title2 = 'Developer' }) => (
   <div className="space-y-2" data-aos="fade-up" data-aos-delay="600">
+    {/* H1: Primary heading for SEO - combines both title lines */}
     <h1 className="text-5xl sm:text-6xl md:text-6xl lg:text-6xl xl:text-7xl font-bold tracking-tight">
       <span className="relative inline-block">
         <span className="absolute -inset-2 bg-gradient-to-r from-[#6366f1] to-[#a855f7] blur-2xl opacity-20"></span>
         <span className="relative bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent">
-          Frontend
+          {title1}
         </span>
       </span>
-      <br />
-      <span className="relative inline-block mt-2">
+      <span className="block sm:inline-block relative mt-2 sm:mt-0 sm:ml-3">
         <span className="absolute -inset-2 bg-gradient-to-r from-[#6366f1] to-[#a855f7] blur-2xl opacity-20"></span>
         <span className="relative bg-gradient-to-r from-[#6366f1] to-[#a855f7] bg-clip-text text-transparent">
-          Developer
+          {title2}
         </span>
       </span>
     </h1>
@@ -81,13 +82,28 @@ SocialLink.displayName = 'SocialLink';
 const TYPING_SPEED = 100;
 const ERASING_SPEED = 50;
 const PAUSE_DURATION = 2000;
-const WORDS = ["Network & Telecom Student", "Tech Enthusiast"];
-const TECH_STACK = ["React", "Javascript", "Node.js", "Tailwind"];
 const SOCIAL_LINKS = [
   { icon: Github, link: "https://github.com/EkiZR", label: "GitHub Profile" },
   { icon: Linkedin, link: "https://www.linkedin.com/in/ekizr/", label: "LinkedIn Profile" },
   { icon: Instagram, link: "https://www.instagram.com/ekizr_/?hl=id", label: "Instagram Profile" }
 ];
+
+const HERO_FALLBACK = {
+  badge_text: 'Ready to Innovate',
+  title_line_1: 'Frontend',
+  title_line_2: 'Developer',
+  typing_words: ['Network & Telecom Student', 'Tech Enthusiast'],
+  description: 'Menciptakan Website Yang Inovatif, Fungsional, dan User-Friendly untuk Solusi Digital.',
+  tech_badges: ['React', 'Javascript', 'Node.js', 'Tailwind'],
+  primary_cta_label: 'Projects',
+  primary_cta_url: '/#Portofolio',
+  secondary_cta_label: 'Contact',
+  secondary_cta_url: '/#Contact',
+  hero_image_url: '/Animation1.gif',
+  hero_image_alt: 'Developer illustration',
+  accent_from: '#6366f1',
+  accent_to: '#a855f7',
+}
 
 const Home = () => {
   const [text, setText] = useState("")
@@ -96,6 +112,9 @@ const Home = () => {
   const [charIndex, setCharIndex] = useState(0)
   const [isLoaded, setIsLoaded] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
+  const [hero, setHero] = useState(HERO_FALLBACK)
+  const [words, setWords] = useState(HERO_FALLBACK.typing_words)
+  const [techStack, setTechStack] = useState(HERO_FALLBACK.tech_badges)
 
   useEffect(() => {
     const initAOS = () => {
@@ -111,14 +130,83 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
+    const fetchHero = async () => {
+      try {
+        console.log('[Hero] Fetching active hero content...')
+        const { data, error } = await supabase
+          .from('hero_contents')
+          .select('*')
+          .eq('is_active', true)
+
+        if (error) {
+          console.warn('[Hero] Fetch error, using fallback:', error.message)
+          setHero(HERO_FALLBACK)
+          setWords(HERO_FALLBACK.typing_words)
+          setTechStack(HERO_FALLBACK.tech_badges)
+        } else if (data && Array.isArray(data) && data.length > 0) {
+          const activeHero = data[0]
+          console.log('[Hero] Fetched data:', activeHero)
+          const normalized = {
+            ...HERO_FALLBACK,
+            ...activeHero,
+            typing_words: Array.isArray(activeHero.typing_words) ? activeHero.typing_words : HERO_FALLBACK.typing_words,
+            tech_badges: Array.isArray(activeHero.tech_badges) ? activeHero.tech_badges : HERO_FALLBACK.tech_badges,
+          }
+          console.log('[Hero] Normalized:', normalized)
+          setHero(normalized)
+          setWords(normalized.typing_words)
+          setTechStack(normalized.tech_badges)
+        } else {
+          console.log('[Hero] No active hero data, using fallback')
+          setHero(HERO_FALLBACK)
+          setWords(HERO_FALLBACK.typing_words)
+          setTechStack(HERO_FALLBACK.tech_badges)
+        }
+      } catch (err) {
+        console.error('[Hero] Exception:', err)
+        setHero(HERO_FALLBACK)
+        setWords(HERO_FALLBACK.typing_words)
+        setTechStack(HERO_FALLBACK.tech_badges)
+      }
+    }
+
+    fetchHero()
+
+    // Real-time subscription: listen for changes on hero_contents table
+    const subscription = supabase
+      .channel('public:hero_contents')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'hero_contents',
+        },
+        (payload) => {
+          console.log('[Hero] Database change detected:', payload)
+          // Re-fetch when any change occurs (INSERT, UPDATE, DELETE)
+          fetchHero()
+        }
+      )
+      .subscribe((status) => {
+        console.log('[Hero] Subscription status:', status)
+      })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
+
+  useEffect(() => {
     setIsLoaded(true);
     return () => setIsLoaded(false);
   }, []);
 
   const handleTyping = useCallback(() => {
+    const currentWords = Array.isArray(words) && words.length > 0 ? words : HERO_FALLBACK.typing_words
     if (isTyping) {
-      if (charIndex < WORDS[wordIndex].length) {
-        setText(prev => prev + WORDS[wordIndex][charIndex]);
+      if (charIndex < (currentWords[wordIndex] || '').length) {
+        setText(prev => prev + (currentWords[wordIndex] || '')[charIndex]);
         setCharIndex(prev => prev + 1);
       } else {
         setTimeout(() => setIsTyping(false), PAUSE_DURATION);
@@ -128,11 +216,11 @@ const Home = () => {
         setText(prev => prev.slice(0, -1));
         setCharIndex(prev => prev - 1);
       } else {
-        setWordIndex(prev => (prev + 1) % WORDS.length);
+        setWordIndex(prev => (prev + 1) % currentWords.length);
         setIsTyping(true);
       }
     }
-  }, [charIndex, isTyping, wordIndex]);
+  }, [charIndex, isTyping, wordIndex, words]);
 
   useEffect(() => {
     const timeout = setTimeout(
@@ -145,31 +233,40 @@ const Home = () => {
   return (
     <>
       <Helmet>
-        <title>Asep Sutrisna Suhada Putra — Full-Stack Web Developer</title>
-        <meta name="description" content="Website resmi Asep Sutrisna Suhada Putra, Full-Stack Web Developer. Saya berfokus pada penciptaan pengalaman digital yang menarik dan selalu berupaya memberikan solusi terbaik dalam setiap proyek yang saya kerjakan." />
+        <title>
+          {hero?.title_line_1 || 'Full-Stack'} {hero?.title_line_2 || 'Developer'} - Asep Sutrisna Suhada Putra | Web Developer Portfolio
+        </title>
+        <meta
+          name="description"
+          content={hero?.description || 'Asep Sutrisna Suhada Putra - Full-Stack Web Developer. Saya berfokus pada penciptaan pengalaman digital yang menarik dan selalu berupaya memberikan solusi terbaik dalam setiap proyek yang saya kerjakan.'}
+        />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://asutrisna.dev" />
-        <meta property="og:title" content="Asep Sutrisna Suhada Putra — Full-Stack Web Developer" />
-        <meta property="og:description" content="Website resmi dan portofolio Asep Sutrisna Suhada Putra, Full-Stack Web Developer." />
+        <meta property="og:title" content={`${hero?.title_line_1 || 'Full-Stack'} ${hero?.title_line_2 || 'Developer'} - Web Developer Portfolio`} />
+        <meta property="og:description" content={hero?.description || 'Web Developer Portfolio'} />
         <meta property="og:url" content="https://asutrisna.dev" />
         <meta property="og:type" content="website" />
+        <meta property="og:image" content={hero?.hero_image_url || '/Animation1.gif'} />
         <script type="application/ld+json">{`
           {
             "@context": "https://schema.org",
             "@type": "Person",
             "name": "Asep Sutrisna Suhada Putra",
-            "jobTitle": "Full-Stack Web Developer",
+            "jobTitle": "${hero?.title_line_1 || 'Full-Stack'} ${hero?.title_line_2 || 'Developer'}",
+            "description": "${hero?.description || ''}",
             "url": "https://asutrisna.dev",
+            "image": "${hero?.hero_image_url || '/Animation1.gif'}",
             "sameAs": [
               "https://github.com/EkiZR",
               "https://www.linkedin.com/in/ekizr/",
               "https://www.instagram.com/ekizr_/"
-            ]
+            ],
+            "skills": ${JSON.stringify(hero?.tech_badges || [])}
           }
         `}</script>
       </Helmet>
 
-      <div className="min-h-screen bg-[#030014] overflow-hidden px-[5%] sm:px-[5%] lg:px-[10%]" id="Home">
+      <section id="Hero" className="min-h-screen bg-[#030014] overflow-hidden px-[5%] sm:px-[5%] lg:px-[10%]" aria-label="Hero Section">
         <div className={`relative z-10 transition-all duration-1000 ${isLoaded ? "opacity-100" : "opacity-0"}`}>
           <div className="container mx-auto min-h-screen">
             <div className="flex flex-col lg:flex-row items-center justify-center h-screen md:justify-between gap-0 sm:gap-12 lg:gap-20">
@@ -178,8 +275,8 @@ const Home = () => {
                 data-aos="fade-right"
                 data-aos-delay="200">
                 <div className="space-y-4 sm:space-y-6">
-                  <StatusBadge />
-                  <MainTitle />
+                  <StatusBadge badge={hero?.badge_text} />
+                  <MainTitle title1={hero?.title_line_1} title2={hero?.title_line_2} />
 
                   {/* Typing Effect */}
                   <div className="h-8 flex items-center" data-aos="fade-up" data-aos-delay="800">
@@ -189,24 +286,29 @@ const Home = () => {
                     <span className="w-[3px] h-6 bg-gradient-to-t from-[#6366f1] to-[#a855f7] ml-1 animate-blink"></span>
                   </div>
 
-                  {/* Description */}
-                  <p className="text-base md:text-lg text-gray-400 max-w-xl leading-relaxed font-light"
-                    data-aos="fade-up"
-                    data-aos-delay="1000">
-                    Menciptakan Website Yang Inovatif, Fungsional, dan User-Friendly untuk Solusi Digital.
-                  </p>
+                  {/* H2: Sub-heading + Description for SEO hierarchy */}
+                  <div className="space-y-2">
+                    <h2 className="sr-only">
+                      {hero?.badge_text || 'Ready to Innovate'} - {hero?.description || ''}
+                    </h2>
+                    <p className="text-base md:text-lg text-gray-400 max-w-xl leading-relaxed font-light"
+                      data-aos="fade-up"
+                      data-aos-delay="1000">
+                      {hero?.description || HERO_FALLBACK.description}
+                    </p>
+                  </div>
 
                   {/* Tech Stack */}
                   <div className="flex flex-wrap gap-3 justify-start" data-aos="fade-up" data-aos-delay="1200">
-                    {TECH_STACK.map((tech, index) => (
+                    {Array.isArray(techStack) ? techStack.map((tech, index) => (
                       <TechStack key={index} tech={tech} />
-                    ))}
+                    )) : null}
                   </div>
 
                   {/* CTA Buttons */}
                   <div className="flex flex-row gap-3 w-full justify-start" data-aos="fade-up" data-aos-delay="1400">
-                    <CTAButton href="#Portofolio" text="Projects" icon={ExternalLink} />
-                    <CTAButton href="#Contact" text="Contact" icon={Mail} />
+                    <CTAButton href={hero?.primary_cta_url || HERO_FALLBACK.primary_cta_url} text={hero?.primary_cta_label || HERO_FALLBACK.primary_cta_label} icon={ExternalLink} />
+                    <CTAButton href={hero?.secondary_cta_url || HERO_FALLBACK.secondary_cta_url} text={hero?.secondary_cta_label || HERO_FALLBACK.secondary_cta_label} icon={Mail} />
                   </div>
 
                   {/* Social Links */}
@@ -232,8 +334,8 @@ const Home = () => {
                   <div className={`relative lg:left-12 z-10 w-full opacity-90 transform transition-transform duration-500 ${isHovering ? "scale-105" : "scale-100"
                     }`}>
                     <img
-                      src="Animation1.gif"
-                      alt="Developer Animation"
+                      src={hero?.hero_image_url || HERO_FALLBACK.hero_image_url}
+                      alt={hero?.hero_image_alt || HERO_FALLBACK.hero_image_alt}
                       className={`w-full h-full object-contain transition-all duration-500 ${isHovering
                         ? "scale-[95%] sm:scale-[90%] md:scale-[90%] lg:scale-[90%] rotate-2"
                         : "scale-[90%] sm:scale-[80%] md:scale-[80%] lg:scale-[80%]"
@@ -252,7 +354,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </>
   );
 };

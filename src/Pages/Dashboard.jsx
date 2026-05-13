@@ -8,10 +8,12 @@ import About from './dashboard/About'
 import TechStacks from './dashboard/TechStacks'
 import SocialLinks from './dashboard/SocialLinks'
 import HeroContent from './dashboard/HeroContent'
-import { FolderGit2, Award, MessageSquare, LogOut, LayoutDashboard, Menu, Sparkles, Boxes, Link2, Paintbrush } from 'lucide-react'
+import WorkExperiences from './dashboard/WorkExperiences'
+import { FolderGit2, Award, MessageSquare, LogOut, LayoutDashboard, Menu, Sparkles, Boxes, Link2, Paintbrush, Briefcase } from 'lucide-react'
 
 const NAV_ITEMS = [
   { to: 'projects', label: 'Projects', icon: FolderGit2 },
+  { to: 'work-experiences', label: 'Work Experience', icon: Briefcase },
   { to: 'hero-content', label: 'Hero Content', icon: Paintbrush },
   { to: 'about', label: 'About', icon: Sparkles },
   { to: 'tech-stacks', label: 'Tech Stack', icon: Boxes },
@@ -131,6 +133,7 @@ export default function Dashboard() {
           <Routes>
             <Route index element={<Navigate to="projects" replace />} />
             <Route path="projects" element={<Projects />} />
+            <Route path="work-experiences" element={<WorkExperiences />} />
             <Route path="hero-content" element={<HeroContent />} />
             <Route path="about" element={<About />} />
             <Route path="tech-stacks" element={<TechStacks />} />

@@ -8,6 +8,7 @@ import About from "./Pages/About";
 import AnimatedBackground from "./components/Background";
 import { AnimatePresence } from "framer-motion";
 import Footer from "./components/Footer";
+import WorkExperienceSection from "./components/WorkExperienceSection";
 
 import Login from "./Pages/Login";
 import Dashboard from "./Pages/Dashboard";
@@ -33,9 +34,10 @@ const LandingPage = ({ showWelcome, setShowWelcome }) => {
       {!showWelcome && (
         <>
           <Navbar />
-      
+
           <Home />
           <About />
+          <WorkExperienceSection />
           <Suspense fallback={<div className="h-20" />}>
             <Portofolio />
             <ContactPage />
@@ -60,11 +62,11 @@ function App() {
   const [showWelcome, setShowWelcome] = useState(true);
 
   return (
-    
+
     <HelmetProvider>
       <div className="pointer-events-none">
-  <AnimatedBackground />
-</div>
+        <AnimatedBackground />
+      </div>
       <BrowserRouter>
         <Routes>
           {/* PUBLIC */}

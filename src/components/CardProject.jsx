@@ -1,13 +1,10 @@
-// import React from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { ExternalLink, ArrowRight } from "lucide-react";
 import { toSlug } from "../utils/slug";
-import { getPrimaryProjectImage } from "../utils/projectImages";
 
-const CardProject = ({ Img, Images, Title, Description, Link: ProjectLink, id }) => {
-  const primaryImage = getPrimaryProjectImage({ img: Img, images: Images });
-
+const CardProject = ({ Img, Title, Description, Link: ProjectLink, id }) => {
   const handleLiveDemo = (e) => {
     if (!ProjectLink) {
       console.log("ProjectLink kosong");
@@ -30,15 +27,13 @@ const CardProject = ({ Img, Images, Title, Description, Link: ProjectLink, id })
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
 
         <div className="relative p-5 z-10">
-          {primaryImage && (
-            <div className="relative overflow-hidden rounded-lg">
-              <img
-                src={primaryImage}
-                alt={Title}
-                className="w-full h-full object-cover aspect-[16/8] transform group-hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-          )}
+          <div className="relative overflow-hidden rounded-lg">
+            <img
+              src={Img}
+              alt={Title}
+              className="w-full h-full object-cover aspect-[16/8] transform group-hover:scale-105 transition-transform duration-500"
+            />
+          </div>
 
           <div className="mt-4 space-y-3">
             <h3 className="text-xl font-semibold bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 bg-clip-text text-transparent">
@@ -93,7 +88,6 @@ const CardProject = ({ Img, Images, Title, Description, Link: ProjectLink, id })
 
 CardProject.propTypes = {
   Img: PropTypes.string.isRequired,
-  Images: PropTypes.arrayOf(PropTypes.string),
   Title: PropTypes.string.isRequired,
   Description: PropTypes.string,
   Link: PropTypes.string,

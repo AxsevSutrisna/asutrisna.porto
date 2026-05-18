@@ -9,6 +9,7 @@ import AnimatedBackground from "./components/Background";
 import { AnimatePresence } from "framer-motion";
 import Footer from "./components/Footer";
 import WorkExperienceSection from "./components/WorkExperienceSection";
+import { useTheme } from "./hooks/useTheme";
 
 import Login from "./Pages/Login";
 import Dashboard from "./Pages/Dashboard";
@@ -60,6 +61,7 @@ const ProjectPageLayout = () => (
 
 function App() {
   const [showWelcome, setShowWelcome] = useState(true);
+  useTheme();
 
   return (
 

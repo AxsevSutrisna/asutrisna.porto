@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../../supabase";
 import {
   Plus,
@@ -11,7 +11,6 @@ import {
   Github,
   Pencil,
 } from "lucide-react";
-import { MAX_PROJECT_IMAGES, getPrimaryProjectImage, normalizeProjectImages } from "../../utils/projectImages";
 
 const Card = ({ children, className = "" }) => (
   <div className={`relative group ${className}`}>
@@ -74,32 +73,21 @@ const SkeletonCard = () => (
 
 const ProjectCard = ({ project, onDelete, onEdit }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
-  const primaryImage = getPrimaryProjectImage(project);
-  const imageCount = normalizeProjectImages(project).length;
-
-  useEffect(() => {
-    setImgLoaded(false);
-  }, [primaryImage]);
 
   return (
     <Card>
       <div className="p-4 flex flex-col h-full">
-        {primaryImage && (
+        {(project.img || project.Img) && (
           <div className="w-full aspect-[16/8] rounded-xl mb-4 border border-white/8 overflow-hidden bg-white/5">
             {!imgLoaded && (
               <div className="w-full h-full animate-pulse bg-white/5" />
             )}
             <img
-              src={primaryImage}
+              src={project.img || project.Img}
               alt={project.Title || project.title}
               onLoad={() => setImgLoaded(true)}
               className={`w-full h-full object-cover transition-opacity duration-300 ${imgLoaded ? "opacity-100" : "opacity-0 absolute"}`}
             />
-            {imageCount > 1 && (
-              <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-black/60 backdrop-blur-sm border border-white/10 text-[10px] text-white">
-                +{imageCount - 1} more
-              </div>
-            )}
           </div>
         )}
         <h3 className="font-semibold text-white text-sm mb-1">
@@ -202,7 +190,6 @@ const ProjectForm = ({
   submitLabel = "Save Project",
   uploading,
 }) => {
-  const imageItemsRef = useRef([]);
   const [form, setForm] = useState({
     title: initial?.title || initial?.Title || "",
     description: initial?.description || initial?.Description || "",
@@ -221,74 +208,23 @@ const ProjectForm = ({
     link: initial?.link || initial?.Link || "",
     github: initial?.github || initial?.Github || "",
   });
-  const [imageItems, setImageItems] = useState(() =>
-    normalizeProjectImages(initial).map((src, index) => ({
-      id: `${src}-${index}`,
-      src,
-      file: null,
-      existing: true,
-    }))
-  );
-
-  useEffect(() => {
-    imageItemsRef.current = imageItems;
-  }, [imageItems]);
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(initial?.img || initial?.Img || null);
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
   const handleFileChange = (e) => {
-    const files = Array.from(e.target.files || []);
-    if (!files.length) return;
-
-    const remainingSlots = MAX_PROJECT_IMAGES - imageItems.length;
-    const selectedFiles = files.slice(0, remainingSlots);
-
-    const nextImages = selectedFiles.map((file, index) => ({
-      id: `${file.name}-${file.size}-${Date.now()}-${index}`,
-      src: URL.createObjectURL(file),
-      file,
-      existing: false,
-    }));
-
-    setImageItems((current) => [...current, ...nextImages]);
-    e.target.value = "";
+    const f = e.target.files[0];
+    if (!f) return;
+    setFile(f);
+    setPreview(URL.createObjectURL(f));
   };
-
-  const removeImage = (index) => {
-    setImageItems((current) => {
-      const item = current[index];
-      if (item && !item.existing) {
-        URL.revokeObjectURL(item.src);
-      }
-      return current.filter((_, currentIndex) => currentIndex !== index);
-    });
-  };
-
-  const setPrimaryImage = (index) => {
-    setImageItems((current) => {
-      if (index <= 0 || index >= current.length) return current;
-      const next = [...current];
-      const [selected] = next.splice(index, 1);
-      next.unshift(selected);
-      return next;
-    });
-  };
-
-  useEffect(() => {
-    return () => {
-      imageItemsRef.current.forEach((item) => {
-        if (!item.existing) {
-          URL.revokeObjectURL(item.src);
-        }
-      });
-    };
-  }, []);
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        onSubmit(form, imageItems);
+        onSubmit(form, file);
       }}
       className="p-5 sm:p-6 space-y-4"
     >
@@ -345,75 +281,33 @@ const ProjectForm = ({
           <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">
             Project Image
           </label>
-          <div className="space-y-3">
-            <label className={`flex items-center gap-4 w-full bg-[#0d0d22] border border-dashed border-white/15 rounded-xl px-4 py-4 transition-all ${imageItems.length >= MAX_PROJECT_IMAGES ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:border-indigo-500/40 hover:bg-white/4"}`}>
-              <div className="w-24 h-16 rounded-lg bg-white/5 flex items-center justify-center border border-white/10 overflow-hidden">
-                {imageItems.length > 0 ? (
-                  <img
-                    src={imageItems[0].src}
-                    className="w-full h-full object-cover"
-                    alt="primary preview"
-                  />
-                ) : (
-                  <ImageIcon className="w-5 h-5 text-gray-600" />
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm text-gray-300">
-                  {imageItems.length > 0 ? "Add more images" : "Click to upload images"}
-                </p>
-                <p className="text-xs text-gray-600 mt-0.5">
-                  PNG, JPG, WEBP supported. Max {MAX_PROJECT_IMAGES} images.
-                </p>
-              </div>
-              <div className="text-xs text-gray-500 whitespace-nowrap">
-                {imageItems.length}/{MAX_PROJECT_IMAGES}
-              </div>
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                disabled={imageItems.length >= MAX_PROJECT_IMAGES}
-                onChange={handleFileChange}
-                className="hidden"
+          <label className="flex items-center gap-4 w-full bg-[#0d0d22] border border-dashed border-white/15 rounded-xl px-4 py-4 cursor-pointer hover:border-indigo-500/40 hover:bg-white/4 transition-all">
+            {preview ? (
+              <img
+                src={preview}
+                className="h-16 w-24 object-cover rounded-lg border border-white/10"
+                alt="preview"
               />
-            </label>
-
-            {imageItems.length > 0 && (
-              <div className="grid grid-cols-2 gap-3">
-                {imageItems.map((item, index) => (
-                  <div key={item.id} className="relative group rounded-xl overflow-hidden border border-white/10 bg-[#0d0d22]">
-                    <img src={item.src} alt={`project-${index + 1}`} className="w-full h-32 object-cover" />
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 flex items-end justify-between gap-2">
-                      <div className="min-w-0">
-                        <p className="text-[11px] text-white font-medium">{index === 0 ? "Primary" : `Image ${index + 1}`}</p>
-                        <p className="text-[10px] text-gray-300 truncate">{item.existing ? "Current image" : item.file?.name}</p>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        {index !== 0 && (
-                          <button
-                            type="button"
-                            onClick={() => setPrimaryImage(index)}
-                            className="px-2 py-1 rounded-md bg-white/10 text-[10px] text-white hover:bg-white/20 transition-colors"
-                          >
-                            Make primary
-                          </button>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => removeImage(index)}
-                          className="p-1.5 rounded-md bg-red-500/15 text-red-300 hover:bg-red-500/25 transition-colors"
-                          aria-label={`Remove image ${index + 1}`}
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+            ) : (
+              <div className="w-24 h-16 rounded-lg bg-white/5 flex items-center justify-center border border-white/10">
+                <ImageIcon className="w-5 h-5 text-gray-600" />
               </div>
             )}
-          </div>
+            <div>
+              <p className="text-sm text-gray-300">
+                {preview ? "Change image" : "Click to upload image"}
+              </p>
+              <p className="text-xs text-gray-600 mt-0.5">
+                PNG, JPG, WEBP supported
+              </p>
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+          </label>
         </div>
       </div>
 
@@ -473,28 +367,14 @@ export default function Projects() {
     return data.publicUrl;
   };
 
-  const uploadProjectImages = async (imageItems) => {
-    const resolvedImages = await Promise.all(
-      imageItems.slice(0, MAX_PROJECT_IMAGES).map(async (item) => {
-        if (item.file) {
-          return uploadImage(item.file);
-        }
-        return item.src;
-      })
-    );
-
-    return resolvedImages.filter(Boolean).slice(0, MAX_PROJECT_IMAGES);
-  };
-
-  const handleCreate = async (form, imageItems) => {
+  const handleCreate = async (form, file) => {
     setUploading(true);
-    const imageUrls = await uploadProjectImages(imageItems);
-    const primaryImage = imageUrls[0] || "";
+    let imgUrl = "";
+    if (file) imgUrl = await uploadImage(file);
     await supabase.from("projects").insert({
       title: form.title,
       description: form.description,
-      img: primaryImage,
-      images: imageUrls,
+      img: imgUrl,
       tech_stack: form.techstack.split(",").map((s) => s.trim()).filter(Boolean),
       features: form.features.split(",").map((s) => s.trim()).filter(Boolean),
       link: form.link,
@@ -505,17 +385,16 @@ export default function Projects() {
     fetchProjects();
   };
 
-  const handleEdit = async (form, imageItems) => {
+  const handleEdit = async (form, file) => {
     setUploading(true);
-    const imageUrls = await uploadProjectImages(imageItems);
-    const primaryImage = imageUrls[0] || "";
+    let imgUrl = editProject.img || editProject.Img || "";
+    if (file) imgUrl = await uploadImage(file);
     await supabase
       .from("projects")
       .update({
         title: form.title,
         description: form.description,
-        img: primaryImage,
-        images: imageUrls,
+        img: imgUrl,
         tech_stack: form.techstack.split(",").map((s) => s.trim()).filter(Boolean),
         features: form.features.split(",").map((s) => s.trim()).filter(Boolean),
         link: form.link,

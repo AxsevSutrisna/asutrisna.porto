@@ -6,20 +6,22 @@ import Certificates from './dashboard/Certificates'
 import Comments from './dashboard/Comments'
 import About from './dashboard/About'
 import TechStacks from './dashboard/TechStacks'
-import SocialLinks from './dashboard/SocialLinks'
+import WorkExperience from './dashboard/WorkExperience'
 import HeroContent from './dashboard/HeroContent'
-import WorkExperiences from './dashboard/WorkExperiences'
-import { FolderGit2, Award, MessageSquare, LogOut, LayoutDashboard, Menu, Sparkles, Boxes, Link2, Paintbrush, Briefcase } from 'lucide-react'
+import SocialLinks from './dashboard/SocialLinks'
+import ThemeManager from './dashboard/ThemeManager'
+import { FolderGit2, Award, MessageSquare, LogOut, LayoutDashboard, Menu, Sparkles, Boxes, Briefcase, Zap, Share2, Palette } from 'lucide-react'
 
 const NAV_ITEMS = [
   { to: 'projects', label: 'Projects', icon: FolderGit2 },
-  { to: 'work-experiences', label: 'Work Experience', icon: Briefcase },
-  { to: 'hero-content', label: 'Hero Content', icon: Paintbrush },
+  { to: 'work-experience', label: 'Work Experience', icon: Briefcase },
+  { to: 'hero-content', label: 'Hero Content', icon: Zap },
   { to: 'about', label: 'About', icon: Sparkles },
   { to: 'tech-stacks', label: 'Tech Stack', icon: Boxes },
-  { to: 'social-links', label: 'Social Media', icon: Link2 },
+  { to: 'social-links', label: 'Social Media', icon: Share2 },
   { to: 'certificates', label: 'Certificates', icon: Award },
   { to: 'comments', label: 'Comments', icon: MessageSquare },
+  { to: 'theme-manager', label: 'Theme Manager', icon: Palette },
 ]
 
 export default function Dashboard() {
@@ -128,18 +130,19 @@ export default function Dashboard() {
           <span className="text-sm font-medium text-white">Dashboard</span>
         </div>
 
-        {/* Hanya main yang overflow-y-auto � scrollbar bisa diklik normal */}
+        {/* Hanya main yang overflow-y-auto — scrollbar bisa diklik normal */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           <Routes>
             <Route index element={<Navigate to="projects" replace />} />
             <Route path="projects" element={<Projects />} />
-            <Route path="work-experiences" element={<WorkExperiences />} />
+            <Route path="work-experience" element={<WorkExperience />} />
             <Route path="hero-content" element={<HeroContent />} />
             <Route path="about" element={<About />} />
             <Route path="tech-stacks" element={<TechStacks />} />
             <Route path="social-links" element={<SocialLinks />} />
             <Route path="certificates" element={<Certificates />} />
             <Route path="comments" element={<Comments />} />
+            <Route path="theme-manager" element={<ThemeManager />} />
           </Routes>
         </main>
       </div>

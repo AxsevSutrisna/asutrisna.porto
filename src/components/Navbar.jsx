@@ -66,14 +66,21 @@ const Navbar = () => {
         setIsOpen(false);
     };
 
+    const navStyle = isOpen
+        ? { backgroundColor: 'var(--color-backdrop-base)' }
+        : scrolled
+            ? {
+                backgroundColor: 'rgba(var(--color-backdrop-base-rgb), 0.55)',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
+            }
+            : undefined;
+
     return (
         <nav
-            className={`fixed w-full top-0 z-50 transition-all duration-500 ${isOpen
-                ? "bg-[#030014]"
-                : scrolled
-                    ? "bg-[#030014]/50 backdrop-blur-xl"
-                    : "bg-transparent"
+            className={`fixed w-full top-0 z-50 transition-all duration-500 ${!isOpen && !scrolled ? "bg-transparent" : ""
                 }`}
+            style={navStyle}
         >
             <div className="mx-auto px-[5%] sm:px-[5%] lg:px-[10%]">
                 <div className="flex items-center justify-between h-16">
@@ -82,7 +89,7 @@ const Navbar = () => {
                         <a
                             href="#Hero"
                             onClick={(e) => scrollToSection(e, "#Hero")}
-                            className="text-xl font-bold bg-gradient-to-r from-[#a855f7] to-[#6366f1] bg-clip-text text-transparent"
+                            className="text-xl font-bold bg-gradient-to-r from-theme-primary-light to-theme-primary-dark bg-clip-text text-transparent"
                         >
                             asutrisna.dev
                         </a>
@@ -100,14 +107,14 @@ const Navbar = () => {
                                 >
                                     <span
                                         className={`relative z-10 transition-colors duration-300 ${activeSection === item.href.substring(1)
-                                            ? "bg-gradient-to-r from-[#6366f1] to-[#a855f7] bg-clip-text text-transparent font-semibold"
+                                            ? "bg-gradient-to-r from-theme-primary-dark to-theme-primary-light bg-clip-text text-transparent font-semibold"
                                             : "text-[#e2d3fd] group-hover:text-white"
                                             }`}
                                     >
                                         {item.label}
                                     </span>
                                     <span
-                                        className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#6366f1] to-[#a855f7] transform origin-left transition-transform duration-300 ${activeSection === item.href.substring(1)
+                                        className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-theme-primary-dark to-theme-primary-light transform origin-left transition-transform duration-300 ${activeSection === item.href.substring(1)
                                             ? "scale-x-100"
                                             : "scale-x-0 group-hover:scale-x-100"
                                             }`}
@@ -121,7 +128,7 @@ const Navbar = () => {
                     <div className="md:hidden">
                         <button
                             onClick={() => setIsOpen(!isOpen)}
-                            className={`relative p-2 text-[#e2d3fd] hover:text-white transition-transform duration-300 ease-in-out transform ${isOpen ? "rotate-90 scale-125" : "rotate-0 scale-100"
+                            className={`relative p-2 text-theme-text-secondary hover:text-white transition-transform duration-300 ease-in-out transform ${isOpen ? "rotate-90 scale-125" : "rotate-0 scale-100"
                                 }`}
                         >
                             {isOpen ? (
@@ -148,7 +155,7 @@ const Navbar = () => {
                             href={item.href}
                             onClick={(e) => scrollToSection(e, item.href)}
                             className={`block px-4 py-3 text-lg font-medium transition-all duration-300 ease ${activeSection === item.href.substring(1)
-                                ? "bg-gradient-to-r from-[#6366f1] to-[#a855f7] bg-clip-text text-transparent font-semibold"
+                                ? "bg-gradient-to-r from-theme-primary-dark to-theme-primary-light bg-clip-text text-transparent font-semibold"
                                 : "text-[#e2d3fd] hover:text-white"
                                 }`}
                             style={{

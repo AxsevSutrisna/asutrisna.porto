@@ -1,45 +1,9 @@
-import { useState, useEffect, useCallback, memo } from "react"
+import { useState, useEffect, useCallback, memo, useMemo } from "react"
 import { Helmet } from "react-helmet-async"
 import { Github, Linkedin, Mail, ExternalLink, Instagram, Sparkles } from "lucide-react"
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 import { supabase } from '../supabase'
-
-const StatusBadge = memo(() => (
-  <div className="inline-block animate-float lg:mx-0" data-aos="zoom-in" data-aos-delay="400">
-    <div className="relative group">
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-[#6366f1] to-[#a855f7] rounded-full blur opacity-30 group-hover:opacity-50 transition duration-1000"></div>
-      <div className="relative px-3 sm:px-4 py-2 rounded-full bg-black/40 backdrop-blur-xl border border-white/10">
-        <span className="bg-gradient-to-r from-[#6366f1] to-[#a855f7] text-transparent bg-clip-text sm:text-sm text-[0.7rem] font-medium flex items-center">
-          <Sparkles className="sm:w-4 sm:h-4 w-3 h-3 mr-2 text-blue-400" />
-          Ready to Innovate
-        </span>
-      </div>
-    </div>
-  </div>
-));
-StatusBadge.displayName = 'StatusBadge';
-
-const MainTitle = memo(() => (
-  <div className="space-y-2" data-aos="fade-up" data-aos-delay="600">
-    <h1 className="text-5xl sm:text-6xl md:text-6xl lg:text-6xl xl:text-7xl font-bold tracking-tight">
-      <span className="relative inline-block">
-        <span className="absolute -inset-2 bg-gradient-to-r from-[#6366f1] to-[#a855f7] blur-2xl opacity-20"></span>
-        <span className="relative bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent">
-          Frontend
-        </span>
-      </span>
-      <br />
-      <span className="relative inline-block mt-2">
-        <span className="absolute -inset-2 bg-gradient-to-r from-[#6366f1] to-[#a855f7] blur-2xl opacity-20"></span>
-        <span className="relative bg-gradient-to-r from-[#6366f1] to-[#a855f7] bg-clip-text text-transparent">
-          Developer
-        </span>
-      </span>
-    </h1>
-  </div>
-));
-MainTitle.displayName = 'MainTitle';
 
 const TechStack = memo(({ tech }) => (
   <div className="px-4 py-2 hidden sm:block rounded-full bg-white/5 backdrop-blur-sm border border-white/10 text-sm text-gray-300 hover:bg-white/10 transition-colors">
@@ -82,21 +46,48 @@ SocialLink.displayName = 'SocialLink';
 const TYPING_SPEED = 100;
 const ERASING_SPEED = 50;
 const PAUSE_DURATION = 2000;
-const WORDS = ["Network & Telecom Student", "Tech Enthusiast"];
-const TECH_STACK = ["React", "Javascript", "Node.js", "Tailwind"];
-const SOCIAL_LINKS = [
-  { icon: Github, link: "https://github.com/EkiZR", label: "GitHub Profile" },
-  { icon: Linkedin, link: "https://www.linkedin.com/in/ekizr/", label: "LinkedIn Profile" },
-  { icon: Instagram, link: "https://www.instagram.com/ekizr_/?hl=id", label: "Instagram Profile" }
-];
+const FALLBACK_SITE_ORIGIN = typeof window !== 'undefined' ? window.location.origin : ''
 
-// State to hold social links fetched from database (fallback to hardcoded)
+const normalizeArray = (value) => {
+  if (Array.isArray(value)) return value.filter(Boolean)
+  if (typeof value === 'string' && value.trim()) {
+    try {
+      const parsed = JSON.parse(value)
+      if (Array.isArray(parsed)) return parsed.filter(Boolean)
+    } catch {
+      return value.split(',').map((item) => item.trim()).filter(Boolean)
+    }
+  }
+  return []
+}
+
+const normalizeCtaButtons = (value) => normalizeArray(value)
+  .map((button) => {
+    if (!button || typeof button !== 'object') return null
+
+    const label = button.label?.trim?.() || ''
+    const url = button.url?.trim?.() || ''
+    if (!label || !url) return null
+
+    return { label, url }
+  })
+  .filter(Boolean)
+
+const buildPageTitle = (heroData) => {
+  const titleParts = [heroData?.title_line_1, heroData?.title_line_2]
+    .map((part) => part?.trim())
+    .filter(Boolean)
+
+  return titleParts.join(' ').trim()
+}
+
 const useFetchSocialLinks = () => {
-  const [links, setLinks] = useState(SOCIAL_LINKS);
+  const [state, setState] = useState({ links: [], loading: true })
 
   useEffect(() => {
-    let mounted = true;
+    let mounted = true
     const fetchLinks = async () => {
+      setState((current) => ({ ...current, loading: true }))
       try {
         const { data, error } = await supabase
           .from('social_links')
@@ -106,35 +97,41 @@ const useFetchSocialLinks = () => {
           .order('sort_order', { ascending: true })
           .order('created_at', { ascending: true });
 
-        if (!error && Array.isArray(data) && data.length > 0) {
-          if (!mounted) return;
+        if (!mounted) return
+
+        if (!error && Array.isArray(data)) {
           const mapped = data.map((item) => {
-            const key = (item.icon || item.platform || item.name || '') .toString().toLowerCase();
-            let Icon = ExternalLink;
-            if (key.includes('git') || key.includes('github')) Icon = Github;
-            else if (key.includes('link') || key.includes('linkedin')) Icon = Linkedin;
-            else if (key.includes('insta') || key.includes('instagram')) Icon = Instagram;
-            else if (key.includes('youtube')) Icon = ExternalLink; // could use Youtube if imported
+            const key = (item.icon || item.platform || item.name || '').toString().toLowerCase()
+            let Icon = ExternalLink
+            if (key.includes('git') || key.includes('github')) Icon = Github
+            else if (key.includes('link') || key.includes('linkedin')) Icon = Linkedin
+            else if (key.includes('insta') || key.includes('instagram')) Icon = Instagram
+            else if (key.includes('youtube')) Icon = ExternalLink
 
             return {
               icon: Icon,
               link: item.url || item.link || '#',
               label: item.display_name || item.displayName || item.platform || item.name || 'Social'
-            };
-          });
-          setLinks(mapped);
+            }
+          })
+
+          setState({ links: mapped, loading: false })
+        } else {
+          setState({ links: [], loading: false })
         }
       } catch (err) {
-        // ignore, keep fallback
-        console.error('Failed to fetch social links for hero:', err);
+        if (mounted) {
+          console.error('Failed to fetch social links for hero:', err)
+          setState({ links: [], loading: false })
+        }
       }
-    };
+    }
 
-    fetchLinks();
-    return () => { mounted = false };
-  }, []);
+    fetchLinks()
+    return () => { mounted = false }
+  }, [])
 
-  return links;
+  return state
 }
 
 const Home = () => {
@@ -144,29 +141,36 @@ const Home = () => {
   const [charIndex, setCharIndex] = useState(0)
   const [isLoaded, setIsLoaded] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
+  const [heroData, setHeroData] = useState(null)
+  const [heroLoading, setHeroLoading] = useState(true)
+  const [siteOrigin, setSiteOrigin] = useState(FALLBACK_SITE_ORIGIN)
 
-  const socialLinks = useFetchSocialLinks();
+  const { links: socialLinks, loading: socialLoading } = useFetchSocialLinks()
 
-  // Hero content from database
-  const [heroData, setHeroData] = useState({
-    badge_text: "Ready to Innovate",
-    title_line_1: "Frontend",
-    title_line_2: "Developer",
-    typing_words: ["Network & Telecom Student", "Tech Enthusiast"],
-    description: "Menciptakan Website Yang Inovatif, Fungsional, dan User-Friendly untuk Solusi Digital.",
-    tech_badges: ["React", "Javascript", "Node.js", "Tailwind"],
-    cta_buttons: [
-      { label: "Projects", url: "/#Portofolio" },
-      { label: "Contact", url: "/#Contact" },
-    ],
-    hero_image_url: "/Animation1.gif",
-    accent_from: "#6366f1",
-    accent_to: "#a855f7",
-  })
+  const pageTitle = useMemo(() => buildPageTitle(heroData), [heroData])
+  const pageDescription = useMemo(() => heroData?.description?.trim() || '', [heroData])
+  const heroImageAlt = useMemo(() => {
+    if (!heroData) return ''
+    return heroData.hero_image_alt?.trim() || `${buildPageTitle(heroData)} illustration`.trim()
+  }, [heroData])
+  const canonicalUrl = useMemo(() => (siteOrigin ? `${siteOrigin}/` : ''), [siteOrigin])
+  const structuredData = useMemo(() => {
+    if (!heroData) return null
+
+    return {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": pageTitle || undefined,
+      "jobTitle": heroData.title_line_2 || pageTitle || '',
+      "url": canonicalUrl || undefined,
+      "sameAs": socialLinks.map((social) => social.link).filter((link) => Boolean(link) && link !== '#')
+    }
+  }, [canonicalUrl, heroData, pageTitle, socialLinks])
 
   // Fetch hero content from database
   useEffect(() => {
     const fetchHeroContent = async () => {
+      setHeroLoading(true)
       try {
         const { data, error } = await supabase
           .from('hero_contents')
@@ -177,27 +181,36 @@ const Home = () => {
 
         if (!error && data) {
           setHeroData({
-            badge_text: data.badge_text || "Ready to Innovate",
-            title_line_1: data.title_line_1 || "Frontend",
-            title_line_2: data.title_line_2 || "Developer",
-            typing_words: Array.isArray(data.typing_words) ? data.typing_words : ["Network & Telecom Student", "Tech Enthusiast"],
-            description: data.description || "Menciptakan Website Yang Inovatif, Fungsional, dan User-Friendly untuk Solusi Digital.",
-            tech_badges: Array.isArray(data.tech_badges) ? data.tech_badges : ["React", "Javascript", "Node.js", "Tailwind"],
-            cta_buttons: Array.isArray(data.cta_buttons) ? data.cta_buttons : [
-              { label: "Projects", url: "/#Portofolio" },
-              { label: "Contact", url: "/#Contact" },
-            ],
-            hero_image_url: data.hero_image_url || "/Animation1.gif",
-            accent_from: data.accent_from || "#6366f1",
-            accent_to: data.accent_to || "#a855f7",
+            badge_text: data.badge_text?.trim() || '',
+            title_line_1: data.title_line_1?.trim() || '',
+            title_line_2: data.title_line_2?.trim() || '',
+            typing_words: normalizeArray(data.typing_words),
+            description: data.description?.trim() || '',
+            tech_badges: normalizeArray(data.tech_badges),
+            cta_buttons: normalizeCtaButtons(data.cta_buttons),
+            hero_image_url: data.hero_image_url?.trim() || '',
+            hero_image_alt: data.hero_image_alt?.trim() || '',
+            accent_from: data.accent_from?.trim() || '',
+            accent_to: data.accent_to?.trim() || '',
           })
+        } else {
+          setHeroData(null)
         }
       } catch (error) {
         console.error('Error fetching hero content:', error)
+        setHeroData(null)
+      } finally {
+        setHeroLoading(false)
       }
     }
 
     fetchHeroContent()
+  }, [])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setSiteOrigin(window.location.origin)
+    }
   }, [])
 
   useEffect(() => {
@@ -218,10 +231,22 @@ const Home = () => {
     return () => setIsLoaded(false);
   }, []);
 
+  useEffect(() => {
+    setText('')
+    setWordIndex(0)
+    setCharIndex(0)
+    setIsTyping(true)
+  }, [heroData])
+
   const handleTyping = useCallback(() => {
+    const typingWords = heroData?.typing_words || []
+    if (!typingWords.length) return
+
+    const currentWord = typingWords[wordIndex % typingWords.length] || ''
+
     if (isTyping) {
-      if (charIndex < heroData.typing_words[wordIndex].length) {
-        setText(prev => prev + heroData.typing_words[wordIndex][charIndex]);
+      if (charIndex < currentWord.length) {
+        setText(prev => prev + currentWord[charIndex]);
         setCharIndex(prev => prev + 1);
       } else {
         setTimeout(() => setIsTyping(false), PAUSE_DURATION);
@@ -231,45 +256,46 @@ const Home = () => {
         setText(prev => prev.slice(0, -1));
         setCharIndex(prev => prev - 1);
       } else {
-        setWordIndex(prev => (prev + 1) % heroData.typing_words.length);
+        setWordIndex(prev => (prev + 1) % typingWords.length);
         setIsTyping(true);
       }
     }
-  }, [charIndex, isTyping, wordIndex, heroData.typing_words]);
+  }, [charIndex, isTyping, wordIndex, heroData]);
 
   useEffect(() => {
+    if (!heroData?.typing_words?.length) return
+
     const timeout = setTimeout(
       handleTyping,
       isTyping ? TYPING_SPEED : ERASING_SPEED
     );
     return () => clearTimeout(timeout);
-  }, [handleTyping]);
+  }, [handleTyping, heroData, isTyping]);
+
+  if (heroLoading || socialLoading || !heroData) {
+    if (!heroLoading && !socialLoading && !heroData) {
+      return <div className="min-h-screen bg-[#030014]" />
+    }
+
+    return (
+      <div className="min-h-screen bg-[#030014] flex items-center justify-center px-[5%]">
+        <div className="w-12 h-12 rounded-full border-2 border-white/10 border-t-indigo-500 animate-spin" />
+      </div>
+    )
+  }
 
   return (
     <>
       <Helmet>
-        <title>Asutrisnadev</title>
-        <meta name="description" content="Website resmi Asutrisnadev, Full Stack Developer. Saya berfokus pada penciptaan pengalaman digital yang menarik dan selalu berupaya memberikan solusi terbaik dalam setiap proyek yang saya kerjakan." />
+        {pageTitle && <title>{pageTitle}</title>}
+        {pageDescription && <meta name="description" content={pageDescription} />}
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://asutrisnadev.com" />
-        <meta property="og:title" content="Asutrisnadev — Frontend Web Developer" />
-        <meta property="og:description" content="Website resmi dan portofolio Asutrisnadev, Front-End Web Developer." />
-        <meta property="og:url" content="https://asutrisnadev.com" />
+        {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+        {pageTitle && <meta property="og:title" content={pageTitle} />}
+        {pageDescription && <meta property="og:description" content={pageDescription} />}
+        {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
         <meta property="og:type" content="website" />
-        <script type="application/ld+json">{`
-          {
-            "@context": "https://schema.org",
-            "@type": "Person",
-            "name": "Asutrisnadev",
-            "jobTitle": "Frontend Developer",
-            "url": "https://asutrisnadev.com",
-            "sameAs": [
-              "https://github.com/EkiZR",
-              "https://www.linkedin.com/in/ekizr/",
-              "https://www.instagram.com/ekizr_/"
-            ]
-          }
-        `}</script>
+        {structuredData && <script type="application/ld+json">{JSON.stringify(structuredData)}</script>}
       </Helmet>
 
       <div className="min-h-screen bg-[#030014] overflow-hidden px-[5%] sm:px-[5%] lg:px-[10%]" id="Hero">
@@ -336,14 +362,15 @@ const Home = () => {
                   </div>
 
                   {/* CTA Buttons */}
-                  <div className="flex flex-row gap-3 w-full justify-start" data-aos="fade-up" data-aos-delay="1400">
-                    {heroData.cta_buttons.slice(0, 2).map((btn, index) => (
-                      <CTAButton
-                        key={index}
-                        href={btn.url}
-                        text={btn.label}
-                        icon={btn.label === 'Contact' ? Mail : ExternalLink}
-                      />
+                  <div className="flex flex-wrap gap-3 w-full justify-center sm:justify-start" data-aos="fade-up" data-aos-delay="1400">
+                    {Array.isArray(heroData.cta_buttons) && heroData.cta_buttons.map((btn, index) => (
+                      <div key={index} className={`${index >= 2 ? 'hidden sm:inline-block' : 'block sm:inline-block'}`}>
+                        <CTAButton
+                          href={btn.url}
+                          text={btn.label}
+                          icon={btn.label === 'Contact' ? Mail : ExternalLink}
+                        />
+                      </div>
                     ))}
                   </div>
 
@@ -369,14 +396,16 @@ const Home = () => {
 
                   <div className={`relative lg:left-12 z-10 w-full opacity-90 transform transition-transform duration-500 ${isHovering ? "scale-105" : "scale-100"
                     }`}>
-                    <img
-                      src={heroData.hero_image_url}
-                      alt={heroData.hero_image_url || "Developer Animation"}
-                      className={`w-full h-full object-contain transition-all duration-500 ${isHovering
-                        ? "scale-[95%] sm:scale-[90%] md:scale-[90%] lg:scale-[90%] rotate-2"
-                        : "scale-[90%] sm:scale-[80%] md:scale-[80%] lg:scale-[80%]"
-                        }`}
-                    />
+                    {heroData.hero_image_url ? (
+                      <img
+                        src={heroData.hero_image_url}
+                        alt={heroImageAlt}
+                        className={`w-full h-full object-contain transition-all duration-500 ${isHovering
+                          ? "scale-[95%] sm:scale-[90%] md:scale-[90%] lg:scale-[90%] rotate-2"
+                          : "scale-[90%] sm:scale-[80%] md:scale-[80%] lg:scale-[80%]"
+                          }`}
+                      />
+                    ) : null}
                   </div>
 
                   <div className={`absolute inset-0 pointer-events-none transition-all duration-700 ${isHovering ? "opacity-50" : "opacity-20"

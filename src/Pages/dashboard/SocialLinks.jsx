@@ -71,7 +71,7 @@ const PLATFORM_PRESETS = {
     instagram: {
         platform: 'Instagram',
         display_name: 'Instagram',
-        sub_text: '@ekizr_',
+        sub_text: '@instagram',
         icon: 'Instagram',
         color: '#E4405F',
         gradient: 'from-[#833AB4] via-[#E4405F] to-[#FCAF45]',
@@ -79,7 +79,7 @@ const PLATFORM_PRESETS = {
     youtube: {
         platform: 'YouTube',
         display_name: 'Youtube',
-        sub_text: '@eki_zulfar',
+        sub_text: '@youtube',
         icon: 'Youtube',
         color: '#FF0000',
         gradient: 'from-[#FF0000] to-[#CC0000]',
@@ -87,7 +87,7 @@ const PLATFORM_PRESETS = {
     github: {
         platform: 'GitHub',
         display_name: 'Github',
-        sub_text: '@EkiZR',
+        sub_text: '@github',
         icon: 'Github',
         color: '#24292e',
         gradient: 'from-[#333] to-[#24292e]',
@@ -95,7 +95,7 @@ const PLATFORM_PRESETS = {
     tiktok: {
         platform: 'TikTok',
         display_name: 'Tiktok',
-        sub_text: '@eki_zulfar',
+        sub_text: '@tiktok',
         icon: 'TikTok',
         color: '#000000',
         gradient: 'from-[#000000] via-[#25F4EE] to-[#FE2C55]',

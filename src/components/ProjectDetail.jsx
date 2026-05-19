@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Swal from "sweetalert2";
 import { toSlug } from "../utils/slug";
+import { normalizeProjectImages } from "../utils/projectImages";
 
 const TECH_ICONS = {
   React: Globe,
@@ -161,12 +162,14 @@ const ProjectDetails = () => {
                   : (typeof found.TechStack === 'string' && found.TechStack.length > 0)
                     ? found.TechStack.split(',').map((s) => s.trim()).filter(Boolean)
                     : []
+          const normalizedImages = normalizeProjectImages(found)
 
           const enhanced = {
             ...found,
             Title: normalizedTitle,
             Description: normalizedDescription,
             Img: found.img || found.Img || "",
+            Images: normalizedImages,
             Link: found.link || found.Link || "#",
             Github: found.github || found.Github || "https://github.com/EkiZR",
             Features: normalizedFeatures,
@@ -197,12 +200,14 @@ const ProjectDetails = () => {
             : Array.isArray(selectedProject.TechStack)
               ? selectedProject.TechStack
               : []
+          const normalizedImages = normalizeProjectImages(selectedProject)
 
           const enhancedProject = {
             ...selectedProject,
             Title: normalizedTitle,
             Description: normalizedDescription,
             Img: selectedProject.img || selectedProject.Img || "",
+            Images: normalizedImages,
             Link: selectedProject.link || selectedProject.Link || "#",
             Github: selectedProject.github || selectedProject.Github || "https://github.com/EkiZR",
             Features: normalizedFeatures,
@@ -234,12 +239,14 @@ const ProjectDetails = () => {
             : Array.isArray(selectedProject.TechStack)
               ? selectedProject.TechStack
               : []
+          const normalizedImages = normalizeProjectImages(selectedProject)
 
           const enhancedProject = {
             ...selectedProject,
             Title: normalizedTitle,
             Description: normalizedDescription,
             Img: selectedProject.img || selectedProject.Img || "",
+            Images: normalizedImages,
             Link: selectedProject.link || selectedProject.Link || "#",
             Github: selectedProject.github || selectedProject.Github || "https://github.com/EkiZR",
             Features: normalizedFeatures,
@@ -289,6 +296,8 @@ const ProjectDetails = () => {
   }
 
   const projectUrl = `https://ekizr.com/project/${toSlug(project.Title)}`;
+  const projectImages = normalizeProjectImages(project);
+  const heroImage = projectImages[0] || project.img || project.Img;
 
   return (
     <>
@@ -314,7 +323,7 @@ const ProjectDetails = () => {
         />
         <meta property="og:url" content={projectUrl} />
         <meta property="og:type" content="website" />
-        {(project.img || project.Img) && <meta property="og:image" content={project.img || project.Img} />}
+        {heroImage && <meta property="og:image" content={heroImage} />}
         <script type="application/ld+json">{`
           {
             "@context": "https://schema.org",
@@ -425,14 +434,43 @@ const ProjectDetails = () => {
               </div>
 
               <div className="space-y-6 md:space-y-10 animate-slideInRight">
-                <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl group">
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#030014] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <img
-                    src={project.img || project.Img}
-                    alt={project.Title || project.title}
-                    className="w-full object-cover transform transition-transform duration-700 will-change-transform group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 border-2 border-white/0 group-hover:border-white/10 transition-colors duration-300 rounded-2xl" />
+                <div className="space-y-4">
+                  <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl group bg-white/5">
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#030014] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    {heroImage ? (
+                      <img
+                        src={heroImage}
+                        alt={project.Title || project.title}
+                        className="w-full object-cover transform transition-transform duration-700 will-change-transform group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="w-full min-h-[260px] md:min-h-[360px] flex items-center justify-center text-gray-500">
+                        No project image available
+                      </div>
+                    )}
+                    <div className="absolute inset-0 border-2 border-white/0 group-hover:border-white/10 transition-colors duration-300 rounded-2xl" />
+                  </div>
+
+                  {projectImages.length > 1 && (
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                      {projectImages.slice(1).map((image, index) => (
+                        <a
+                          key={`${image}-${index}`}
+                          href={image}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/5 aspect-[16/10]"
+                        >
+                          <img
+                            src={image}
+                            alt={`${project.Title} image ${index + 2}`}
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+                        </a>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="bg-white/[0.02] backdrop-blur-xl rounded-2xl p-8 border border-white/10 space-y-6 hover:border-white/20 transition-colors duration-300 group">

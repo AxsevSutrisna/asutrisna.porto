@@ -102,71 +102,143 @@ const ProfileImage = memo(({ photoUrl }) => (
 ));
 ProfileImage.displayName = 'ProfileImage';
 
-const StatCard = memo(({ icon: Icon, color, value, label, description, animation }) => (
-  <div data-aos={animation} data-aos-duration={1300} className="relative group">
-    <div className="relative z-10 bg-gray-900/50 backdrop-blur-lg rounded-2xl p-6 border border-white/10 overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl h-full flex flex-col justify-between">
-      <div className={`absolute -z-10 inset-0 bg-gradient-to-br ${color} opacity-10 group-hover:opacity-20 transition-opacity duration-300`}></div>
+const StatCard = memo(({ icon: Icon, color, value, label, description, animation, href }) => {
+  const Wrapper = href ? 'a' : 'div'
 
-      <div className="flex items-center justify-between mb-4">
-        <div className="w-16 h-16 rounded-full flex items-center justify-center bg-white/10 transition-transform group-hover:rotate-6">
-          <Icon className="w-8 h-8 text-white" />
-        </div>
-        <span
-          className="text-4xl font-bold text-white"
-          data-aos="fade-up-left"
-          data-aos-duration="1500"
-          data-aos-anchor-placement="top-bottom"
-        >
-          {value}
-        </span>
-      </div>
+  return (
+    <Wrapper
+      data-aos={animation}
+      data-aos-duration={1300}
+      className="relative group block h-full"
+      href={href}
+    >
+      <div className="relative z-10 bg-gray-900/50 backdrop-blur-lg rounded-2xl p-6 border border-white/10 overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl h-full flex flex-col justify-between">
+        <div className={`absolute -z-10 inset-0 bg-gradient-to-br ${color} opacity-10 group-hover:opacity-20 transition-opacity duration-300`}></div>
 
-      <div>
-        <p
-          className="text-sm uppercase tracking-wider text-gray-300 mb-2"
-          data-aos="fade-up"
-          data-aos-duration="800"
-          data-aos-anchor-placement="top-bottom"
-        >
-          {label}
-        </p>
-        <div className="flex items-center justify-between">
-          <p
-            className="text-xs text-gray-400"
-            data-aos="fade-up"
-            data-aos-duration="1000"
+        <div className="flex items-center justify-between mb-4">
+          <div className="w-16 h-16 rounded-full flex items-center justify-center bg-white/10 transition-transform group-hover:rotate-6">
+            <Icon className="w-8 h-8 text-white" />
+          </div>
+          <span
+            className="text-4xl font-bold text-white"
+            data-aos="fade-up-left"
+            data-aos-duration="1500"
             data-aos-anchor-placement="top-bottom"
           >
-            {description}
+            {value}
+          </span>
+        </div>
+
+        <div>
+          <p
+            className="text-sm uppercase tracking-wider text-gray-300 mb-2"
+            data-aos="fade-up"
+            data-aos-duration="800"
+            data-aos-anchor-placement="top-bottom"
+          >
+            {label}
           </p>
-          <ArrowUpRight className="w-4 h-4 text-white/50 group-hover:text-white transition-colors" />
+          <div className="flex items-center justify-between">
+            <p
+              className="text-xs text-gray-400"
+              data-aos="fade-up"
+              data-aos-duration="1000"
+              data-aos-anchor-placement="top-bottom"
+            >
+              {description}
+            </p>
+            <ArrowUpRight className="w-4 h-4 text-white/50 group-hover:text-white transition-colors" />
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-));
+    </Wrapper>
+  )
+});
 StatCard.displayName = 'StatCard';
 
 const AboutPage = () => {
   const [aboutContent, setAboutContent] = useState(null)
   const [cvDownloadUrl, setCvDownloadUrl] = useState('')
 
-  // Memoized calculations
-  const { totalProjects, totalCertificates, YearExperience } = useMemo(() => {
-    const storedProjects = JSON.parse(localStorage.getItem("projects") || "[]");
-    const storedCertificates = JSON.parse(localStorage.getItem("certificates") || "[]");
+  // Projects & certificates from localStorage
+  const storedProjects = JSON.parse(localStorage.getItem('projects') || '[]')
+  const storedCertificates = JSON.parse(localStorage.getItem('certificates') || '[]')
 
-    const startDate = new Date("2021-11-06");
-    const today = new Date();
-    const experience = today.getFullYear() - startDate.getFullYear() -
-      (today < new Date(today.getFullYear(), startDate.getMonth(), startDate.getDate()) ? 1 : 0);
+  // Work experiences fetched from Supabase (server-driven)
+  const [workItems, setWorkItems] = useState([])
 
-    return {
-      totalProjects: storedProjects.length,
-      totalCertificates: storedCertificates.length,
-      YearExperience: experience
-    };
-  }, []);
+  useEffect(() => {
+    const fetchWorkExperiences = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('work_experiences')
+          .select('*')
+        if (error) {
+          console.error('Error fetching work_experiences:', error)
+          return
+        }
+        setWorkItems(data || [])
+      } catch (err) {
+        console.error('Unexpected error fetching work_experiences:', err)
+      }
+    }
+
+    fetchWorkExperiences()
+  }, [])
+
+  // Compute precise years/months and a decimal representation
+  const { YearExperienceDecimal, YearExperienceLabel } = useMemo(() => {
+    if (!Array.isArray(workItems) || workItems.length === 0) {
+      const startDate = new Date('2021-11-06')
+      const now = new Date()
+      let years = now.getFullYear() - startDate.getFullYear()
+      if (now.getMonth() < startDate.getMonth() || (now.getMonth() === startDate.getMonth() && now.getDate() < startDate.getDate())) years -= 1
+      const decimal = Number(years.toFixed(1))
+      const label = `${years} ${years === 1 ? 'year' : 'years'}`
+      return { YearExperienceDecimal: decimal, YearExperienceLabel: label }
+    }
+
+    const starts = workItems
+      .map((w) => ({ month: Number(w.start_month) || 1, year: Number(w.start_year) || 0 }))
+      .filter((s) => s.year > 0)
+
+    const ends = workItems.map((w) => {
+      if (w.is_current) {
+        const now = new Date()
+        return { month: now.getMonth() + 1, year: now.getFullYear() }
+      }
+      return { month: Number(w.end_month) || 1, year: Number(w.end_year) || (Number(w.start_year) || 0) }
+    })
+
+    if (starts.length === 0 || ends.length === 0) {
+      return { YearExperienceDecimal: 0, YearExperienceLabel: '0 years' }
+    }
+
+    const earliest = starts.reduce((min, cur) => {
+      if (cur.year < min.year) return cur
+      if (cur.year === min.year && cur.month < min.month) return cur
+      return min
+    }, starts[0])
+
+    const latest = ends.reduce((max, cur) => {
+      if (cur.year > max.year) return cur
+      if (cur.year === max.year && cur.month > max.month) return cur
+      return max
+    }, ends[0])
+
+    const totalMonths = (latest.year - earliest.year) * 12 + (latest.month - earliest.month)
+    const years = Math.floor(totalMonths / 12)
+    const months = Math.max(0, totalMonths % 12)
+    const decimal = Number((totalMonths / 12).toFixed(1))
+    const label = months > 0
+      ? `${years} ${years === 1 ? 'year' : 'years'} ${months} ${months === 1 ? 'month' : 'months'} (${decimal} yrs)`
+      : `${years} ${years === 1 ? 'year' : 'years'} (${decimal} yrs)`
+
+    return { YearExperienceDecimal: decimal, YearExperienceLabel: label }
+  }, [workItems])
+
+  const totalProjects = storedProjects.length
+  const totalCertificates = storedCertificates.length
 
   useEffect(() => {
     const fetchAboutContent = async () => {
@@ -264,6 +336,7 @@ const AboutPage = () => {
       label: "Total Projects",
       description: "Innovative web solutions crafted",
       animation: "fade-right",
+      href: "#Portofolio",
     },
     {
       icon: Award,
@@ -272,16 +345,18 @@ const AboutPage = () => {
       label: "Certificates",
       description: "Professional skills validated",
       animation: "fade-up",
+      href: "#Portofolio",
     },
     {
       icon: Globe,
       color: "from-[#6366f1] to-[#a855f7]",
-      value: YearExperience,
+      value: YearExperienceDecimal,
       label: "Years of Experience",
-      description: "Continuous learning journey",
+      description: YearExperienceLabel || "Continuous learning journey",
       animation: "fade-left",
+      href: "#WorkExperience",
     },
-  ], [totalProjects, totalCertificates, YearExperience]);
+  ], [totalProjects, totalCertificates, YearExperienceDecimal, YearExperienceLabel]);
 
   return (
     <div
@@ -369,13 +444,11 @@ const AboutPage = () => {
           <ProfileImage photoUrl={content.photo_url} />
         </div>
 
-        <a href="#Portofolio">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 cursor-pointer">
-            {statsData.map((stat) => (
-              <StatCard key={stat.label} {...stat} />
-            ))}
-          </div>
-        </a>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
+          {statsData.map((stat) => (
+            <StatCard key={stat.label} {...stat} />
+          ))}
+        </div>
       </div>
 
       <style>{`

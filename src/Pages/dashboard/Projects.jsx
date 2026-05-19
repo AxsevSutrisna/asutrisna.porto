@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../supabase";
 import {
+  MAX_PROJECT_IMAGES,
+  normalizeProjectImages,
+} from "../../utils/projectImages";
+import {
   Plus,
   Trash2,
   Upload,
@@ -190,6 +194,13 @@ const ProjectForm = ({
   submitLabel = "Save Project",
   uploading,
 }) => {
+  const [imageItems, setImageItems] = useState(() =>
+    normalizeProjectImages(initial).map((url, index) => ({
+      id: `existing-${index}-${url}`,
+      url,
+      file: null,
+    })),
+  );
   const [form, setForm] = useState({
     title: initial?.title || initial?.Title || "",
     description: initial?.description || initial?.Description || "",
@@ -208,26 +219,48 @@ const ProjectForm = ({
     link: initial?.link || initial?.Link || "",
     github: initial?.github || initial?.Github || "",
   });
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(initial?.img || initial?.Img || null);
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
   const handleFileChange = (e) => {
-    const f = e.target.files[0];
-    if (!f) return;
-    setFile(f);
-    setPreview(URL.createObjectURL(f));
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    const availableSlots = MAX_PROJECT_IMAGES - imageItems.length;
+    if (availableSlots <= 0) {
+      alert(`Maximum ${MAX_PROJECT_IMAGES} images allowed.`);
+      e.target.value = "";
+      return;
+    }
+
+    const acceptedFiles = files.slice(0, availableSlots);
+    const nextItems = acceptedFiles.map((file) => ({
+      id: `new-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+      url: URL.createObjectURL(file),
+      file,
+    }));
+
+    setImageItems((current) => [...current, ...nextItems]);
+    e.target.value = "";
+  };
+
+  const removeImage = (id) => {
+    setImageItems((current) => {
+      const target = current.find((item) => item.id === id);
+      if (target?.url?.startsWith("blob:")) {
+        URL.revokeObjectURL(target.url);
+      }
+      return current.filter((item) => item.id !== id);
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(form, imageItems);
   };
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit(form, file);
-      }}
-      className="p-5 sm:p-6 space-y-4"
-    >
+    <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="sm:col-span-2">
           <InputField
@@ -279,35 +312,77 @@ const ProjectForm = ({
 
         <div className="sm:col-span-2 space-y-1.5">
           <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">
-            Project Image
+            Project Images (max {MAX_PROJECT_IMAGES})
           </label>
-          <label className="flex items-center gap-4 w-full bg-[#0d0d22] border border-dashed border-white/15 rounded-xl px-4 py-4 cursor-pointer hover:border-indigo-500/40 hover:bg-white/4 transition-all">
-            {preview ? (
-              <img
-                src={preview}
-                className="h-16 w-24 object-cover rounded-lg border border-white/10"
-                alt="preview"
+          <div className="space-y-3">
+            <label className="flex items-center gap-4 w-full bg-[#0d0d22] border border-dashed border-white/15 rounded-xl px-4 py-4 cursor-pointer hover:border-indigo-500/40 hover:bg-white/4 transition-all">
+              {imageItems.length > 0 ? (
+                <div className="flex -space-x-3">
+                  {imageItems.slice(0, 3).map((item) => (
+                    <img
+                      key={item.id}
+                      src={item.url}
+                      className="h-16 w-24 object-cover rounded-lg border border-white/10 ring-2 ring-[#0d0d22]"
+                      alt="preview"
+                    />
+                  ))}
+                  {imageItems.length > 3 && (
+                    <div className="h-16 w-16 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center text-xs text-gray-300 ring-2 ring-[#0d0d22]">
+                      +{imageItems.length - 3}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="w-24 h-16 rounded-lg bg-white/5 flex items-center justify-center border border-white/10">
+                  <ImageIcon className="w-5 h-5 text-gray-600" />
+                </div>
+              )}
+              <div>
+                <p className="text-sm text-gray-300">
+                  {imageItems.length > 0 ? "Add more images" : "Click to upload images"}
+                </p>
+                <p className="text-xs text-gray-600 mt-0.5">
+                  PNG, JPG, WEBP supported
+                </p>
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleFileChange}
+                className="hidden"
+                disabled={imageItems.length >= MAX_PROJECT_IMAGES}
               />
-            ) : (
-              <div className="w-24 h-16 rounded-lg bg-white/5 flex items-center justify-center border border-white/10">
-                <ImageIcon className="w-5 h-5 text-gray-600" />
+            </label>
+
+            {imageItems.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {imageItems.map((item, index) => (
+                  <div
+                    key={item.id}
+                    className="relative rounded-xl overflow-hidden border border-white/10 bg-white/5"
+                  >
+                    <img
+                      src={item.url}
+                      alt={`Project preview ${index + 1}`}
+                      className="h-28 w-full object-cover"
+                    />
+                    <div className="absolute left-2 top-2 px-2 py-1 rounded-full bg-black/60 text-[10px] text-white border border-white/10">
+                      {index === 0 ? "Primary" : `#${index + 1}`}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeImage(item.id)}
+                      className="absolute right-2 top-2 w-7 h-7 rounded-full bg-black/70 border border-white/10 text-white flex items-center justify-center hover:bg-red-500/80 transition-colors"
+                      aria-label="Remove image"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
-            <div>
-              <p className="text-sm text-gray-300">
-                {preview ? "Change image" : "Click to upload image"}
-              </p>
-              <p className="text-xs text-gray-600 mt-0.5">
-                PNG, JPG, WEBP supported
-              </p>
-            </div>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-          </label>
+          </div>
         </div>
       </div>
 
@@ -367,14 +442,28 @@ export default function Projects() {
     return data.publicUrl;
   };
 
-  const handleCreate = async (form, file) => {
+  const uploadProjectImages = async (imageItems) => {
+    const uploadedUrls = [];
+
+    for (const item of (imageItems || []).slice(0, 6)) {
+      if (item?.file) {
+        uploadedUrls.push(await uploadImage(item.file));
+      } else if (item?.url) {
+        uploadedUrls.push(item.url);
+      }
+    }
+
+    return [...new Set(uploadedUrls)].slice(0, MAX_PROJECT_IMAGES);
+  };
+
+  const handleCreate = async (form, imageItems) => {
     setUploading(true);
-    let imgUrl = "";
-    if (file) imgUrl = await uploadImage(file);
+    const images = await uploadProjectImages(imageItems);
     await supabase.from("projects").insert({
       title: form.title,
       description: form.description,
-      img: imgUrl,
+      img: images[0] || "",
+      images,
       tech_stack: form.techstack.split(",").map((s) => s.trim()).filter(Boolean),
       features: form.features.split(",").map((s) => s.trim()).filter(Boolean),
       link: form.link,
@@ -385,16 +474,16 @@ export default function Projects() {
     fetchProjects();
   };
 
-  const handleEdit = async (form, file) => {
+  const handleEdit = async (form, imageItems) => {
     setUploading(true);
-    let imgUrl = editProject.img || editProject.Img || "";
-    if (file) imgUrl = await uploadImage(file);
+    const images = await uploadProjectImages(imageItems);
     await supabase
       .from("projects")
       .update({
         title: form.title,
         description: form.description,
-        img: imgUrl,
+        img: images[0] || "",
+        images,
         tech_stack: form.techstack.split(",").map((s) => s.trim()).filter(Boolean),
         features: form.features.split(",").map((s) => s.trim()).filter(Boolean),
         link: form.link,

@@ -251,15 +251,22 @@ const SocialLinks = () => {
           </a>
         ) : null}
 
-        {/* Second Row - Instagram & YouTube */}
+        {/* Second Row - Instagram & GitHub */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {others.slice(0, 2).map((link, index) => renderCard(link, index))}
         </div>
 
-        {/* Third Row - GitHub & TikTok */}
+        {/* Third Row - YouTube & TikTok */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {others.slice(2, 4).map((link, index) => renderCard(link, index + 2))}
         </div>
+
+        {/* Fourth Row - Additional Links */}
+        {others.length > 4 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {others.slice(4, 6).map((link, index) => renderCard(link, index + 4))}
+          </div>
+        )}
 
       </div>
     </div>

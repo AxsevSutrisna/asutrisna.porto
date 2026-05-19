@@ -152,100 +152,128 @@ const isValidUrl = (value) => {
     }
 }
 
-const SocialLinkCard = ({ item, onEdit, onDelete, onToggleActive, onSetPrimary, isDragging, isDropTarget }) => (
-    <Card className={`${isDragging ? 'opacity-60 scale-[0.99]' : ''} ${isDropTarget ? 'ring-2 ring-indigo-400/70 ring-offset-2 ring-offset-transparent shadow-[0_0_0_1px_rgba(129,140,248,0.25)]' : ''}`}>
-        <div className="relative p-4 flex flex-col h-full gap-4">
-            {isDropTarget && (
-                <div className="absolute inset-0 rounded-2xl border-2 border-dashed border-indigo-400/70 bg-indigo-500/10 pointer-events-none flex items-center justify-center text-indigo-200 text-xs font-medium tracking-widest uppercase">
-                    Drop to place here
-                </div>
-            )}
+const SocialLinkCard = ({ item, onEdit, onDelete, onToggleActive, onSetPrimary, isDragging, isDropTarget }) => {
+    const getShortUrl = (url) => {
+        try {
+            const urlObj = new URL(url)
+            return urlObj.hostname.replace('www.', '')
+        } catch {
+            return url.slice(0, 30) + (url.length > 30 ? '...' : '')
+        }
+    }
 
-            <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                    <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <h3 className="font-semibold text-white text-sm truncate">{item.display_name}</h3>
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] border ${item.is_active ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300' : 'bg-gray-500/10 border-gray-500/20 text-gray-400'}`}>
-                            {item.is_active ? 'Active' : 'Hidden'}
-                        </span>
-                        {item.is_primary ? (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] border bg-yellow-500/10 border-yellow-500/20 text-yellow-300">
-                                Primary
-                            </span>
-                        ) : null}
+    const getShortGradient = (gradient) => {
+        if (!gradient) return '-'
+        return gradient.length > 35 ? gradient.slice(0, 32) + '...' : gradient
+    }
+
+    const getShortIcon = (icon) => {
+        if (!icon) return 'Custom Icon'
+        // If it's a URL, extract filename
+        if (icon.includes('/')) {
+            const filename = icon.split('/').pop()
+            return filename.length > 25 ? filename.slice(0, 22) + '...' : filename
+        }
+        // If it's text, truncate if needed
+        return icon.length > 25 ? icon.slice(0, 22) + '...' : icon
+    }
+
+    return (
+        <Card className={`${isDragging ? 'opacity-60 scale-[0.99]' : ''} ${isDropTarget ? 'ring-2 ring-indigo-400/70 ring-offset-2 ring-offset-transparent shadow-[0_0_0_1px_rgba(129,140,248,0.25)]' : ''}`}>
+            <div className="relative p-4 flex flex-col h-full gap-4">
+                {isDropTarget && (
+                    <div className="absolute inset-0 rounded-2xl border-2 border-dashed border-indigo-400/70 bg-indigo-500/10 pointer-events-none flex items-center justify-center text-indigo-200 text-xs font-medium tracking-widest uppercase">
+                        Drop to place here
                     </div>
-                    <p className="text-gray-500 text-xs">{item.platform} · /{item.icon || 'custom-icon'}</p>
-                </div>
+                )}
 
-                <div className="flex gap-2 shrink-0">
-                    <button
-                        onClick={() => onSetPrimary(item)}
-                        className="p-2 rounded-lg border border-white/10 text-gray-400 hover:text-yellow-300 hover:border-yellow-300/30 transition-colors"
-                        title={item.is_primary ? 'Primary link' : 'Set as primary'}
-                    >
-                        {item.is_primary ? <Star className="w-4 h-4 fill-current" /> : <StarOff className="w-4 h-4" />}
-                    </button>
-                    <button
-                        onClick={() => onToggleActive(item)}
-                        className="p-2 rounded-lg border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-colors"
-                        title={item.is_active ? 'Deactivate' : 'Activate'}
-                    >
-                        {item.is_active ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                    <button
-                        onClick={() => onEdit(item)}
-                        className="p-2 rounded-lg border border-indigo-500/25 text-indigo-400 hover:bg-indigo-500/10 transition-colors"
-                        title="Edit"
-                    >
-                        <Pencil className="w-4 h-4" />
-                    </button>
-                    <button
-                        onClick={() => onDelete(item.id)}
-                        className="p-2 rounded-lg border border-red-500/20 text-red-400 hover:bg-red-500/10 transition-colors"
-                        title="Delete"
-                    >
-                        <Trash2 className="w-4 h-4" />
-                    </button>
-                </div>
-            </div>
-
-            <div className="flex items-center gap-2 text-[11px] text-gray-500 uppercase tracking-widest">
-                <GripVertical className="w-4 h-4 text-gray-600" />
-                Drag to reorder
-            </div>
-
-            <div className="rounded-xl border border-white/10 bg-white/5 p-3 space-y-3">
-                <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shrink-0" style={{ background: item.color ? `${item.color}15` : undefined }}>
-                        <Link2 className="w-5 h-5" style={{ color: item.color || '#9ca3af' }} />
-                    </div>
+                <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                        <p className="text-sm font-medium text-gray-200 truncate">{item.url}</p>
-                        <p className="text-xs text-gray-500 truncate">{item.sub_text || 'No subtitle'}</p>
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                            <h3 className="font-semibold text-white text-sm truncate">{item.display_name}</h3>
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] border whitespace-nowrap ${item.is_active ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300' : 'bg-gray-500/10 border-gray-500/20 text-gray-400'}`}>
+                                {item.is_active ? 'Active' : 'Hidden'}
+                            </span>
+                            {item.is_primary ? (
+                                <span className="px-2 py-0.5 rounded-full text-[10px] border bg-yellow-500/10 border-yellow-500/20 text-yellow-300 whitespace-nowrap">
+                                    Primary
+                                </span>
+                            ) : null}
+                        </div>
+                        <p className="text-gray-500 text-xs truncate">{item.platform} · /{getShortIcon(item.icon)}</p>
+                    </div>
+
+                    <div className="flex gap-2 shrink-0">
+                        <button
+                            onClick={() => onSetPrimary(item)}
+                            className="p-2 rounded-lg border border-white/10 text-gray-400 hover:text-yellow-300 hover:border-yellow-300/30 transition-colors"
+                            title={item.is_primary ? 'Primary link' : 'Set as primary'}
+                        >
+                            {item.is_primary ? <Star className="w-4 h-4 fill-current" /> : <StarOff className="w-4 h-4" />}
+                        </button>
+                        <button
+                            onClick={() => onToggleActive(item)}
+                            className="p-2 rounded-lg border border-white/10 text-gray-400 hover:text-white hover:border-white/20 transition-colors"
+                            title={item.is_active ? 'Deactivate' : 'Activate'}
+                        >
+                            {item.is_active ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                        <button
+                            onClick={() => onEdit(item)}
+                            className="p-2 rounded-lg border border-indigo-500/25 text-indigo-400 hover:bg-indigo-500/10 transition-colors"
+                            title="Edit"
+                        >
+                            <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={() => onDelete(item.id)}
+                            className="p-2 rounded-lg border border-red-500/20 text-red-400 hover:bg-red-500/10 transition-colors"
+                            title="Delete"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </button>
                     </div>
                 </div>
-                <div className="flex flex-wrap gap-2 text-[11px] text-gray-400">
-                    <span className="px-2 py-1 rounded-full bg-white/5 border border-white/10">Order: {item.sort_order ?? 0}</span>
-                    <span className="px-2 py-1 rounded-full bg-white/5 border border-white/10">Color: {item.color || '-'}</span>
-                    <span className="px-2 py-1 rounded-full bg-white/5 border border-white/10">Gradient: {item.gradient || '-'}</span>
+
+                <div className="flex items-center gap-2 text-[11px] text-gray-500 uppercase tracking-widest">
+                    <GripVertical className="w-4 h-4 text-gray-600" />
+                    Drag to reorder
+                </div>
+
+                <div className="rounded-xl border border-white/10 bg-white/5 p-3 space-y-3">
+                    <div className="flex items-center gap-3">
+                        <div className="w-11 h-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shrink-0" style={{ background: item.color ? `${item.color}15` : undefined }}>
+                            <Link2 className="w-5 h-5" style={{ color: item.color || '#9ca3af' }} />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-gray-200 truncate" title={item.url}>{getShortUrl(item.url)}</p>
+                            <p className="text-xs text-gray-500 truncate">{item.sub_text || 'No subtitle'}</p>
+                        </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2 text-[11px] text-gray-400">
+                        <span className="px-2 py-1 rounded-full bg-white/5 border border-white/10 whitespace-nowrap">Order: {item.sort_order ?? 0}</span>
+                        <span className="px-2 py-1 rounded-full bg-white/5 border border-white/10 whitespace-nowrap">Color: {item.color || '-'}</span>
+                        <span className="px-2 py-1 rounded-full bg-white/5 border border-white/10 truncate" title={item.gradient || '-'}>Gradient: {getShortGradient(item.gradient)}</span>
+                    </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-3 pt-1">
+                    <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-white transition-colors"
+                        title={item.url}
+                    >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        Open Link
+                    </a>
+                    <div className="text-[11px] text-gray-500 uppercase tracking-widest truncate" title={item.icon || 'Custom Icon'}>{getShortIcon(item.icon)}</div>
                 </div>
             </div>
-
-            <div className="flex items-center justify-between gap-3 pt-1">
-                <a
-                    href={item.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-white transition-colors"
-                >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                    Open Link
-                </a>
-                <div className="text-[11px] text-gray-500 uppercase tracking-widest">{item.icon || 'Custom Icon'}</div>
-            </div>
-        </div>
-    </Card>
-)
+        </Card>
+    )
+}
 
 const SocialLinkForm = ({ initial, onSubmit, onCancel, uploading }) => {
     const [form, setForm] = useState({
@@ -261,6 +289,8 @@ const SocialLinkForm = ({ initial, onSubmit, onCancel, uploading }) => {
         is_active: initial?.is_active ?? true,
     })
     const [colorDraft, setColorDraft] = useState(initial?.color || '#6366f1')
+    const [iconFile, setIconFile] = useState(null)
+    const [iconPreview, setIconPreview] = useState(initial?.icon || null)
 
     useEffect(() => {
         setColorDraft(form.color || '#6366f1')
@@ -328,18 +358,25 @@ const SocialLinkForm = ({ initial, onSubmit, onCancel, uploading }) => {
         gradient: form.gradient || 'from-[#6366f1] to-[#a855f7]',
     }
 
+    const handleFileChange = (e) => {
+        const file = e.target.files && e.target.files[0]
+        if (!file) return
+        setIconFile(file)
+        try { setIconPreview(URL.createObjectURL(file)) } catch { setIconPreview(null) }
+    }
+
     return (
         <form
             onSubmit={(event) => {
                 event.preventDefault()
-                onSubmit(form)
+                onSubmit(form, iconFile)
             }}
             className="p-5 sm:p-6 space-y-4"
         >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="sm:col-span-2 space-y-2">
+                <div className="sm:col-span-2">
                     <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">Platform Presets</label>
-                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mt-2">
                         {Object.values(PLATFORM_PRESETS).map((preset) => {
                             const active = normalizePlatformKey(form.platform) === normalizePlatformKey(preset.platform)
                             return (
@@ -372,9 +409,39 @@ const SocialLinkForm = ({ initial, onSubmit, onCancel, uploading }) => {
                 <InputField label="Display Name" value={form.display_name} onChange={set('display_name')} placeholder="e.g. Let's Connect" required />
                 <InputField label="Sub Text" value={form.sub_text} onChange={set('sub_text')} placeholder="e.g. on LinkedIn" />
                 <InputField label="URL" value={form.url} onChange={set('url')} placeholder="https://example.com" required />
-                <InputField label="Icon" value={form.icon} onChange={set('icon')} placeholder="e.g. Linkedin" />
+
+                <div className="sm:col-span-2">
+                    <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">Icon</label>
+                    <div className="flex items-center gap-4 mt-3">
+                        <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+                            {iconPreview ? (
+                                <img src={iconPreview} alt="icon preview" className="w-full h-full object-cover" />
+                            ) : (
+                                <div className="text-gray-500 text-sm">No image</div>
+                            )}
+                        </div>
+
+                        <div className="flex-1">
+                            <div className="flex gap-3 items-center">
+                                <label className="inline-flex items-center bg-indigo-600 text-white rounded-full px-4 py-2 text-sm cursor-pointer">
+                                    Choose File
+                                    <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+                                </label>
+                                <div className="text-sm text-gray-300">{iconFile ? iconFile.name : (initial?.icon ? 'Using existing icon' : 'No file chosen')}</div>
+                            </div>
+
+                            <div className="mt-3">
+                                <InputField label="Or Icon Key (fallback)" value={form.icon} onChange={set('icon')} placeholder="e.g. Linkedin" />
+                                <p className="text-[11px] text-gray-500 mt-2">If you upload an image it will be used as the icon; otherwise the frontend icon mapping will use the icon key.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <InputField label="Sort Order" type="number" value={form.sort_order} onChange={set('sort_order')} placeholder="Leave empty to place at the bottom" min="0" />
                 <p className="-mt-2 text-[11px] text-gray-500 sm:col-span-2">Optional. If left empty, the new social link will be placed after the current last order.</p>
+
+
 
                 <div className="sm:col-span-2 space-y-3">
                     <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">Color</label>
@@ -614,6 +681,18 @@ export default function SocialLinksDashboard() {
         }
     }
 
+    const uploadIcon = async (file) => {
+        if (!file) return null
+        const fileName = `social-icons/${Date.now()}-${file.name}`
+        const { error: uploadError } = await supabase.storage.from('project-images').upload(fileName, file, {
+            upsert: true,
+        })
+        if (uploadError) throw uploadError
+
+        const { data } = supabase.storage.from('project-images').getPublicUrl(fileName)
+        return data.publicUrl
+    }
+
     const persistOrder = async (orderedItems) => {
         const updates = orderedItems.map((item, index) =>
             supabase
@@ -672,7 +751,7 @@ export default function SocialLinksDashboard() {
         }
     }
 
-    const handleCreate = async (form) => {
+    const handleCreate = async (form, iconFile) => {
         setUploading(true)
         try {
             const normalized = validateForm(form)
@@ -682,12 +761,24 @@ export default function SocialLinksDashboard() {
                 await clearOtherPrimary()
             }
 
+            // If an image file was provided, upload and use its public URL as icon
+            let iconValue = normalized.icon || null
+            if (iconFile) {
+                try {
+                    const publicUrl = await uploadIcon(iconFile)
+                    if (publicUrl) iconValue = publicUrl
+                } catch (err) {
+                    console.error('Icon upload failed:', err)
+                    throw new Error('Failed to upload icon image')
+                }
+            }
+
             const { error } = await supabase.from('social_links').insert({
                 platform: normalized.platform,
                 display_name: normalized.display_name,
                 sub_text: normalized.sub_text || null,
                 url: normalized.url,
-                icon: normalized.icon || null,
+                icon: iconValue || null,
                 color: normalized.color || null,
                 gradient: normalized.gradient || null,
                 is_primary: normalized.is_primary,
@@ -707,7 +798,7 @@ export default function SocialLinksDashboard() {
         }
     }
 
-    const handleEdit = async (form) => {
+    const handleEdit = async (form, iconFile) => {
         if (!editItem) return
         setUploading(true)
         try {
@@ -718,6 +809,17 @@ export default function SocialLinksDashboard() {
                 await clearOtherPrimary(editItem.id)
             }
 
+            let iconValue = normalized.icon || null
+            if (iconFile) {
+                try {
+                    const publicUrl = await uploadIcon(iconFile)
+                    if (publicUrl) iconValue = publicUrl
+                } catch (err) {
+                    console.error('Icon upload failed:', err)
+                    throw new Error('Failed to upload icon image')
+                }
+            }
+
             const { error } = await supabase
                 .from('social_links')
                 .update({
@@ -725,7 +827,7 @@ export default function SocialLinksDashboard() {
                     display_name: normalized.display_name,
                     sub_text: normalized.sub_text || null,
                     url: normalized.url,
-                    icon: normalized.icon || null,
+                    icon: iconValue || null,
                     color: normalized.color || null,
                     gradient: normalized.gradient || null,
                     is_primary: normalized.is_primary,

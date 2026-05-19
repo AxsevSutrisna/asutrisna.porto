@@ -90,6 +90,53 @@ const SOCIAL_LINKS = [
   { icon: Instagram, link: "https://www.instagram.com/ekizr_/?hl=id", label: "Instagram Profile" }
 ];
 
+// State to hold social links fetched from database (fallback to hardcoded)
+const useFetchSocialLinks = () => {
+  const [links, setLinks] = useState(SOCIAL_LINKS);
+
+  useEffect(() => {
+    let mounted = true;
+    const fetchLinks = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('social_links')
+          .select('*')
+          .eq('is_active', true)
+          .order('is_primary', { ascending: false })
+          .order('sort_order', { ascending: true })
+          .order('created_at', { ascending: true });
+
+        if (!error && Array.isArray(data) && data.length > 0) {
+          if (!mounted) return;
+          const mapped = data.map((item) => {
+            const key = (item.icon || item.platform || item.name || '') .toString().toLowerCase();
+            let Icon = ExternalLink;
+            if (key.includes('git') || key.includes('github')) Icon = Github;
+            else if (key.includes('link') || key.includes('linkedin')) Icon = Linkedin;
+            else if (key.includes('insta') || key.includes('instagram')) Icon = Instagram;
+            else if (key.includes('youtube')) Icon = ExternalLink; // could use Youtube if imported
+
+            return {
+              icon: Icon,
+              link: item.url || item.link || '#',
+              label: item.display_name || item.displayName || item.platform || item.name || 'Social'
+            };
+          });
+          setLinks(mapped);
+        }
+      } catch (err) {
+        // ignore, keep fallback
+        console.error('Failed to fetch social links for hero:', err);
+      }
+    };
+
+    fetchLinks();
+    return () => { mounted = false };
+  }, []);
+
+  return links;
+}
+
 const Home = () => {
   const [text, setText] = useState("")
   const [isTyping, setIsTyping] = useState(true)
@@ -97,6 +144,8 @@ const Home = () => {
   const [charIndex, setCharIndex] = useState(0)
   const [isLoaded, setIsLoaded] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
+
+  const socialLinks = useFetchSocialLinks();
 
   // Hero content from database
   const [heroData, setHeroData] = useState({
@@ -223,7 +272,7 @@ const Home = () => {
         `}</script>
       </Helmet>
 
-      <div className="min-h-screen bg-[#030014] overflow-hidden px-[5%] sm:px-[5%] lg:px-[10%]" id="Home">
+      <div className="min-h-screen bg-[#030014] overflow-hidden px-[5%] sm:px-[5%] lg:px-[10%]" id="Hero">
         <div className={`relative z-10 transition-all duration-1000 ${isLoaded ? "opacity-100" : "opacity-0"}`}>
           <div className="container mx-auto min-h-screen">
             <div className="flex flex-col lg:flex-row items-center justify-center h-screen md:justify-between gap-0 sm:gap-12 lg:gap-20">
@@ -300,7 +349,7 @@ const Home = () => {
 
                   {/* Social Links */}
                   <div className="hidden sm:flex gap-4 justify-start" data-aos="fade-up" data-aos-delay="1600">
-                    {SOCIAL_LINKS.map((social, index) => (
+                    {socialLinks.map((social, index) => (
                       <SocialLink key={index} {...social} />
                     ))}
                   </div>

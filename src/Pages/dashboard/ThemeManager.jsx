@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { HexColorPicker } from 'react-colorful'
 import { fetchTheme, updateTheme, resetTheme, THEME_COLOR_CATEGORIES, DEFAULT_THEME } from '../../utils/themeManager'
 import { RotateCcw, Copy, Check, X } from 'lucide-react'
 import { useToast } from '../../hooks/useToast'
 import ToastStack from '../../components/ToastStack'
+import ThemePresetSection from './components/ThemePresetSection'
 
 export default function ThemeManager() {
     const [colors, setColors] = useState(DEFAULT_THEME)
@@ -85,6 +86,20 @@ export default function ThemeManager() {
             setSaving(false)
         }
     }
+
+    const handlePresetApply = useCallback((mappedColors) => {
+        // Merge all preset-derived fields into the current colors state.
+        // Fields not covered by the preset (e.g. text, border, state colors)
+        // keep their existing values so the user doesn't lose manual tweaks.
+        setColors((prev) => ({ ...prev, ...mappedColors }))
+        // Clear any validation errors on the fields being updated
+        setInvalidFields((prev) => {
+            const next = { ...prev }
+            Object.keys(mappedColors).forEach((k) => { next[k] = false })
+            return next
+        })
+        pushToast('success', '✓ Preset applied — click Save to persist')
+    }, [pushToast])
 
     const handleReset = async () => {
         if (confirm('Reset all colors to default?')) {
@@ -314,6 +329,21 @@ export default function ThemeManager() {
                     <RotateCcw className="w-4 h-4" />
                     Reset All
                 </button>
+            </div>
+
+            {/* ── Quick Palette Presets ── */}
+            <div className="p-5 rounded-2xl border border-white/8 bg-white/[0.02]">
+                <ThemePresetSection
+                    currentColors={colors}
+                    onPresetApply={handlePresetApply}
+                />
+            </div>
+
+            {/* ── Divider ── */}
+            <div className="flex items-center gap-3">
+                <div className="flex-1 h-px bg-white/8" />
+                <span className="text-xs text-gray-600 uppercase tracking-widest">Manual Editor</span>
+                <div className="flex-1 h-px bg-white/8" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

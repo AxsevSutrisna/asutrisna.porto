@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import { HexColorPicker } from 'react-colorful'
 import { fetchTheme, updateTheme, resetTheme, THEME_COLOR_CATEGORIES, DEFAULT_THEME } from '../../utils/themeManager'
 import { RotateCcw, Copy, Check, X } from 'lucide-react'
+import { useToast } from '../../hooks/useToast'
+import ToastStack from '../../components/ToastStack'
 
 export default function ThemeManager() {
     const [colors, setColors] = useState(DEFAULT_THEME)
@@ -12,6 +14,7 @@ export default function ThemeManager() {
     const [pickerOpen, setPickerOpen] = useState(null) // Track which color picker is open
     const modalRef = useRef(null)
     const isClosingRef = useRef(false)
+    const { toasts, pushToast, removeToast } = useToast()
 
     useEffect(() => {
         fetchThemeData()
@@ -67,17 +70,17 @@ export default function ThemeManager() {
 
     const handleSave = async () => {
         if (Object.values(invalidFields).some(Boolean)) {
-            alert('Please fix invalid hex colors before saving')
+            pushToast('error', 'Please fix invalid hex colors before saving')
             return
         }
 
         try {
             setSaving(true)
             await updateTheme(colors)
-            alert('Theme updated successfully!')
+            pushToast('success', 'Theme updated successfully!')
         } catch (error) {
             console.error('Error saving theme:', error)
-            alert('Failed to save theme')
+            pushToast('error', error.message || 'Failed to save theme')
         } finally {
             setSaving(false)
         }
@@ -90,10 +93,10 @@ export default function ThemeManager() {
                 await resetTheme()
                 setColors(DEFAULT_THEME)
                 setInvalidFields({})
-                alert('Theme reset successfully!')
+                pushToast('success', 'Theme reset successfully!')
             } catch (error) {
                 console.error('Error resetting theme:', error)
-                alert('Failed to reset theme')
+                pushToast('error', error.message || 'Failed to reset theme')
             } finally {
                 setSaving(false)
             }
@@ -345,7 +348,7 @@ export default function ThemeManager() {
                         <div className="p-4 border border-white/10 rounded-lg overflow-hidden">
                             <p className="text-white text-sm font-medium mb-3">Backdrop Preview</p>
                             <div
-                                className="w-full h-56 rounded-lg border border-white/10 relative overflow-hidden"
+                                className="w-full h-40 rounded-lg border border-white/10 relative overflow-hidden"
                                 style={buildBackdropPreview()}
                             >
                                 {/* Animated blobs */}
@@ -361,25 +364,191 @@ export default function ThemeManager() {
                                     }}
                                 />
 
-                                {/* Content preview elements */}
-                                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-4">
-                                    {/* Sample button */}
+                                {/* Content preview - Buttons */}
+                                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-3">
+                                    {/* Primary Button */}
                                     <button
                                         disabled
-                                        className="px-6 py-2 rounded-lg font-medium transition text-white text-sm"
+                                        className="px-4 py-1.5 rounded-lg font-medium transition text-white text-xs"
                                         style={{
-                                            background: `linear-gradient(135deg, ${colors.primary_color_dark} 0%, ${colors.primary_color_light} 100%)`
+                                            background: `linear-gradient(135deg, ${colors.button_primary_from || colors.primary_color_dark} 0%, ${colors.button_primary_to || colors.primary_color_light} 100%)`
                                         }}
                                     >
-                                        Sample Button
+                                        Primary
                                     </button>
 
-                                    {/* Text preview */}
-                                    <div className="text-center">
-                                        <p className="text-white/80 text-xs font-medium">Primary Text</p>
-                                        <p className="text-white/50 text-xs mt-1">Secondary Text</p>
+                                    {/* Text Examples */}
+                                    <div className="text-center text-xs space-y-0.5">
+                                        <p style={{ color: colors.text_primary || DEFAULT_THEME.text_primary }}>Primary Text</p>
+                                        <p style={{ color: colors.text_secondary || DEFAULT_THEME.text_secondary }}>Secondary Text</p>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        {/* Button Styles Preview */}
+                        <div className="p-4 border border-white/10 rounded-lg space-y-3">
+                            <p className="text-white text-sm font-medium">Button Styles</p>
+
+                            {/* Primary Button */}
+                            <div className="space-y-1">
+                                <p className="text-xs text-gray-400">Primary Button</p>
+                                <button
+                                    disabled
+                                    className="w-full px-3 py-2 rounded-lg font-medium text-white text-xs transition"
+                                    style={{
+                                        background: `linear-gradient(135deg, ${colors.button_primary_from || colors.primary_color_dark}, ${colors.button_primary_to || colors.primary_color_light})`
+                                    }}
+                                >
+                                    Click Me
+                                </button>
+                            </div>
+
+                            {/* Secondary Button */}
+                            <div className="space-y-1">
+                                <p className="text-xs text-gray-400">Secondary Button</p>
+                                <button
+                                    disabled
+                                    className="w-full px-3 py-2 rounded-lg font-medium text-white text-xs transition"
+                                    style={{
+                                        background: `linear-gradient(135deg, ${colors.button_secondary_from || colors.secondary_color_dark}, ${colors.button_secondary_to || colors.secondary_color_light})`
+                                    }}
+                                >
+                                    Secondary
+                                </button>
+                            </div>
+
+                            {/* Outline Button */}
+                            <div className="space-y-1">
+                                <p className="text-xs text-gray-400">Outline Button</p>
+                                <button
+                                    disabled
+                                    className="w-full px-3 py-2 rounded-lg font-medium text-xs transition border-2"
+                                    style={{
+                                        borderColor: colors.button_outline_color || colors.primary_color_light,
+                                        color: colors.button_outline_color || colors.primary_color_light,
+                                        backgroundColor: 'transparent'
+                                    }}
+                                >
+                                    Outline
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Text Colors Preview */}
+                        <div className="p-4 border border-white/10 rounded-lg space-y-3">
+                            <p className="text-white text-sm font-medium">Text Colors</p>
+
+                            <div className="space-y-2 text-xs">
+                                <div style={{ color: colors.text_primary || DEFAULT_THEME.text_primary }}>
+                                    <p>● Primary Text Color</p>
+                                </div>
+                                <div style={{ color: colors.text_secondary || DEFAULT_THEME.text_secondary }}>
+                                    <p>● Secondary Text Color</p>
+                                </div>
+                                <div style={{ color: colors.text_muted || DEFAULT_THEME.text_muted }}>
+                                    <p>● Muted Text Color</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* State Colors Preview */}
+                        <div className="p-4 border border-white/10 rounded-lg space-y-3">
+                            <p className="text-white text-sm font-medium">State Colors</p>
+
+                            <div className="grid grid-cols-2 gap-2 text-xs">
+                                <div className="space-y-1">
+                                    <div
+                                        className="w-full h-6 rounded border border-white/10"
+                                        style={{ backgroundColor: colors.state_success || DEFAULT_THEME.state_success }}
+                                        title="Success"
+                                    />
+                                    <p className="text-gray-400 text-center">Success</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <div
+                                        className="w-full h-6 rounded border border-white/10"
+                                        style={{ backgroundColor: colors.state_warning || DEFAULT_THEME.state_warning }}
+                                        title="Warning"
+                                    />
+                                    <p className="text-gray-400 text-center">Warning</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <div
+                                        className="w-full h-6 rounded border border-white/10"
+                                        style={{ backgroundColor: colors.state_error || DEFAULT_THEME.state_error }}
+                                        title="Error"
+                                    />
+                                    <p className="text-gray-400 text-center">Error</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <div
+                                        className="w-full h-6 rounded border border-white/10"
+                                        style={{ backgroundColor: colors.state_info || DEFAULT_THEME.state_info }}
+                                        title="Info"
+                                    />
+                                    <p className="text-gray-400 text-center">Info</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Color Palette */}
+                        <div className="p-4 border border-white/10 rounded-lg space-y-3">
+                            <p className="text-white text-sm font-medium">Main Palette</p>
+
+                            <div className="grid grid-cols-4 gap-2">
+                                <div className="text-center space-y-1">
+                                    <div
+                                        className="w-full h-10 rounded-lg border border-white/10 shadow-sm"
+                                        style={{ backgroundColor: colors.button_primary_from || colors.primary_color_dark }}
+                                        title="Primary Dark"
+                                    />
+                                    <p className="text-xs text-gray-400 truncate">Primary</p>
+                                </div>
+                                <div className="text-center space-y-1">
+                                    <div
+                                        className="w-full h-10 rounded-lg border border-white/10 shadow-sm"
+                                        style={{ backgroundColor: colors.button_primary_to || colors.primary_color_light }}
+                                        title="Primary Light"
+                                    />
+                                    <p className="text-xs text-gray-400 truncate">Light</p>
+                                </div>
+                                <div className="text-center space-y-1">
+                                    <div
+                                        className="w-full h-10 rounded-lg border border-white/10 shadow-sm"
+                                        style={{ backgroundColor: colors.backdrop_base || DEFAULT_THEME.backdrop_base }}
+                                        title="Base"
+                                    />
+                                    <p className="text-xs text-gray-400 truncate">Base</p>
+                                </div>
+                                <div className="text-center space-y-1">
+                                    <div
+                                        className="w-full h-10 rounded-lg border border-white/10 shadow-sm"
+                                        style={{ backgroundColor: colors.backdrop_glow || DEFAULT_THEME.backdrop_glow }}
+                                        title="Glow"
+                                    />
+                                    <p className="text-xs text-gray-400 truncate">Glow</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Card Preview */}
+                        <div className="p-4 border border-white/10 rounded-lg space-y-3">
+                            <p className="text-white text-sm font-medium">Card Preview</p>
+
+                            <div
+                                className="p-3 rounded-lg border-2 space-y-2"
+                                style={{
+                                    backgroundColor: colors.card_bg_dark || DEFAULT_THEME.card_bg_dark,
+                                    borderColor: colors.card_border_light || DEFAULT_THEME.card_border_light
+                                }}
+                            >
+                                <p style={{ color: colors.text_primary || DEFAULT_THEME.text_primary }} className="text-xs font-medium">
+                                    Card Title
+                                </p>
+                                <p style={{ color: colors.text_secondary || DEFAULT_THEME.text_secondary }} className="text-xs">
+                                    Card content with custom colors
+                                </p>
                             </div>
                         </div>
 
@@ -426,13 +595,20 @@ export default function ThemeManager() {
                         <button
                             onClick={handleSave}
                             disabled={saving || Object.values(invalidFields).some(Boolean)}
-                            className="w-full px-4 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition font-medium text-sm"
+                            className="w-full px-4 py-3 rounded-lg transition font-medium text-sm text-white"
+                            style={{
+                                background: `linear-gradient(135deg, ${colors.button_primary_from || colors.primary_color_dark}, ${colors.button_primary_to || colors.primary_color_light})`,
+                                opacity: saving || Object.values(invalidFields).some(Boolean) ? 0.5 : 1,
+                                cursor: saving || Object.values(invalidFields).some(Boolean) ? 'not-allowed' : 'pointer'
+                            }}
                         >
                             {saving ? 'Saving...' : 'Save Theme'}
                         </button>
                     </div>
                 </div>
             </div>
+
+            <ToastStack toasts={toasts} onDismiss={removeToast} />
         </div>
     )
 }

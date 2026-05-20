@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../supabase'
+import { useToast } from '../../hooks/useToast'
+import ToastStack from '../../components/ToastStack'
 import {
     Boxes,
     Plus,
@@ -249,6 +251,7 @@ export default function TechStacks() {
     const [uploading, setUploading] = useState(false)
     const [draggingId, setDraggingId] = useState(null)
     const [dropTargetId, setDropTargetId] = useState(null)
+    const { toasts, pushToast, removeToast } = useToast()
 
     const fetchItems = async () => {
         setLoading(true)
@@ -375,7 +378,7 @@ export default function TechStacks() {
             await persistOrder(nextItems)
         } catch (error) {
             console.error('Error reordering tech stacks:', error)
-            alert(error.message || 'Failed to reorder tech stacks')
+            pushToast('error', error.message || 'Failed to reorder tech stacks')
         } finally {
             setDraggingId(null)
             setDropTargetId(null)
@@ -402,10 +405,11 @@ export default function TechStacks() {
             if (error) throw error
 
             setShowCreate(false)
+            pushToast('success', 'Tech stack created successfully!')
             fetchItems()
         } catch (error) {
             console.error('Error creating tech stack:', error)
-            alert(error.message || 'Failed to create tech stack')
+            pushToast('error', error.message || 'Failed to create tech stack')
         } finally {
             setUploading(false)
         }
@@ -435,10 +439,11 @@ export default function TechStacks() {
             if (error) throw error
 
             setEditItem(null)
+            pushToast('success', 'Tech stack updated successfully!')
             fetchItems()
         } catch (error) {
             console.error('Error updating tech stack:', error)
-            alert(error.message || 'Failed to update tech stack')
+            pushToast('error', error.message || 'Failed to update tech stack')
         } finally {
             setUploading(false)
         }
@@ -448,9 +453,10 @@ export default function TechStacks() {
         if (!confirm('Delete this tech stack?')) return
         const { error } = await supabase.from('tech_stacks').delete().eq('id', id)
         if (error) {
-            alert(error.message || 'Failed to delete tech stack')
+            pushToast('error', error.message || 'Failed to delete tech stack')
             return
         }
+        pushToast('success', 'Tech stack deleted successfully!')
         fetchItems()
     }
 
@@ -461,10 +467,11 @@ export default function TechStacks() {
             .eq('id', item.id)
 
         if (error) {
-            alert(error.message || 'Failed to update status')
+            pushToast('error', error.message || 'Failed to update status')
             return
         }
 
+        pushToast('success', 'Tech stack status updated!')
         fetchItems()
     }
 
@@ -548,6 +555,8 @@ export default function TechStacks() {
                     ))}
                 </div>
             )}
+
+            <ToastStack toasts={toasts} onDismiss={removeToast} />
         </div>
     )
 }

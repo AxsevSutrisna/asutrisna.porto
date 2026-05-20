@@ -3,27 +3,72 @@ import { supabase } from '../supabase';
 import { DEFAULT_THEME } from '../utils/themeManager';
 
 const CSS_VAR_MAP = {
+    // Primary and Secondary
     primary_color_dark: '--color-primary-dark',
     primary_color_light: '--color-primary-light',
     secondary_color_dark: '--color-secondary-dark',
     secondary_color_light: '--color-secondary-light',
+
+    // Backdrop
     backdrop_base: '--color-backdrop-base',
     backdrop_glow: '--color-backdrop-glow',
+
+    // Background
     background_blob_one: '--color-background-blob-one',
     background_blob_two: '--color-background-blob-two',
     background_blob_three: '--color-background-blob-three',
     background_blob_four: '--color-background-blob-four',
     background_grid_line: '--color-grid-line',
     background_grid_line_soft: '--color-grid-line-soft',
+    background_gradient_from: '--color-background-gradient-from',
+    background_gradient_to: '--color-background-gradient-to',
+
+    // Text
+    text_primary: '--color-text-primary',
+    text_secondary: '--color-text-secondary',
+    text_muted: '--color-text-muted',
+
+    // Border
+    border_light: '--color-border-light',
+    border_dark: '--color-border-dark',
+
+    // Buttons
+    button_primary_from: '--color-button-primary-from',
+    button_primary_to: '--color-button-primary-to',
+    button_secondary_from: '--color-button-secondary-from',
+    button_secondary_to: '--color-button-secondary-to',
+    button_outline_color: '--color-button-outline',
+
+    // Cards
+    card_bg_light: '--color-card-bg-light',
+    card_bg_dark: '--color-card-bg-dark',
+    card_border_light: '--color-card-border-light',
+    card_border_dark: '--color-card-border-dark',
+
+    // States
     state_success: '--color-state-success',
     state_warning: '--color-state-warning',
     state_error: '--color-state-error',
     state_info: '--color-state-info',
-    text_primary: '--color-text-primary',
-    text_secondary: '--color-text-secondary',
-    text_tertiary: '--color-text-tertiary',
-    border_light: '--color-border-light',
-    border_dark: '--color-border-dark',
+
+    // Navigation
+    navbar_bg: '--color-navbar-bg',
+    navbar_link_active: '--color-navbar-link-active',
+    navbar_link_inactive: '--color-navbar-link-inactive',
+
+    // Forms & Links
+    input_bg_color: '--color-input-bg',
+    input_border_color: '--color-input-border',
+    input_border_focus: '--color-input-border-focus',
+    link_color: '--color-link',
+    link_hover_color: '--color-link-hover',
+
+    // Effects
+    shadow_primary_color: '--color-shadow-primary',
+    glow_color_primary: '--color-glow-primary',
+    glow_color_secondary: '--color-glow-secondary',
+    grid_line_color: '--color-grid-line',
+    overlay_bg_color: '--color-overlay-bg',
 };
 
 const hexToRgba = (hex, alpha = 1) => {
@@ -107,36 +152,19 @@ export const useTheme = () => {
                 if (error) throw error;
 
                 if (data) {
-                    // Extract color values
-                    const colors = {
-                        primary_color_dark: data.primary_color_dark || DEFAULT_THEME.primary_color_dark,
-                        primary_color_light: data.primary_color_light || DEFAULT_THEME.primary_color_light,
-                        secondary_color_dark: data.secondary_color_dark || DEFAULT_THEME.secondary_color_dark,
-                        secondary_color_light: data.secondary_color_light || DEFAULT_THEME.secondary_color_light,
-                        backdrop_base: data.backdrop_base || DEFAULT_THEME.backdrop_base,
-                        backdrop_glow: data.backdrop_glow || DEFAULT_THEME.backdrop_glow,
-                        background_blob_one: data.background_blob_one || DEFAULT_THEME.background_blob_one,
-                        background_blob_two: data.background_blob_two || DEFAULT_THEME.background_blob_two,
-                        background_blob_three: data.background_blob_three || DEFAULT_THEME.background_blob_three,
-                        background_blob_four: data.background_blob_four || DEFAULT_THEME.background_blob_four,
-                        background_grid_line: data.background_grid_line || DEFAULT_THEME.background_grid_line,
-                        background_grid_line_soft: data.background_grid_line_soft || DEFAULT_THEME.background_grid_line_soft,
-                        state_success: data.state_success || DEFAULT_THEME.state_success,
-                        state_warning: data.state_warning || DEFAULT_THEME.state_warning,
-                        state_error: data.state_error || DEFAULT_THEME.state_error,
-                        state_info: data.state_info || DEFAULT_THEME.state_info,
-                        text_primary: data.text_primary || DEFAULT_THEME.text_primary,
-                        text_secondary: data.text_secondary || DEFAULT_THEME.text_secondary,
-                        text_tertiary: data.text_tertiary || DEFAULT_THEME.text_tertiary,
-                        border_light: data.border_light || DEFAULT_THEME.border_light,
-                        border_dark: data.border_dark || DEFAULT_THEME.border_dark,
-                    };
+                    // Extract color values - using all fields from CSS_VAR_MAP
+                    const colors = {};
+                    Object.keys(CSS_VAR_MAP).forEach(key => {
+                        colors[key] = data[key] || DEFAULT_THEME[key];
+                    });
 
+                    console.log('[Theme] Initial theme loaded from database:', colors);
                     injectCSSVariables(colors);
                     localStorage.setItem('theme_colors', JSON.stringify(colors));
                 }
 
                 // Subscribe to real-time updates
+                console.log('[Theme] Setting up realtime subscription...');
                 const subscription = supabase
                     .channel('site_theme_changes')
                     .on(
@@ -148,38 +176,24 @@ export const useTheme = () => {
                             filter: 'id=eq.1',
                         },
                         (payload) => {
+                            console.log('[Theme] Realtime update received:', payload);
                             if (payload.new) {
-                                const colors = {
-                                    primary_color_dark: payload.new.primary_color_dark,
-                                    primary_color_light: payload.new.primary_color_light,
-                                    secondary_color_dark: payload.new.secondary_color_dark,
-                                    secondary_color_light: payload.new.secondary_color_light,
-                                    backdrop_base: payload.new.backdrop_base,
-                                    backdrop_glow: payload.new.backdrop_glow,
-                                    background_blob_one: payload.new.background_blob_one,
-                                    background_blob_two: payload.new.background_blob_two,
-                                    background_blob_three: payload.new.background_blob_three,
-                                    background_blob_four: payload.new.background_blob_four,
-                                    background_grid_line: payload.new.background_grid_line,
-                                    background_grid_line_soft: payload.new.background_grid_line_soft,
-                                    state_success: payload.new.state_success,
-                                    state_warning: payload.new.state_warning,
-                                    state_error: payload.new.state_error,
-                                    state_info: payload.new.state_info,
-                                    text_primary: payload.new.text_primary,
-                                    text_secondary: payload.new.text_secondary,
-                                    text_tertiary: payload.new.text_tertiary,
-                                    border_light: payload.new.border_light,
-                                    border_dark: payload.new.border_dark,
-                                };
+                                const colors = {};
+                                Object.keys(CSS_VAR_MAP).forEach(key => {
+                                    colors[key] = payload.new[key] || DEFAULT_THEME[key];
+                                });
+                                console.log('[Theme] Injecting updated CSS variables:', colors);
                                 injectCSSVariables(colors);
                                 localStorage.setItem('theme_colors', JSON.stringify(colors));
                             }
                         }
                     )
-                    .subscribe();
+                    .subscribe((status) => {
+                        console.log('[Theme] Subscription status:', status);
+                    });
 
                 return () => {
+                    console.log('[Theme] Cleaning up subscription');
                     supabase.removeChannel(subscription);
                 };
             } catch (error) {

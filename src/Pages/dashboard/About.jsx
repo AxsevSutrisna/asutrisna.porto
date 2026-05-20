@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../supabase'
+import { useToast } from '../../hooks/useToast'
+import ToastStack from '../../components/ToastStack'
 import {
     Plus,
     Pencil,
@@ -300,6 +302,7 @@ export default function About() {
     const [showCreate, setShowCreate] = useState(false)
     const [editItem, setEditItem] = useState(null)
     const [uploading, setUploading] = useState(false)
+    const { toasts, pushToast, removeToast } = useToast()
 
     const fetchItems = async () => {
         setLoading(true)
@@ -359,10 +362,11 @@ export default function About() {
             })
 
             setShowCreate(false)
+            pushToast('success', 'About content created successfully!')
             fetchItems()
         } catch (error) {
             console.error('Error creating about content:', error)
-            alert('Failed to save about content')
+            pushToast('error', error.message || 'Failed to save about content')
         } finally {
             setUploading(false)
         }
@@ -397,10 +401,11 @@ export default function About() {
                 .eq('id', editItem.id)
 
             setEditItem(null)
+            pushToast('success', 'About content updated successfully!')
             fetchItems()
         } catch (error) {
             console.error('Error updating about content:', error)
-            alert('Failed to update about content')
+            pushToast('error', error.message || 'Failed to update about content')
         } finally {
             setUploading(false)
         }
@@ -408,7 +413,12 @@ export default function About() {
 
     const deleteItem = async (id) => {
         if (!confirm('Delete this about content?')) return
-        await supabase.from('about_contents').delete().eq('id', id)
+        const { error } = await supabase.from('about_contents').delete().eq('id', id)
+        if (error) {
+            pushToast('error', error.message || 'Failed to delete about content')
+            return
+        }
+        pushToast('success', 'About content deleted successfully!')
         fetchItems()
     }
 
@@ -430,6 +440,7 @@ export default function About() {
                 .update({ is_published: true })
                 .eq('id', item.id)
         }
+        pushToast('success', item.is_published ? 'About content unpublished!' : 'About content published!')
         fetchItems()
     }
 
@@ -509,6 +520,8 @@ export default function About() {
                     ))}
                 </div>
             )}
+
+            <ToastStack toasts={toasts} onDismiss={removeToast} />
         </div>
     )
 }

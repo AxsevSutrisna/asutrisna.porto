@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../supabase'
+import { useToast } from '../../hooks/useToast'
+import ToastStack from '../../components/ToastStack'
 import {
     Plus,
     Pencil,
@@ -611,6 +613,7 @@ export default function SocialLinksDashboard() {
     const [uploading, setUploading] = useState(false)
     const [draggingId, setDraggingId] = useState(null)
     const [dropTargetId, setDropTargetId] = useState(null)
+    const { toasts, pushToast, removeToast } = useToast()
 
     const fetchItems = async () => {
         setLoading(true)
@@ -789,10 +792,11 @@ export default function SocialLinksDashboard() {
             if (error) throw error
 
             setShowCreate(false)
+            pushToast('success', 'Social link created successfully!')
             fetchItems()
         } catch (error) {
             console.error('Error creating social link:', error)
-            alert(error.message || 'Failed to create social link')
+            pushToast('error', error.message || 'Failed to create social link')
         } finally {
             setUploading(false)
         }
@@ -839,10 +843,11 @@ export default function SocialLinksDashboard() {
             if (error) throw error
 
             setEditItem(null)
+            pushToast('success', 'Social link updated successfully!')
             fetchItems()
         } catch (error) {
             console.error('Error updating social link:', error)
-            alert(error.message || 'Failed to update social link')
+            pushToast('error', error.message || 'Failed to update social link')
         } finally {
             setUploading(false)
         }
@@ -852,9 +857,10 @@ export default function SocialLinksDashboard() {
         if (!confirm('Delete this social link?')) return
         const { error } = await supabase.from('social_links').delete().eq('id', id)
         if (error) {
-            alert(error.message || 'Failed to delete social link')
+            pushToast('error', error.message || 'Failed to delete social link')
             return
         }
+        pushToast('success', 'Social link deleted successfully!')
         fetchItems()
     }
 
@@ -865,10 +871,11 @@ export default function SocialLinksDashboard() {
             .eq('id', item.id)
 
         if (error) {
-            alert(error.message || 'Failed to update status')
+            pushToast('error', error.message || 'Failed to update status')
             return
         }
 
+        pushToast('success', 'Social link status updated!')
         fetchItems()
     }
 
@@ -882,10 +889,11 @@ export default function SocialLinksDashboard() {
 
             if (error) throw error
 
+            pushToast('success', 'Primary social link updated!')
             fetchItems()
         } catch (error) {
             console.error('Error updating primary social link:', error)
-            alert(error.message || 'Failed to set primary social link')
+            pushToast('error', error.message || 'Failed to set primary social link')
         }
     }
 
@@ -969,6 +977,8 @@ export default function SocialLinksDashboard() {
                     ))}
                 </div>
             )}
+
+            <ToastStack toasts={toasts} onDismiss={removeToast} />
         </div>
     )
 }

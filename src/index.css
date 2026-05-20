@@ -2,6 +2,68 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom layer to apply CSS variables to text and border colors */
+@layer utilities {
+
+	/* Text color utilities that use CSS variables */
+	.text-primary-dynamic {
+		color: var(--color-text-primary);
+	}
+
+	.text-secondary-dynamic {
+		color: var(--color-text-secondary);
+	}
+
+	.text-muted-dynamic {
+		color: var(--color-text-muted);
+	}
+
+	.border-primary-dynamic {
+		border-color: var(--color-border-light);
+	}
+
+	.border-dark-dynamic {
+		border-color: var(--color-border-dark);
+	}
+}
+
+/* Override text colors with CSS variables */
+.text-white:not([class*="gradient"]):not([class*="transparent"]):not([class*="bg-clip"]) {
+	color: var(--color-text-primary) !important;
+}
+
+.text-gray-200:not([class*="gradient"]):not([class*="transparent"]):not([class*="bg-clip"]) {
+	color: var(--color-text-primary) !important;
+}
+
+.text-gray-300:not([class*="gradient"]):not([class*="transparent"]):not([class*="bg-clip"]) {
+	color: var(--color-text-secondary) !important;
+}
+
+.text-gray-400:not([class*="gradient"]):not([class*="transparent"]):not([class*="bg-clip"]) {
+	color: var(--color-text-muted) !important;
+}
+
+.text-slate-300:not([class*="gradient"]):not([class*="transparent"]):not([class*="bg-clip"]) {
+	color: var(--color-text-secondary) !important;
+}
+
+.text-slate-400:not([class*="gradient"]):not([class*="transparent"]):not([class*="bg-clip"]) {
+	color: var(--color-text-muted) !important;
+}
+
+/* Override border colors */
+.border-white:not([class*="transparent"]) {
+	border-color: var(--color-border-light) !important;
+}
+
+.border-white\/\[0\.15\],
+.border-white\/\[0\.2\],
+.border-white\/10,
+.border-white\/20 {
+	border-color: var(--color-border-light) !important;
+}
+
 :root {
 	/* Primary Colors */
 	--color-primary-dark: #6366f1;
@@ -56,8 +118,43 @@ body {
 	overflow-x: hidden;
 	background: radial-gradient(circle at top, rgba(var(--color-backdrop-glow-rgb, 27, 18, 61), 0.6) 0%, var(--color-backdrop-base) 55%);
 	scroll-behavior: smooth !important;
+	color: var(--color-text-primary);
 }
 
+/* Override standard text colors to use CSS variables */
+:not([class*="gradient"]):not([class*="transparent"]) {
+	--tw-text-opacity: 1;
+}
+
+/* Map Tailwind text colors to CSS variables - only for non-gradient text */
+.text-white:where(:not([class*="gradient"]):not([class*="transparent"]):not([class*="bg-clip"])) {
+	color: var(--color-text-primary) !important;
+}
+
+.text-gray-300:where(:not([class*="gradient"]):not([class*="transparent"]):not([class*="bg-clip"])) {
+	color: var(--color-text-secondary) !important;
+}
+
+.text-gray-400:where(:not([class*="gradient"]):not([class*="transparent"]):not([class*="bg-clip"])) {
+	color: var(--color-text-secondary) !important;
+}
+
+.text-gray-500:where(:not([class*="gradient"]):not([class*="transparent"]):not([class*="bg-clip"])) {
+	color: var(--color-text-muted) !important;
+}
+
+.text-gray-600:where(:not([class*="gradient"]):not([class*="transparent"]):not([class*="bg-clip"])) {
+	color: var(--color-text-muted) !important;
+}
+
+/* Apply to border colors as well */
+.border-white:where(:not([class*="transparent"])) {
+	border-color: var(--color-border-light) !important;
+}
+
+.border-gray-400:where(:not([class*="transparent"])) {
+	border-color: var(--color-border-light) !important;
+}
 
 @keyframes blob {
 

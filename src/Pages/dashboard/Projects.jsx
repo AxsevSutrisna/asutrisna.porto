@@ -4,6 +4,8 @@ import {
   MAX_PROJECT_IMAGES,
   normalizeProjectImages,
 } from "../../utils/projectImages";
+import { useToast } from "../../hooks/useToast";
+import ToastStack from "../../components/ToastStack";
 import {
   Plus,
   Trash2,
@@ -418,6 +420,7 @@ export default function Projects() {
   const [showCreate, setShowCreate] = useState(false);
   const [editProject, setEditProject] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const { toasts, pushToast, removeToast } = useToast();
 
   const fetchProjects = async () => {
     setLoading(true);
@@ -470,6 +473,7 @@ export default function Projects() {
       github: form.github,
     });
     setShowCreate(false);
+    pushToast("success", "Project created successfully!");
     setUploading(false);
     fetchProjects();
   };
@@ -491,13 +495,19 @@ export default function Projects() {
       })
       .eq("id", editProject.id);
     setEditProject(null);
+    pushToast("success", "Project updated successfully!");
     setUploading(false);
     fetchProjects();
   };
 
   const deleteProject = async (id) => {
     if (!confirm("Delete this project?")) return;
-    await supabase.from("projects").delete().eq("id", id);
+    const { error } = await supabase.from("projects").delete().eq("id", id);
+    if (error) {
+      pushToast("error", error.message || "Failed to delete project");
+      return;
+    }
+    pushToast("success", "Project deleted successfully!");
     fetchProjects();
   };
 
@@ -587,6 +597,8 @@ export default function Projects() {
           ))}
         </div>
       )}
+
+      <ToastStack toasts={toasts} onDismiss={removeToast} />
     </div>
   );
 }

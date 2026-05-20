@@ -15,9 +15,9 @@ TechStack.displayName = 'TechStack';
 const CTAButton = memo(({ href, text, icon: Icon }) => (
   <a href={href}>
     <button className="group relative w-[160px]">
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-[#4f52c9] to-[#8644c5] rounded-xl opacity-50 blur-md group-hover:opacity-90 transition-all duration-700"></div>
-      <div className="relative h-11 bg-[#030014] backdrop-blur-xl rounded-lg border border-white/10 leading-none overflow-hidden">
-        <div className="absolute inset-0 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500 bg-gradient-to-r from-[#4f52c9]/20 to-[#8644c5]/20"></div>
+      <div className="absolute -inset-0.5 rounded-xl opacity-50 blur-md group-hover:opacity-90 transition-all duration-700" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }}></div>
+      <div className="relative h-11 backdrop-blur-xl rounded-lg border border-white/10 leading-none overflow-hidden" style={{ backgroundColor: 'var(--color-backdrop-base)' }}>
+        <div className="absolute inset-0 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500" style={{ background: 'linear-gradient(90deg, rgba(var(--color-primary-dark-rgb),0.12), rgba(var(--color-primary-light-rgb),0.12))' }}></div>
         <span className="absolute inset-0 flex items-center justify-center gap-2 text-sm group-hover:gap-3 transition-all duration-300">
           <span className="bg-gradient-to-r from-gray-200 to-white bg-clip-text text-transparent font-medium z-10">
             {text}
@@ -34,7 +34,7 @@ const SocialLink = memo(({ icon: Icon, link, label }) => (
   <a href={link} target="_blank" rel="noopener noreferrer" aria-label={label}>
     <button className="group relative p-3"
       aria-label={label}>
-      <div className="absolute inset-0 bg-gradient-to-r from-[#6366f1] to-[#a855f7] rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-300"></div>
+      <div className="absolute inset-0 rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-300" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }}></div>
       <div className="relative rounded-xl bg-black/50 backdrop-blur-xl p-2 flex items-center justify-center border border-white/10 group-hover:border-white/20 transition-all duration-300">
         <Icon className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
       </div>
@@ -205,6 +205,25 @@ const Home = () => {
     }
 
     fetchHeroContent()
+
+    const subscription = supabase
+      .channel('hero_content_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'hero_contents',
+        },
+        () => {
+          fetchHeroContent()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(subscription)
+    }
   }, [])
 
   useEffect(() => {
@@ -274,11 +293,11 @@ const Home = () => {
 
   if (heroLoading || socialLoading || !heroData) {
     if (!heroLoading && !socialLoading && !heroData) {
-      return <div className="min-h-screen bg-[#030014]" />
+      return <div className="min-h-screen" style={{ backgroundColor: 'var(--color-backdrop-base)' }} />
     }
 
     return (
-      <div className="min-h-screen bg-[#030014] flex items-center justify-center px-[5%]">
+      <div className="min-h-screen flex items-center justify-center px-[5%]" style={{ backgroundColor: 'var(--color-backdrop-base)' }}>
         <div className="w-12 h-12 rounded-full border-2 border-white/10 border-t-indigo-500 animate-spin" />
       </div>
     )
@@ -298,7 +317,7 @@ const Home = () => {
         {structuredData && <script type="application/ld+json">{JSON.stringify(structuredData)}</script>}
       </Helmet>
 
-      <div className="min-h-screen bg-[#030014] overflow-hidden px-[5%] sm:px-[5%] lg:px-[10%]" id="Hero">
+      <div className="min-h-screen overflow-hidden px-[5%] sm:px-[5%] lg:px-[10%]" id="Hero" style={{ backgroundColor: 'var(--color-backdrop-base)' }}>
         <div className={`relative z-10 transition-all duration-1000 ${isLoaded ? "opacity-100" : "opacity-0"}`}>
           <div className="container mx-auto min-h-screen">
             <div className="flex flex-col lg:flex-row items-center justify-center h-screen md:justify-between gap-0 sm:gap-12 lg:gap-20">
@@ -344,11 +363,12 @@ const Home = () => {
                     <span className="text-xl md:text-2xl bg-gradient-to-r from-gray-100 to-gray-300 bg-clip-text text-transparent font-light">
                       {text}
                     </span>
-                    <span className="w-[3px] h-6 bg-gradient-to-t from-[#6366f1] to-[#a855f7] ml-1 animate-blink"></span>
+                    <span className="w-[3px] h-6 ml-1 animate-blink" style={{ background: 'linear-gradient(180deg, var(--color-primary-dark), var(--color-primary-light))' }}></span>
                   </div>
 
                   {/* Description */}
-                  <p className="text-base md:text-lg text-gray-400 max-w-xl leading-relaxed font-light"
+                  <p className="text-base md:text-lg max-w-xl leading-relaxed font-light"
+                    style={{ color: 'var(--color-text-secondary)' }}
                     data-aos="fade-up"
                     data-aos-delay="1000">
                     {heroData.description}

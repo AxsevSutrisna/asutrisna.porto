@@ -37,7 +37,10 @@ const Header = memo(({ name }) => (
   <div className="text-center lg:mb-8 mb-2 px-[5%]">
     <div className="inline-block relative group">
       <h2
-        className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#6366f1] to-[#a855f7]"
+        className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text"
+        style={{
+          backgroundImage: 'linear-gradient(to right, var(--color-button-primary-from), var(--color-button-primary-to))'
+        }}
         data-aos="zoom-in-up"
         data-aos-duration="600"
       >
@@ -45,7 +48,8 @@ const Header = memo(({ name }) => (
       </h2>
     </div>
     <p
-      className="mt-2 text-gray-400 max-w-2xl mx-auto text-base sm:text-lg flex items-center justify-center gap-2"
+      className="mt-2 max-w-2xl mx-auto text-base sm:text-lg flex items-center justify-center gap-2"
+      style={{ color: 'var(--color-text-secondary)' }}
       data-aos="zoom-in-up"
       data-aos-duration="800"
     >
@@ -131,7 +135,8 @@ const StatCard = memo(({ icon: Icon, color, value, label, description, animation
 
         <div>
           <p
-            className="text-sm uppercase tracking-wider text-gray-300 mb-2"
+            className="text-sm uppercase tracking-wider mb-2"
+            style={{ color: 'var(--color-text-secondary)' }}
             data-aos="fade-up"
             data-aos-duration="800"
             data-aos-anchor-placement="top-bottom"
@@ -140,7 +145,8 @@ const StatCard = memo(({ icon: Icon, color, value, label, description, animation
           </p>
           <div className="flex items-center justify-between">
             <p
-              className="text-xs text-gray-400"
+              className="text-xs"
+              style={{ color: 'var(--color-text-muted)' }}
               data-aos="fade-up"
               data-aos-duration="1000"
               data-aos-anchor-placement="top-bottom"
@@ -390,7 +396,8 @@ const AboutPage = () => {
             </h2>
 
             <p
-              className="text-base sm:text-lg lg:text-xl text-gray-400 leading-relaxed text-justify pb-4 sm:pb-0"
+              className="text-base sm:text-lg lg:text-xl leading-relaxed text-justify pb-4 sm:pb-0"
+              style={{ color: 'var(--color-text-secondary)' }}
               data-aos="fade-right"
               data-aos-duration="1500"
             >
@@ -414,7 +421,7 @@ const AboutPage = () => {
                 </svg>
               </div>
 
-              <blockquote className="text-gray-300 text-center lg:text-left italic font-medium text-sm relative z-10 pl-6">
+              <blockquote className="text-center lg:text-left italic font-medium text-sm relative z-10 pl-6" style={{ color: 'var(--color-text-secondary)' }}>
                 &quot;{content.quote || ABOUT_FALLBACK.quote}&quot;
               </blockquote>
             </div>
@@ -424,7 +431,10 @@ const AboutPage = () => {
                 <button
                   data-aos="fade-up"
                   data-aos-duration="800"
-                  className="w-full lg:w-auto sm:px-6 py-2 sm:py-3 rounded-lg bg-gradient-to-r from-[#6366f1] to-[#a855f7] text-white font-medium transition-all duration-300 hover:scale-105 flex items-center justify-center lg:justify-start gap-2 shadow-lg hover:shadow-xl "
+                  className="w-full lg:w-auto sm:px-6 py-2 sm:py-3 rounded-lg text-white font-medium transition-all duration-300 hover:scale-105 flex items-center justify-center lg:justify-start gap-2 shadow-lg hover:shadow-xl"
+                  style={{
+                    backgroundImage: 'linear-gradient(to right, var(--color-button-primary-from), var(--color-button-primary-to))'
+                  }}
                 >
                   <FileText className="w-4 h-4 sm:w-5 sm:h-5" /> Download CV
                 </button>
@@ -433,7 +443,15 @@ const AboutPage = () => {
                 <button
                   data-aos="fade-up"
                   data-aos-duration="1000"
-                  className="w-full lg:w-auto sm:px-6 py-2 sm:py-3 rounded-lg border border-[#a855f7]/50 text-[#a855f7] font-medium transition-all duration-300 hover:scale-105 flex items-center justify-center lg:justify-start gap-2 hover:bg-[#a855f7]/10 "
+                  className="w-full lg:w-auto sm:px-6 py-2 sm:py-3 rounded-lg border font-medium transition-all duration-300 hover:scale-105 flex items-center justify-center lg:justify-start gap-2"
+                  style={{
+                    borderColor: 'var(--color-button-secondary-from)',
+                    color: 'var(--color-button-secondary-from)',
+                    backgroundColor: 'transparent'
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-button-secondary-from)'
+                  }
+                  onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
                 >
                   <Code className="w-4 h-4 sm:w-5 sm:h-5" /> View Projects
                 </button>

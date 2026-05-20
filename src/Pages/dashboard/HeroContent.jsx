@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from '../../supabase'
+import { useToast } from '../../hooks/useToast'
+import ToastStack from '../../components/ToastStack'
 import {
     X,
     ImageIcon,
@@ -139,6 +141,7 @@ export default function HeroContentDashboard() {
     const [isAtBottom, setIsAtBottom] = useState(false)
     const formRef = useRef(null)
     const [dockDims, setDockDims] = useState({ left: 0, width: 0 })
+    const { toasts, pushToast, removeToast } = useToast()
 
     // Fetch the hero content (should exist)
     useEffect(() => {
@@ -235,8 +238,10 @@ export default function HeroContentDashboard() {
             if (error) throw error
             setHeroItem(data)
             initForm(data)
+            pushToast('success', 'Default hero content created successfully!')
         } catch (err) {
             console.error('Error creating default hero:', err)
+            pushToast('error', err.message || 'Failed to create default hero content')
         }
     }
 
@@ -303,6 +308,7 @@ export default function HeroContentDashboard() {
             if (error) throw error
 
             setSaveStatus({ type: 'success', message: 'Hero content saved successfully!' })
+            pushToast('success', 'Hero content saved successfully!')
             setImageFile(null)
 
             // Re-fetch to sync state
@@ -321,6 +327,7 @@ export default function HeroContentDashboard() {
         } catch (error) {
             console.error('Error saving hero content:', error)
             setSaveStatus({ type: 'error', message: error.message || 'Failed to save hero content' })
+            pushToast('error', error.message || 'Failed to save hero content')
         } finally {
             setUploading(false)
         }
@@ -711,6 +718,8 @@ export default function HeroContentDashboard() {
                     </div>
                 </div>
             </div>
+
+            <ToastStack toasts={toasts} onDismiss={removeToast} />
         </div>
     )
 }

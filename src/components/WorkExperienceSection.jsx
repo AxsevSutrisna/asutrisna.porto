@@ -166,12 +166,9 @@ const WorkExperienceSection = () => {
                                         'linear-gradient(to bottom, color-mix(in srgb, var(--color-primary-dark) 70%, transparent) 0%, color-mix(in srgb, var(--color-primary-light) 45%, transparent) 45%, transparent 100%)',
                                 }}
                             />
-                            <div className="space-y-5 sm:space-y-6 md:pl-14 lg:pl-16">
+                            <div className="space-y-5 sm:space-y-6 md:pl-10 lg:pl-12">
                                 {experiences.map((experience, index) => (
                                     <div key={experience.id} className="relative">
-                                        <div className="absolute left-0 top-8 hidden md:flex h-5 w-5 items-center justify-center rounded-full bg-[var(--color-backdrop-base)] border border-theme-primary-dark/40 shadow-[0_0_0_6px_rgba(99,102,241,0.08)] z-10">
-                                            <Briefcase className="w-3 h-3 text-theme-primary-light" />
-                                        </div>
                                         <div className={`relative z-20 ${index % 2 === 0 ? 'lg:pr-20' : 'lg:pl-20'}`}>
                                             <ExperienceCard experience={experience} />
                                         </div>

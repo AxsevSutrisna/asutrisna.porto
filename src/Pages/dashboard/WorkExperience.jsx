@@ -127,26 +127,33 @@ const ExperienceForm = ({ initial = null, onSubmit, onCancel, submitting }) => {
         onSubmit(payload)
     }
 
+    const sectionTitle = (icon, text) => (
+        <div className="flex items-center gap-2 text-[11px] text-gray-500 uppercase tracking-widest my-2 pt-2">
+            <div className="flex-1 h-px bg-white/6" />
+            <span className="flex items-center gap-1.5">{icon} {text}</span>
+            <div className="flex-1 h-px bg-white/6" />
+        </div>
+    )
+
     const labelCls = 'text-xs text-indigo-300/70 uppercase tracking-wider font-medium'
     const inputCls = 'w-full bg-[#0d0d22] border border-white/10 rounded-xl px-4 py-2.5 text-gray-200 placeholder-gray-600 text-sm outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/20 transition-all'
     const selectCls = inputCls + ' cursor-pointer'
 
     return (
-        <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-5">
+            {sectionTitle(<Briefcase className="w-3 h-3" />, "Role & Company")}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Position */}
                 <div className="sm:col-span-2 space-y-1.5">
                     <label className={labelCls}>Position *</label>
                     <input type="text" value={form.position} onChange={set('position')} placeholder="e.g. Full-Stack Developer" required className={inputCls} />
                 </div>
-
-                {/* Company */}
                 <div className="space-y-1.5">
                     <label className={labelCls}>Company *</label>
-                    <input type="text" value={form.company} onChange={set('company')} placeholder="e.g. Kazee" required className={inputCls} />
+                    <div className="relative">
+                        <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                        <input type="text" value={form.company} onChange={set('company')} placeholder="e.g. Kazee" required className={`${inputCls} pl-10`} />
+                    </div>
                 </div>
-
-                {/* Employment type */}
                 <div className="space-y-1.5">
                     <label className={labelCls}>Employment Type</label>
                     <select value={form.employment_type} onChange={set('employment_type')} className={selectCls}>
@@ -157,14 +164,17 @@ const ExperienceForm = ({ initial = null, onSubmit, onCancel, submitting }) => {
                         <option value="Part Time">Part Time</option>
                     </select>
                 </div>
-
-                {/* Location */}
                 <div className="sm:col-span-2 space-y-1.5">
                     <label className={labelCls}>Location</label>
-                    <input type="text" value={form.location} onChange={set('location')} placeholder="e.g. Bandung" className={inputCls} />
+                    <div className="relative">
+                        <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                        <input type="text" value={form.location} onChange={set('location')} placeholder="e.g. Bandung, Indonesia (Remote)" className={`${inputCls} pl-10`} />
+                    </div>
                 </div>
+            </div>
 
-                {/* Start Date */}
+            {sectionTitle(<Calendar className="w-3 h-3" />, "Timeline")}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                     <label className={labelCls}>Start Month *</label>
                     <select value={form.start_month} onChange={set('start_month')} required className={selectCls}>
@@ -178,51 +188,55 @@ const ExperienceForm = ({ initial = null, onSubmit, onCancel, submitting }) => {
                         {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
                     </select>
                 </div>
-
-                {/* End Date */}
                 <div className="space-y-1.5">
-                    <label className={labelCls + (form.is_current ? ' opacity-40' : '')}>End Month</label>
-                    <select value={form.end_month} onChange={set('end_month')} disabled={form.is_current} className={selectCls + (form.is_current ? ' opacity-40 cursor-not-allowed' : '')}>
+                    <label className={`${labelCls} ${form.is_current ? 'opacity-40' : ''}`}>End Month</label>
+                    <select value={form.end_month} onChange={set('end_month')} disabled={form.is_current} className={`${selectCls} ${form.is_current ? 'opacity-40 cursor-not-allowed' : ''}`}>
                         <option value="">Select month</option>
                         {MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
                     </select>
                 </div>
                 <div className="space-y-1.5">
-                    <label className={labelCls + (form.is_current ? ' opacity-40' : '')}>End Year</label>
-                    <select value={form.end_year} onChange={set('end_year')} disabled={form.is_current} className={selectCls + (form.is_current ? ' opacity-40 cursor-not-allowed' : '')}>
+                    <label className={`${labelCls} ${form.is_current ? 'opacity-40' : ''}`}>End Year</label>
+                    <select value={form.end_year} onChange={set('end_year')} disabled={form.is_current} className={`${selectCls} ${form.is_current ? 'opacity-40 cursor-not-allowed' : ''}`}>
                         {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
                     </select>
                 </div>
 
-                {/* Is Current */}
-                <div className="sm:col-span-2">
-                    <label className="flex items-center gap-3 cursor-pointer group w-fit">
+                {/* Modern Toggle for Currently Working Here */}
+                <div className="sm:col-span-2 mt-1">
+                    <label className="flex items-center gap-3 cursor-pointer group w-fit p-1 -ml-1">
+                        <div className={`relative w-10 h-5 rounded-full transition-colors duration-300 ${form.is_current ? 'bg-indigo-500' : 'bg-white/10'}`}>
+                            <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform duration-300 ${form.is_current ? 'translate-x-5' : 'translate-x-0'}`} />
+                        </div>
                         <input
                             type="checkbox"
+                            className="hidden"
                             checked={form.is_current}
                             onChange={(e) => setForm((f) => ({ ...f, is_current: e.target.checked, end_month: '', end_year: CURRENT_YEAR }))}
-                            className="w-4 h-4 accent-indigo-500 cursor-pointer"
                         />
-                        <span className="text-sm text-gray-300 group-hover:text-white transition-colors">Currently working here</span>
+                        <span className={`text-sm transition-colors ${form.is_current ? 'text-white font-medium' : 'text-gray-400 group-hover:text-gray-300'}`}>
+                            I currently work here
+                        </span>
                     </label>
                 </div>
+            </div>
 
-                {/* Description */}
-                <div className="sm:col-span-2 space-y-1.5">
+            {sectionTitle(<Code2 className="w-3 h-3" />, "Details & Skills")}
+            <div className="grid grid-cols-1 gap-4">
+                <div className="space-y-1.5">
                     <label className={labelCls}>Description</label>
                     <textarea
                         value={form.description}
                         onChange={set('description')}
                         placeholder="Describe your responsibilities and achievements..."
                         rows={3}
-                        className={inputCls + ' resize-none'}
+                        className={`${inputCls} resize-none`}
                     />
                 </div>
 
-                {/* Tech Stack */}
-                <div className="sm:col-span-2 space-y-1.5">
+                <div className="space-y-1.5">
                     <label className={labelCls}>Tech Stack</label>
-                    <div className="rounded-xl border border-white/10 bg-[#0d0d22] px-3 py-3 space-y-2">
+                    <div className="rounded-xl border border-white/10 bg-[#0d0d22] px-3 py-3 space-y-2 focus-within:border-indigo-500/60 focus-within:ring-1 focus-within:ring-indigo-500/20 transition-all">
                         {techStack.length > 0 && (
                             <div className="flex flex-wrap gap-1.5">
                                 {techStack.map((item) => (
@@ -241,24 +255,24 @@ const ExperienceForm = ({ initial = null, onSubmit, onCancel, submitting }) => {
                             onChange={(e) => setTechDraft(e.target.value)}
                             onKeyDown={handleKeyDown}
                             onBlur={addTech}
-                            placeholder={techStack.length === 0 ? 'Add technology and press Enter...' : 'Add more...'}
+                            placeholder={techStack.length === 0 ? 'Type a technology and press Enter (e.g. React, Node.js)' : 'Add another...'}
                             className="w-full bg-transparent text-gray-200 placeholder-gray-600 text-sm outline-none"
                         />
                     </div>
-                    <p className="text-[10px] text-gray-600">Press Enter or comma to add each technology</p>
+                    <p className="text-[10px] text-gray-500">Press Enter or comma to add each technology to the stack.</p>
                 </div>
             </div>
 
             {/* Buttons */}
-            <div className="flex justify-end gap-2 pt-1">
+            <div className="flex justify-end gap-2 pt-4 border-t border-white/5">
                 <button type="button" onClick={onCancel} className="px-4 py-2 rounded-xl border border-white/10 text-gray-400 hover:text-white text-sm transition-colors">
                     Cancel
                 </button>
                 <button type="submit" disabled={submitting} className="relative group/s">
                     <div className="absolute -inset-0.5 rounded-xl opacity-60 blur group-hover/s:opacity-100 transition duration-300" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
-                    <div className="relative flex items-center gap-2 px-5 py-2 rounded-xl border border-white/10" style={{ backgroundColor: 'var(--color-backdrop-base)' }}>
-                        {submitting && <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />}
-                        <span className="text-sm text-gray-200">{submitting ? 'Saving...' : (initial ? 'Update Experience' : 'Save Experience')}</span>
+                    <div className="relative flex items-center gap-2 px-6 py-2.5 rounded-xl border border-white/10" style={{ backgroundColor: 'var(--color-backdrop-base)' }}>
+                        {submitting ? <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <Briefcase className="w-4 h-4 text-indigo-400" />}
+                        <span className="text-sm font-medium text-gray-200">{submitting ? 'Saving...' : (initial ? 'Update Experience' : 'Save Experience')}</span>
                     </div>
                 </button>
             </div>

@@ -394,254 +394,234 @@ export default function HeroContentDashboard() {
                 {/* Form Section */}
                 <div ref={formRef} className="lg:col-span-2 space-y-6">
                     {/* Badge & Titles */}
-                    <div className="rounded-lg border border-white/10 bg-[#0a0a1a] p-6 space-y-4">
-                        <div className="flex items-center gap-2 mb-2">
-                            <Type className="w-4 h-4 text-indigo-400" />
-                            <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Main Content</h2>
+                    <div className="relative group/card">
+                        <div className="absolute -inset-0.5 rounded-2xl blur opacity-10 group-hover/card:opacity-20 transition duration-500" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
+                        <div className="relative bg-[#0a0a1a] border border-white/12 rounded-2xl p-6 space-y-5">
+                            <div className="flex items-center gap-2 mb-2 pb-3 border-b border-white/5">
+                                <Type className="w-4 h-4 text-indigo-400" />
+                                <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Main Content</h2>
+                            </div>
+
+                            <InputField label="Badge Text" value={form.badge_text} onChange={set('badge_text')} placeholder="Ready to Innovate" required />
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <InputField label="Title Line 1" value={form.title_line_1} onChange={set('title_line_1')} placeholder="Frontend" required />
+                                <InputField label="Title Line 2" value={form.title_line_2} onChange={set('title_line_2')} placeholder="Developer" required />
+                            </div>
+
+                            <TextAreaField label="Description" value={form.description} onChange={set('description')} placeholder="Describe your hero section" rows={3} required />
                         </div>
-
-                        <InputField label="Badge Text" value={form.badge_text} onChange={set('badge_text')} placeholder="Ready to Innovate" required />
-
-                        <div className="grid grid-cols-2 gap-3">
-                            <InputField label="Title Line 1" value={form.title_line_1} onChange={set('title_line_1')} placeholder="Frontend" required />
-                            <InputField label="Title Line 2" value={form.title_line_2} onChange={set('title_line_2')} placeholder="Developer" required />
-                        </div>
-
-                        <TextAreaField label="Description" value={form.description} onChange={set('description')} placeholder="Describe your hero section" rows={3} required />
                     </div>
 
                     {/* Typing Words & Tech Badges */}
-                    <div className="rounded-lg border border-white/10 bg-[#0a0a1a] p-6 space-y-4">
-                        <div className="flex items-center gap-2 mb-2">
-                            <Sparkles className="w-4 h-4 text-indigo-400" />
-                            <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Dynamic Elements</h2>
+                    <div className="relative group/card">
+                        <div className="absolute -inset-0.5 rounded-2xl blur opacity-10 group-hover/card:opacity-20 transition duration-500" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
+                        <div className="relative bg-[#0a0a1a] border border-white/12 rounded-2xl p-6 space-y-5">
+                            <div className="flex items-center gap-2 mb-2 pb-3 border-b border-white/5">
+                                <Sparkles className="w-4 h-4 text-indigo-400" />
+                                <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Dynamic Elements</h2>
+                            </div>
+
+                            <TagInput
+                                label="Typing Words"
+                                value={form.typing_words}
+                                onChange={(value) => setForm((current) => ({ ...current, typing_words: value }))}
+                                placeholder="Type and press Enter"
+                                hint="Words that cycle through the typing animation on your home page."
+                            />
+
+                            <TagInput
+                                label="Tech Badges"
+                                value={form.tech_badges}
+                                onChange={(value) => setForm((current) => ({ ...current, tech_badges: value }))}
+                                placeholder="Add tech like React, Tailwind"
+                                hint="Technologies displayed below the hero description."
+                            />
                         </div>
-
-                        <TagInput
-                            label="Typing Words"
-                            value={form.typing_words}
-                            onChange={(value) => setForm((current) => ({ ...current, typing_words: value }))}
-                            placeholder="Type and press Enter"
-                            hint="Words that cycle through the typing animation on your home page."
-                        />
-
-                        <TagInput
-                            label="Tech Badges"
-                            value={form.tech_badges}
-                            onChange={(value) => setForm((current) => ({ ...current, tech_badges: value }))}
-                            placeholder="Add tech like React, Tailwind"
-                            hint="Technologies displayed below the hero description."
-                        />
                     </div>
 
                     {/* Call-to-Action Buttons */}
-                    <div className="rounded-lg border border-white/10 bg-[#0a0a1a] p-6 space-y-4">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Call-to-Action Buttons</h2>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setForm((current) => ({
-                                        ...current,
-                                        cta_buttons: [...(current.cta_buttons || []), { label: '', url: '' }],
-                                    }))
-                                }}
-                                className="px-3 py-1 text-xs bg-indigo-500/20 border border-indigo-500/40 rounded-lg text-indigo-300 hover:bg-indigo-500/30 transition-all"
-                            >
-                                + Add CTA
-                            </button>
-                        </div>
-
-                        {form.cta_buttons && form.cta_buttons.length > 0 ? (
-                            <div className="space-y-4">
-                                {form.cta_buttons.map((cta, idx) => (
-                                    <div key={idx} className="p-4 rounded-lg bg-[#0d0d22] border border-white/5 space-y-3">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <span className="text-xs text-gray-400">Button {idx + 1}</span>
-                                            {form.cta_buttons.length > 1 && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        setForm((current) => ({
-                                                            ...current,
-                                                            cta_buttons: current.cta_buttons.filter((_, i) => i !== idx),
-                                                        }))
-                                                    }}
-                                                    className="text-red-400 hover:text-red-300 transition-colors"
-                                                >
-                                                    <X className="w-4 h-4" />
-                                                </button>
-                                            )}
-                                        </div>
-
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                            <InputField
-                                                label="Button Label"
-                                                value={cta.label}
-                                                onChange={(e) => {
-                                                    const newCtaButtons = [...form.cta_buttons]
-                                                    newCtaButtons[idx].label = e.target.value
-                                                    setForm((current) => ({ ...current, cta_buttons: newCtaButtons }))
-                                                }}
-                                                placeholder="Projects"
-                                                required
-                                            />
-                                            <InputField
-                                                label="Button URL"
-                                                value={cta.url}
-                                                onChange={(e) => {
-                                                    const newCtaButtons = [...form.cta_buttons]
-                                                    newCtaButtons[idx].url = e.target.value
-                                                    setForm((current) => ({ ...current, cta_buttons: newCtaButtons }))
-                                                }}
-                                                placeholder="/#Portofolio"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="p-4 rounded-lg bg-[#0d0d22] border border-white/5 text-center text-gray-500 text-sm">
-                                {`No CTA buttons yet. Click "+ Add CTA" to add one.`}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Image & Styling */}
-                    <div className="rounded-lg border border-white/10 bg-[#0a0a1a] p-6 space-y-4">
-                        <h2 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Visual Settings</h2>
-
-                        <div>
-                            <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium mb-2 block">Hero Image</label>
-                            <label className="flex items-center gap-4 w-full bg-[#0d0d22] border border-dashed border-white/15 rounded-lg px-4 py-6 cursor-pointer hover:border-indigo-500/40 hover:bg-white/4 transition-all">
-                                {imagePreview ? (
-                                    <img
-                                        src={imagePreview}
-                                        className="h-20 w-28 object-cover rounded-lg border border-white/10 shrink-0"
-                                        alt="hero preview"
-                                    />
-                                ) : (
-                                    <div className="w-28 h-20 rounded-lg bg-white/5 flex items-center justify-center border border-white/10 shrink-0">
-                                        <ImageIcon className="w-6 h-6 text-gray-600" />
-                                    </div>
-                                )}
-                                <div>
-                                    <p className="text-sm text-gray-300 font-medium">{imageFile ? 'Change Image' : 'Click to Upload'}</p>
-                                    <p className="text-xs text-gray-500 mt-1">PNG, JPG, WEBP, GIF (recommended: square or wide aspect)</p>
-                                </div>
-                                <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
-                            </label>
-                            <InputField label="Image Alt Text" value={form.hero_image_alt} onChange={set('hero_image_alt')} placeholder="Developer illustration" hint="For accessibility and SEO" />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="space-y-1.5">
-                                <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">Accent Color Start</label>
+                    <div className="relative group/card">
+                        <div className="absolute -inset-0.5 rounded-2xl blur opacity-10 group-hover/card:opacity-20 transition duration-500" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
+                        <div className="relative bg-[#0a0a1a] border border-white/12 rounded-2xl p-6 space-y-5">
+                            <div className="flex items-center justify-between mb-2 pb-3 border-b border-white/5">
                                 <div className="flex items-center gap-2">
-                                    <input
-                                        type="color"
-                                        value={form.accent_from}
-                                        onChange={set('accent_from')}
-                                        className="h-10 w-12 rounded-lg border border-white/10 bg-transparent p-1 cursor-pointer"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={form.accent_from}
-                                        onChange={set('accent_from')}
-                                        className="flex-1 bg-[#0d0d22] border border-white/10 rounded-lg px-3 py-2 text-gray-200 text-xs outline-none focus:border-indigo-500/60"
-                                    />
+                                    <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Call-to-Action Buttons</h2>
                                 </div>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setForm((current) => ({
+                                            ...current,
+                                            cta_buttons: [...(current.cta_buttons || []), { label: '', url: '' }],
+                                        }))
+                                    }}
+                                    className="px-3 py-1.5 text-xs bg-indigo-500/10 border border-indigo-500/30 rounded-lg text-indigo-300 hover:bg-indigo-500/20 hover:border-indigo-500/50 transition-all flex items-center gap-1.5"
+                                >
+                                    <span>+</span> Add CTA
+                                </button>
                             </div>
 
-                            <div className="space-y-1.5">
-                                <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">Accent Color End</label>
-                                <div className="flex items-center gap-2">
-                                    <input
-                                        type="color"
-                                        value={form.accent_to}
-                                        onChange={set('accent_to')}
-                                        className="h-10 w-12 rounded-lg border border-white/10 bg-transparent p-1 cursor-pointer"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={form.accent_to}
-                                        onChange={set('accent_to')}
-                                        className="flex-1 bg-[#0d0d22] border border-white/10 rounded-lg px-3 py-2 text-gray-200 text-xs outline-none focus:border-indigo-500/60"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="h-12 rounded-lg border border-white/10" style={{ background: `linear-gradient(90deg, ${form.accent_from}, ${form.accent_to})` }} />
-                    </div>
-
-                    {/* Save Button: floating (bottom-right) OR docked (full-width bottom) depending on scroll */}
-                    <div>
-                        {/* Floating */}
-                        <div
-                            className={`fixed z-50 ${isAtBottom ? 'bottom-0' : 'bottom-6 right-6'}`}
-                            style={(() => {
-                                if (!isAtBottom) return undefined
-                                // If we have a reasonable measured width, align to form; otherwise center with max width
-                                if (dockDims && dockDims.width && dockDims.width > 240) {
-                                    return { left: dockDims.left, width: dockDims.width, right: 'auto', transform: 'none' }
-                                }
-                                return { left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '760px' }
-                            })()}
-                        >
-                            {isAtBottom ? (
-                                <div className="p-2 bg-transparent">
-                                    <div className="relative">
-                                        <div className="absolute -inset-0.5 rounded-t-lg opacity-60 blur" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
-                                        <div className="relative rounded-t-lg border-t border-white/10 px-6 py-4 flex items-center justify-center" style={{ backgroundColor: 'var(--color-backdrop-base)' }}>
-                                            <button
-                                                onClick={handleSave}
-                                                disabled={uploading}
-                                                style={{ width: '100%', maxWidth: dockDims && dockDims.width && dockDims.width > 240 ? Math.min(dockDims.width, 680) : 680 }}
-                                                className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500/5 to-purple-500/5 rounded-lg text-gray-200 font-medium whitespace-nowrap text-sm transition-all duration-300 hover:scale-105 hover:text-white hover:shadow-lg hover:shadow-indigo-500/20 active:scale-95 hover:from-indigo-500/25 hover:to-purple-500/25"
-                                            >
-                                                {uploading ? (
-                                                    <>
-                                                        <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                                                        <span>Saving...</span>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <Save className="w-4 h-4" />
-                                                        <span>Save & Publish to Home</span>
-                                                    </>
+                            {form.cta_buttons && form.cta_buttons.length > 0 ? (
+                                <div className="space-y-4">
+                                    {form.cta_buttons.map((cta, idx) => (
+                                        <div key={idx} className="relative group/item p-5 rounded-xl bg-[#0d0d22] border border-white/5 space-y-4 hover:border-white/10 transition-colors">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white/5 text-[10px] text-gray-400 font-medium">
+                                                        {idx + 1}
+                                                    </span>
+                                                    <span className="text-xs text-gray-400 font-medium">Button Link</span>
+                                                </div>
+                                                {form.cta_buttons.length > 1 && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setForm((current) => ({
+                                                                ...current,
+                                                                cta_buttons: current.cta_buttons.filter((_, i) => i !== idx),
+                                                            }))
+                                                        }}
+                                                        className="text-gray-500 hover:text-red-400 transition-colors p-1"
+                                                    >
+                                                        <X className="w-4 h-4" />
+                                                    </button>
                                                 )}
-                                            </button>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                <InputField
+                                                    label="Label"
+                                                    value={cta.label}
+                                                    onChange={(e) => {
+                                                        const newCtaButtons = [...form.cta_buttons]
+                                                        newCtaButtons[idx].label = e.target.value
+                                                        setForm((current) => ({ ...current, cta_buttons: newCtaButtons }))
+                                                    }}
+                                                    placeholder="e.g. Projects"
+                                                    required
+                                                />
+                                                <InputField
+                                                    label="Target URL"
+                                                    value={cta.url}
+                                                    onChange={(e) => {
+                                                        const newCtaButtons = [...form.cta_buttons]
+                                                        newCtaButtons[idx].url = e.target.value
+                                                        setForm((current) => ({ ...current, cta_buttons: newCtaButtons }))
+                                                    }}
+                                                    placeholder="e.g. /#Portofolio"
+                                                    required
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
+                                    ))}
                                 </div>
                             ) : (
-                                <div className="flex items-center justify-end">
-                                    <button
-                                        onClick={handleSave}
-                                        disabled={uploading}
-                                        className="relative group rounded-full px-3 py-2 shadow-lg text-sm transition-all duration-200 hover:shadow-xl hover:shadow-indigo-500/30 active:scale-95"
-                                        style={{ minHeight: 40 }}
-                                    >
-                                        <div className="absolute -inset-0.5 rounded-full opacity-60 blur group-hover:opacity-100 group-hover:shadow-lg transition duration-300" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
-                                        <div className="relative flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500/5 to-purple-500/5 rounded-full border border-white/10 text-gray-200 font-medium px-3 py-1.5 transition-all duration-300 group-hover:border-indigo-500/50 group-hover:from-indigo-500/30 group-hover:to-purple-500/30">
-                                            {uploading ? (
-                                                <>
-                                                    <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                                                    <span>Saving...</span>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Save className="w-3 h-3" />
-                                                    <span className="text-sm">Save & Publish</span>
-                                                </>
-                                            )}
-                                        </div>
-                                    </button>
+                                <div className="p-8 rounded-xl bg-[#0d0d22] border border-dashed border-white/10 text-center flex flex-col items-center justify-center gap-2">
+                                    <p className="text-gray-500 text-sm">No CTA buttons defined.</p>
+                                    <p className="text-gray-600 text-xs">Click the + Add CTA button to create one.</p>
                                 </div>
                             )}
                         </div>
+                    </div>
+
+                    {/* Image & Styling */}
+                    <div className="relative group/card">
+                        <div className="absolute -inset-0.5 rounded-2xl blur opacity-10 group-hover/card:opacity-20 transition duration-500" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
+                        <div className="relative bg-[#0a0a1a] border border-white/12 rounded-2xl p-6 space-y-5">
+                            <div className="flex items-center gap-2 mb-2 pb-3 border-b border-white/5">
+                                <Paintbrush className="w-4 h-4 text-indigo-400" />
+                                <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Visual Settings</h2>
+                            </div>
+
+                            <div>
+                                <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium mb-2 block">Hero Image</label>
+                                <label className="flex items-center gap-4 w-full bg-[#0d0d22] border border-dashed border-white/15 rounded-xl px-4 py-6 cursor-pointer hover:border-indigo-500/40 hover:bg-white/4 transition-all">
+                                    {imagePreview ? (
+                                        <img
+                                            src={imagePreview}
+                                            className="h-20 w-28 object-cover rounded-lg border border-white/10 shrink-0 shadow-md"
+                                            alt="hero preview"
+                                        />
+                                    ) : (
+                                        <div className="w-28 h-20 rounded-lg bg-white/5 flex items-center justify-center border border-white/10 shrink-0">
+                                            <ImageIcon className="w-6 h-6 text-gray-600" />
+                                        </div>
+                                    )}
+                                    <div>
+                                        <p className="text-sm text-gray-200 font-medium">{imageFile ? 'Change Image' : 'Click to Upload'}</p>
+                                        <p className="text-xs text-gray-500 mt-1">PNG, JPG, WEBP, GIF (recommended: square or wide aspect)</p>
+                                    </div>
+                                    <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                                </label>
+                            </div>
+
+                            <InputField label="Image Alt Text" value={form.hero_image_alt} onChange={set('hero_image_alt')} placeholder="Developer illustration" hint="For accessibility and SEO" />
+
+                            <div className="grid grid-cols-2 gap-4 pt-2">
+                                <div className="space-y-1.5">
+                                    <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">Accent Start</label>
+                                    <div className="flex items-center gap-3 bg-[#0d0d22] border border-white/10 rounded-xl p-2 focus-within:border-indigo-500/60 transition-colors">
+                                        <input
+                                            type="color"
+                                            value={form.accent_from}
+                                            onChange={set('accent_from')}
+                                            className="h-8 w-8 rounded-lg border-0 bg-transparent cursor-pointer"
+                                        />
+                                        <input
+                                            type="text"
+                                            value={form.accent_from}
+                                            onChange={set('accent_from')}
+                                            className="flex-1 bg-transparent text-gray-200 text-sm outline-none"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">Accent End</label>
+                                    <div className="flex items-center gap-3 bg-[#0d0d22] border border-white/10 rounded-xl p-2 focus-within:border-indigo-500/60 transition-colors">
+                                        <input
+                                            type="color"
+                                            value={form.accent_to}
+                                            onChange={set('accent_to')}
+                                            className="h-8 w-8 rounded-lg border-0 bg-transparent cursor-pointer"
+                                        />
+                                        <input
+                                            type="text"
+                                            value={form.accent_to}
+                                            onChange={set('accent_to')}
+                                            className="flex-1 bg-transparent text-gray-200 text-sm outline-none"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="h-16 rounded-xl border border-white/10 shadow-inner" style={{ background: `linear-gradient(90deg, ${form.accent_from}, ${form.accent_to})` }} />
+                        </div>
+                    </div>
+
+                    {/* Save Button: Sleek floating pill */}
+                    <div className="fixed z-50 bottom-6 right-6 lg:right-12">
+                        <button
+                            onClick={handleSave}
+                            disabled={uploading}
+                            className="relative group flex items-center justify-center focus:outline-none"
+                        >
+                            <div className="absolute -inset-1 rounded-full opacity-60 blur group-hover:opacity-100 transition duration-300" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
+                            <div className="relative flex items-center gap-2 px-6 py-3.5 bg-[#0a0a1a] border border-white/15 rounded-full shadow-2xl transition-all duration-300 group-hover:bg-[#111122]">
+                                {uploading ? (
+                                    <>
+                                        <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                                        <span className="text-sm font-semibold text-white">Saving...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Save className="w-5 h-5 text-indigo-400" />
+                                        <span className="text-sm font-semibold text-white">Save Changes</span>
+                                    </>
+                                )}
+                            </div>
+                        </button>
                     </div>
                 </div>
 

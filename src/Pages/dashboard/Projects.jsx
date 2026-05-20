@@ -465,59 +465,109 @@ const ProjectForm = ({
     onSubmit(form, imageItems);
   };
 
+  const sectionTitle = (icon, text) => (
+    <div className="flex items-center gap-2 text-[11px] text-gray-500 uppercase tracking-widest my-2 pt-2 sm:col-span-2">
+      <div className="flex-1 h-px bg-white/6" />
+      <span className="flex items-center gap-1.5">{icon} {text}</span>
+      <div className="flex-1 h-px bg-white/6" />
+    </div>
+  );
+
+  const inputCls = "w-full bg-[#0d0d22] border border-white/10 rounded-xl px-4 py-2.5 text-gray-200 placeholder-gray-600 text-sm outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/20 transition-all";
+  const labelCls = "text-xs text-indigo-300/70 uppercase tracking-wider font-medium";
+
   return (
-    <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4">
+    <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="sm:col-span-2">
-          <InputField
-            label="Project Title"
+        {sectionTitle(<FolderGit2 className="w-3 h-3" />, "Basic Info")}
+        
+        <div className="sm:col-span-2 space-y-1.5">
+          <label className={labelCls}>Project Title *</label>
+          <input
+            type="text"
             value={form.title}
             onChange={set("title")}
             placeholder="e.g. My Portfolio Website"
             required
+            className={inputCls}
           />
         </div>
 
         <div className="sm:col-span-2 space-y-1.5">
-          <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">
-            Description
-          </label>
+          <label className={labelCls}>Description</label>
           <textarea
             value={form.description}
             onChange={set("description")}
             placeholder="Describe what this project does, its purpose, and impact..."
             rows={3}
-            className="w-full bg-[#0d0d22] border border-white/10 rounded-xl px-4 py-2.5 text-gray-200 placeholder-gray-600 text-sm outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/20 transition-all resize-none"
+            className={`${inputCls} resize-none`}
           />
         </div>
 
-        <InputField
-          label="Tech Stack (comma separated)"
-          value={form.techstack}
-          onChange={set("techstack")}
-          placeholder="e.g. React, Tailwind, Supabase"
-        />
-        <InputField
-          label="Key Features (comma separated)"
-          value={form.features}
-          onChange={set("features")}
-          placeholder="e.g. Auth, Dark mode, REST API"
-        />
-        <InputField
-          label="Live URL"
-          value={form.link}
-          onChange={set("link")}
-          placeholder="https://yourproject.com"
-        />
-        <InputField
-          label="GitHub URL"
-          value={form.github}
-          onChange={set("github")}
-          placeholder="https://github.com/username/repo"
-        />
+        {sectionTitle(<Zap className="w-3 h-3" />, "Tech & Features")}
+
+        <div className="space-y-1.5">
+          <label className={labelCls}>Tech Stack</label>
+          <div className="relative">
+            <Layers className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <input
+              type="text"
+              value={form.techstack}
+              onChange={set("techstack")}
+              placeholder="e.g. React, Tailwind, Supabase"
+              className={`${inputCls} pl-10`}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <label className={labelCls}>Key Features</label>
+          <div className="relative">
+            <List className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <input
+              type="text"
+              value={form.features}
+              onChange={set("features")}
+              placeholder="e.g. Auth, Dark mode"
+              className={`${inputCls} pl-10`}
+            />
+          </div>
+        </div>
+
+        {sectionTitle(<ExternalLink className="w-3 h-3" />, "Links")}
+
+        <div className="space-y-1.5">
+          <label className={labelCls}>Live URL</label>
+          <div className="relative">
+            <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <input
+              type="url"
+              value={form.link}
+              onChange={set("link")}
+              placeholder="https://yourproject.com"
+              className={`${inputCls} pl-10`}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <label className={labelCls}>GitHub URL</label>
+          <div className="relative">
+            <Github className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <input
+              type="url"
+              value={form.github}
+              onChange={set("github")}
+              placeholder="https://github.com/username/repo"
+              className={`${inputCls} pl-10`}
+            />
+          </div>
+        </div>
+
+        {sectionTitle(<ImageIcon className="w-3 h-3" />, "Media")}
 
         <div className="sm:col-span-2 space-y-1.5">
-          <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">
+          <label className={labelCls}>
             Project Images (max {MAX_PROJECT_IMAGES})
           </label>
           <div className="space-y-3">
@@ -533,9 +583,9 @@ const ProjectForm = ({
                     />
                   ))}
                   {imageItems.length > 3 && (
-                    <div className="h-16 w-16 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center text-xs text-gray-300 ring-2 ring-[#0d0d22]">
-                      +{imageItems.length - 3}
-                    </div>
+                     <div className="h-16 w-16 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center text-xs text-gray-300 ring-2 ring-[#0d0d22]">
+                       +{imageItems.length - 3}
+                     </div>
                   )}
                 </div>
               ) : (
@@ -566,20 +616,21 @@ const ProjectForm = ({
                 {imageItems.map((item, index) => (
                   <div
                     key={item.id}
-                    className="relative rounded-xl overflow-hidden border border-white/10 bg-white/5"
+                    className="relative rounded-xl overflow-hidden border border-white/10 bg-white/5 group/img"
                   >
                     <img
                       src={item.url}
                       alt={`Project preview ${index + 1}`}
-                      className="h-28 w-full object-cover"
+                      className="h-28 w-full object-cover transition-transform duration-500 group-hover/img:scale-105"
                     />
-                    <div className="absolute left-2 top-2 px-2 py-1 rounded-full bg-black/60 text-[10px] text-white border border-white/10">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute left-2 top-2 px-2 py-1 rounded-full bg-black/60 backdrop-blur-md text-[10px] text-white border border-white/10 shadow-sm">
                       {index === 0 ? "Primary" : `#${index + 1}`}
                     </div>
                     <button
                       type="button"
                       onClick={() => removeImage(item.id)}
-                      className="absolute right-2 top-2 w-7 h-7 rounded-full bg-black/70 border border-white/10 text-white flex items-center justify-center hover:bg-red-500/80 transition-colors"
+                      className="absolute right-2 top-2 w-7 h-7 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-white flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm"
                       aria-label="Remove image"
                     >
                       <X className="w-4 h-4" />
@@ -592,7 +643,7 @@ const ProjectForm = ({
         </div>
       </div>
 
-      <div className="flex justify-end gap-2 pt-1">
+      <div className="flex justify-end gap-2 pt-4 border-t border-white/5">
         <button
           type="button"
           onClick={onCancel}
@@ -602,13 +653,13 @@ const ProjectForm = ({
         </button>
         <button type="submit" disabled={uploading} className="relative group/s">
           <div className="absolute -inset-0.5 rounded-xl opacity-60 blur group-hover/s:opacity-100 transition duration-300" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
-          <div className="relative flex items-center gap-2 px-5 py-2 rounded-xl border border-white/10" style={{ backgroundColor: 'var(--color-backdrop-base)' }}>
+          <div className="relative flex items-center gap-2 px-6 py-2.5 rounded-xl border border-white/10" style={{ backgroundColor: 'var(--color-backdrop-base)' }}>
             {uploading ? (
               <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
             ) : (
               <Upload className="w-4 h-4 text-indigo-400" />
             )}
-            <span className="text-sm text-gray-200">
+            <span className="text-sm font-medium text-gray-200">
               {uploading ? "Saving..." : submitLabel}
             </span>
           </div>

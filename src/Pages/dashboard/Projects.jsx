@@ -16,6 +16,14 @@ import {
   ExternalLink,
   Github,
   Pencil,
+  LayoutGrid,
+  List,
+  Globe,
+  CheckCircle2,
+  Clock,
+  Layers,
+  Zap,
+  Eye,
 } from "lucide-react";
 
 const Card = ({ children, className = "" }) => (
@@ -77,63 +85,159 @@ const SkeletonCard = () => (
   </div>
 );
 
+/* ── Premium Project Card (Grid View) ── */
 const ProjectCard = ({ project, onDelete, onEdit }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
+  const [hovered, setHovered] = useState(false);
+
+  const title = project.title || project.Title || "Untitled";
+  const desc = project.description || project.Description || "";
+  const techStack = project.tech_stack || project.techstack || project.TechStack || [];
+  const features = project.features || project.Features || [];
+  const isPublished = project.is_published ?? true;
+  const imgSrc = project.img || project.Img || "";
+  const liveUrl = project.link || project.Link || "";
+  const githubUrl = project.github || project.Github || "";
 
   return (
-    <Card>
-      <div className="p-4 flex flex-col h-full">
-        {(project.img || project.Img) && (
-          <div className="w-full aspect-[16/8] rounded-xl mb-4 border border-white/8 overflow-hidden bg-white/5">
-            {!imgLoaded && (
-              <div className="w-full h-full animate-pulse bg-white/5" />
-            )}
+    <div
+      className="group relative flex flex-col rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] transition-all duration-500 hover:border-white/20 hover:shadow-2xl"
+      style={{ boxShadow: hovered ? "0 0 40px -10px rgba(99,102,241,0.25)" : "none" }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {/* Gradient glow on hover */}
+      <div
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl"
+        style={{ background: "radial-gradient(ellipse at top, rgba(99,102,241,0.08) 0%, transparent 70%)" }}
+      />
+
+      {/* Image */}
+      <div className="relative w-full aspect-[16/9] overflow-hidden bg-white/5 shrink-0">
+        {imgSrc ? (
+          <>
+            {!imgLoaded && <div className="absolute inset-0 animate-pulse bg-white/5" />}
             <img
-              src={project.img || project.Img}
-              alt={project.Title || project.title}
+              src={imgSrc}
+              alt={title}
               onLoad={() => setImgLoaded(true)}
-              className={`w-full h-full object-cover transition-opacity duration-300 ${imgLoaded ? "opacity-100" : "opacity-0 absolute"}`}
+              className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
             />
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a1a]/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          </>
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <ImageIcon className="w-8 h-8 text-white/10" />
           </div>
         )}
-        <h3 className="font-semibold text-white text-sm mb-1">
-          {project.Title || project.title}
-        </h3>
-        {(project.Description || project.description) && (
-          <p className="text-gray-400 text-xs mb-3 line-clamp-2 leading-relaxed">
-            {project.Description || project.description}
-          </p>
-        )}
-        {(project.TechStack || project.techstack || project.tech_stack)?.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-3">
-            {(project.TechStack || project.techstack || project.tech_stack).map((t) => (
+
+        {/* Status badge */}
+        <div className={`absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border backdrop-blur-sm ${
+          isPublished
+            ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300"
+            : "bg-amber-500/20 border-amber-500/40 text-amber-300"
+        }`}>
+          {isPublished ? <CheckCircle2 className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
+          {isPublished ? "Published" : "Draft"}
+        </div>
+
+        {/* Quick links overlay on hover */}
+        <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-300">
+          {liveUrl && (
+            <a
+              href={liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-8 h-8 rounded-lg bg-black/60 border border-white/20 text-white flex items-center justify-center hover:bg-white/20 transition-colors backdrop-blur-sm"
+              title="Live Preview"
+            >
+              <Globe className="w-3.5 h-3.5" />
+            </a>
+          )}
+          {githubUrl && (
+            <a
+              href={githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-8 h-8 rounded-lg bg-black/60 border border-white/20 text-white flex items-center justify-center hover:bg-white/20 transition-colors backdrop-blur-sm"
+              title="GitHub Repo"
+            >
+              <Github className="w-3.5 h-3.5" />
+            </a>
+          )}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex flex-col flex-1 p-4 gap-3">
+        <div>
+          <h3 className="font-semibold text-white text-sm leading-snug line-clamp-2 group-hover:text-indigo-200 transition-colors duration-300">
+            {title}
+          </h3>
+          {desc && (
+            <p className="text-gray-500 text-xs mt-1.5 line-clamp-2 leading-relaxed">
+              {desc}
+            </p>
+          )}
+        </div>
+
+        {/* Tech Stack */}
+        {techStack.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {techStack.slice(0, 4).map((t) => (
               <span
                 key={t}
-                className="px-2 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-500/25 text-indigo-300 text-xs"
+                className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300/80 text-[11px]"
               >
+                <Layers className="w-2.5 h-2.5" />
                 {t}
+              </span>
+            ))}
+            {techStack.length > 4 && (
+              <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-gray-500 text-[11px]">
+                +{techStack.length - 4} more
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Features */}
+        {features.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {features.slice(0, 3).map((f) => (
+              <span
+                key={f}
+                className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300/80 text-[11px]"
+              >
+                <Zap className="w-2.5 h-2.5" />
+                {f}
               </span>
             ))}
           </div>
         )}
-        <div className="mt-auto flex items-center justify-between gap-2 pt-2 border-t border-white/8">
-          <div className="flex gap-2">
-            {project.Link && (
+
+        {/* Actions */}
+        <div className="mt-auto pt-3 border-t border-white/8 flex items-center justify-between gap-2">
+          <div className="flex gap-1.5">
+            {liveUrl && (
               <a
-                href={project.Link}
+                href={liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-1.5 rounded-lg border border-white/10 text-gray-500 hover:text-white hover:border-white/20 transition-colors"
+                className="p-1.5 rounded-lg border border-white/8 text-gray-500 hover:text-white hover:border-white/20 transition-all hover:bg-white/5"
+                title="Open live site"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
             )}
-            {project.Github && (
+            {githubUrl && (
               <a
-                href={project.Github}
+                href={githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-1.5 rounded-lg border border-white/10 text-gray-500 hover:text-white hover:border-white/20 transition-colors"
+                className="p-1.5 rounded-lg border border-white/8 text-gray-500 hover:text-white hover:border-white/20 transition-all hover:bg-white/5"
+                title="Open GitHub"
               >
                 <Github className="w-3.5 h-3.5" />
               </a>
@@ -142,20 +246,120 @@ const ProjectCard = ({ project, onDelete, onEdit }) => {
           <div className="flex gap-2">
             <button
               onClick={() => onEdit(project)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-indigo-500/25 text-indigo-400 hover:bg-indigo-500/10 text-xs transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/25 text-indigo-300 hover:bg-indigo-500/20 hover:border-indigo-500/50 text-xs font-medium transition-all duration-200"
             >
               <Pencil className="w-3 h-3" /> Edit
             </button>
             <button
               onClick={() => onDelete(project.id)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-red-500/20 text-red-400 hover:bg-red-500/10 text-xs transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/8 border border-red-500/20 text-red-400 hover:bg-red-500/18 hover:border-red-500/40 text-xs font-medium transition-all duration-200"
             >
               <Trash2 className="w-3 h-3" /> Delete
             </button>
           </div>
         </div>
       </div>
-    </Card>
+    </div>
+  );
+};
+
+/* ── Premium Table Row (List View) ── */
+const ProjectRow = ({ project, onDelete, onEdit, index }) => {
+  const title = project.title || project.Title || "Untitled";
+  const desc = project.description || project.Description || "";
+  const techStack = project.tech_stack || project.techstack || project.TechStack || [];
+  const features = project.features || project.Features || [];
+  const isPublished = project.is_published ?? true;
+  const imgSrc = project.img || project.Img || "";
+  const liveUrl = project.link || project.Link || "";
+  const githubUrl = project.github || project.Github || "";
+
+  return (
+    <div
+      className="group flex items-center gap-4 px-4 py-3.5 rounded-xl border border-white/5 hover:border-white/15 bg-white/[0.02] hover:bg-white/[0.05] transition-all duration-300"
+      style={{ animationDelay: `${index * 50}ms` }}
+    >
+      {/* Thumbnail */}
+      <div className="relative w-20 h-14 rounded-lg overflow-hidden bg-white/5 border border-white/8 shrink-0">
+        {imgSrc ? (
+          <img src={imgSrc} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <ImageIcon className="w-5 h-5 text-white/15" />
+          </div>
+        )}
+      </div>
+
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <p className="text-sm font-semibold text-white truncate">{title}</p>
+          <span className={`shrink-0 flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border ${
+            isPublished
+              ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-300"
+              : "bg-amber-500/15 border-amber-500/30 text-amber-300"
+          }`}>
+            {isPublished ? <CheckCircle2 className="w-2.5 h-2.5" /> : <Clock className="w-2.5 h-2.5" />}
+            {isPublished ? "Published" : "Draft"}
+          </span>
+        </div>
+        {desc && <p className="text-xs text-gray-500 truncate">{desc}</p>}
+      </div>
+
+      {/* Tech Stack */}
+      <div className="hidden sm:flex flex-wrap gap-1 w-40 shrink-0">
+        {techStack.slice(0, 3).map((t) => (
+          <span key={t} className="px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300/80 text-[10px]">
+            {t}
+          </span>
+        ))}
+        {techStack.length > 3 && (
+          <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-gray-500 text-[10px]">
+            +{techStack.length - 3}
+          </span>
+        )}
+      </div>
+
+      {/* Features */}
+      <div className="hidden lg:flex flex-wrap gap-1 w-36 shrink-0">
+        {features.slice(0, 2).map((f) => (
+          <span key={f} className="px-2 py-0.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300/80 text-[10px]">
+            {f}
+          </span>
+        ))}
+        {features.length > 2 && (
+          <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-gray-500 text-[10px]">
+            +{features.length - 2}
+          </span>
+        )}
+      </div>
+
+      {/* Actions */}
+      <div className="flex items-center gap-2 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        {liveUrl && (
+          <a href={liveUrl} target="_blank" rel="noopener noreferrer"
+            className="p-1.5 rounded-lg border border-white/10 text-gray-500 hover:text-white hover:border-white/25 transition-all"
+            title="Live site">
+            <Globe className="w-3.5 h-3.5" />
+          </a>
+        )}
+        {githubUrl && (
+          <a href={githubUrl} target="_blank" rel="noopener noreferrer"
+            className="p-1.5 rounded-lg border border-white/10 text-gray-500 hover:text-white hover:border-white/25 transition-all"
+            title="GitHub">
+            <Github className="w-3.5 h-3.5" />
+          </a>
+        )}
+        <button onClick={() => onEdit(project)}
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/25 text-indigo-300 hover:bg-indigo-500/20 text-xs font-medium transition-all">
+          <Pencil className="w-3 h-3" /> Edit
+        </button>
+        <button onClick={() => onDelete(project.id)}
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-red-500/8 border border-red-500/20 text-red-400 hover:bg-red-500/18 text-xs font-medium transition-all">
+          <Trash2 className="w-3 h-3" /> Delete
+        </button>
+      </div>
+    </div>
   );
 };
 
@@ -511,40 +715,95 @@ export default function Projects() {
     fetchProjects();
   };
 
+  const [viewMode, setViewMode] = useState("grid"); // "grid" | "list"
+
+  const publishedCount = projects.filter((p) => p.is_published ?? true).length;
+  const draftCount = projects.length - publishedCount;
+
   return (
-    <div className="space-y-6z ">
-      {/* Header */}
-      <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <div className="absolute -inset-0.5 rounded-xl blur opacity-50" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
-            <div className="relative w-9 h-9 rounded-xl border border-white/15 flex items-center justify-center" style={{ backgroundColor: 'var(--color-backdrop-base)' }}>
-              <FolderGit2 className="w-4 h-4 text-indigo-400" />
+    <div className="space-y-6">
+      {/* ── Header ── */}
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        {/* Left: Icon + Title + Stats */}
+        <div className="flex items-center gap-4">
+          <div className="relative shrink-0">
+            <div
+              className="absolute -inset-1 rounded-xl blur-md opacity-60"
+              style={{ background: "linear-gradient(135deg, var(--color-primary-dark), var(--color-primary-light))" }}
+            />
+            <div
+              className="relative w-10 h-10 rounded-xl border border-white/15 flex items-center justify-center"
+              style={{ backgroundColor: "var(--color-backdrop-base)" }}
+            >
+              <FolderGit2 className="w-5 h-5 text-indigo-400" />
             </div>
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-white">
-              Projects
-            </h1>
-            <p className="text-gray-500 text-xs">
-              {loading ? "Loading..." : `${projects.length} projects total`}
-            </p>
+            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Projects</h1>
+            {!loading && (
+              <div className="flex items-center gap-2 mt-1 flex-wrap">
+                <span className="flex items-center gap-1 text-[11px] text-gray-400 bg-white/5 border border-white/8 rounded-full px-2.5 py-0.5">
+                  <Eye className="w-3 h-3" /> {projects.length} total
+                </span>
+                <span className="flex items-center gap-1 text-[11px] text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-2.5 py-0.5">
+                  <CheckCircle2 className="w-3 h-3" /> {publishedCount} published
+                </span>
+                {draftCount > 0 && (
+                  <span className="flex items-center gap-1 text-[11px] text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-full px-2.5 py-0.5">
+                    <Clock className="w-3 h-3" /> {draftCount} draft
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
-        <button
-          onClick={() => setShowCreate(true)}
-          className="relative group shrink-0"
-        >
-          <div className="absolute -inset-0.5 rounded-xl opacity-50 blur group-hover:opacity-80 transition duration-300" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
-          <div className="relative flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10" style={{ backgroundColor: 'var(--color-backdrop-base)' }}>
-            <Plus className="w-4 h-4 text-indigo-400" />
-            <span className="text-sm text-gray-200">New Project</span>
+        {/* Right: View Toggle + New Project */}
+        <div className="flex items-center gap-3 shrink-0">
+          {/* View mode toggle */}
+          <div className="flex items-center gap-0.5 p-1 rounded-xl bg-white/5 border border-white/10">
+            <button
+              onClick={() => setViewMode("grid")}
+              title="Grid view"
+              className={`p-2 rounded-lg transition-all duration-200 ${
+                viewMode === "grid"
+                  ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                  : "text-gray-500 hover:text-gray-300 border border-transparent"
+              }`}
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode("list")}
+              title="List view"
+              className={`p-2 rounded-lg transition-all duration-200 ${
+                viewMode === "list"
+                  ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                  : "text-gray-500 hover:text-gray-300 border border-transparent"
+              }`}
+            >
+              <List className="w-4 h-4" />
+            </button>
           </div>
-        </button>
+
+          {/* New Project CTA */}
+          <button onClick={() => setShowCreate(true)} className="relative group">
+            <div
+              className="absolute -inset-0.5 rounded-xl opacity-50 blur group-hover:opacity-90 transition duration-300"
+              style={{ background: "linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))" }}
+            />
+            <div
+              className="relative flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10"
+              style={{ backgroundColor: "var(--color-backdrop-base)" }}
+            >
+              <Plus className="w-4 h-4 text-indigo-400" />
+              <span className="text-sm font-medium text-gray-200">New Project</span>
+            </div>
+          </button>
+        </div>
       </div>
 
-      {/* Create Modal */}
+      {/* ── Modals ── */}
       {showCreate && (
         <Modal title="Add New Project" onClose={() => setShowCreate(false)}>
           <ProjectForm
@@ -555,8 +814,6 @@ export default function Projects() {
           />
         </Modal>
       )}
-
-      {/* Edit Modal */}
       {editProject && (
         <Modal title="Edit Project" onClose={() => setEditProject(null)}>
           <ProjectForm
@@ -569,23 +826,66 @@ export default function Projects() {
         </Modal>
       )}
 
-      {/* Projects Grid */}
+      {/* ── Content ── */}
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <SkeletonCard key={i} />
-          ))}
-        </div>
-      ) : projects.length === 0 ? (
-        <Card>
-          <div className="p-16 text-center">
-            <FolderGit2 className="w-10 h-10 text-gray-700 mx-auto mb-3" />
-            <p className="text-gray-500 text-sm">
-              No projects yet. Create your first one!
-            </p>
+        /* Skeleton */
+        viewMode === "grid" ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
           </div>
-        </Card>
-      ) : (
+        ) : (
+          <div className="space-y-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-4 px-4 py-3.5 rounded-xl border border-white/5 bg-white/[0.02]">
+                <div className="w-20 h-14 rounded-lg bg-white/5 animate-pulse shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-white/5 animate-pulse rounded-lg w-1/3" />
+                  <div className="h-3 bg-white/5 animate-pulse rounded-lg w-1/2" />
+                </div>
+                <div className="hidden sm:flex gap-1 w-40">
+                  <div className="h-5 w-16 bg-white/5 animate-pulse rounded-full" />
+                  <div className="h-5 w-14 bg-white/5 animate-pulse rounded-full" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )
+      ) : projects.length === 0 ? (
+        /* Empty state */
+        <div className="relative rounded-2xl border border-white/8 border-dashed overflow-hidden">
+          <div
+            className="absolute inset-0 opacity-30"
+            style={{ background: "radial-gradient(ellipse at center, rgba(99,102,241,0.08) 0%, transparent 70%)" }}
+          />
+          <div className="relative py-24 flex flex-col items-center gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+              <FolderGit2 className="w-7 h-7 text-gray-600" />
+            </div>
+            <div className="text-center">
+              <p className="text-gray-300 font-medium text-sm">No projects yet</p>
+              <p className="text-gray-600 text-xs mt-1">Add your first project to showcase your work</p>
+            </div>
+            <button
+              onClick={() => setShowCreate(true)}
+              className="relative group mt-2"
+            >
+              <div
+                className="absolute -inset-0.5 rounded-xl opacity-50 blur group-hover:opacity-90 transition duration-300"
+                style={{ background: "linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))" }}
+              />
+              <div
+                className="relative flex items-center gap-2 px-5 py-2.5 rounded-xl border border-white/10 text-sm font-medium text-gray-200"
+                style={{ backgroundColor: "var(--color-backdrop-base)" }}
+              >
+                <Plus className="w-4 h-4 text-indigo-400" /> Create First Project
+              </div>
+            </button>
+          </div>
+        </div>
+      ) : viewMode === "grid" ? (
+        /* Grid view */
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {projects.map((project) => (
             <ProjectCard
@@ -595,6 +895,30 @@ export default function Projects() {
               onEdit={setEditProject}
             />
           ))}
+        </div>
+      ) : (
+        /* List view */
+        <div className="rounded-2xl border border-white/8 overflow-hidden">
+          {/* Table header */}
+          <div className="flex items-center gap-4 px-4 py-2.5 bg-white/[0.03] border-b border-white/8">
+            <div className="w-20 shrink-0" />
+            <div className="flex-1 text-[11px] font-semibold uppercase tracking-wider text-gray-500">Project</div>
+            <div className="hidden sm:block w-40 shrink-0 text-[11px] font-semibold uppercase tracking-wider text-gray-500">Tech Stack</div>
+            <div className="hidden lg:block w-36 shrink-0 text-[11px] font-semibold uppercase tracking-wider text-gray-500">Features</div>
+            <div className="w-36 shrink-0" />
+          </div>
+          {/* Rows */}
+          <div className="p-2 space-y-1">
+            {projects.map((project, i) => (
+              <ProjectRow
+                key={project.id}
+                project={project}
+                onDelete={deleteProject}
+                onEdit={setEditProject}
+                index={i}
+              />
+            ))}
+          </div>
         </div>
       )}
 

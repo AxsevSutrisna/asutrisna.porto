@@ -117,7 +117,7 @@ const StatCard = memo(({ icon: Icon, color, value, label, description, animation
       href={href}
     >
       <div className="relative z-10 bg-gray-900/50 backdrop-blur-lg rounded-2xl p-6 border border-white/10 overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl h-full flex flex-col justify-between">
-        <div className={`absolute -z-10 inset-0 bg-gradient-to-br ${color} opacity-10 group-hover:opacity-20 transition-opacity duration-300`}></div>
+        <div className="absolute -z-10 inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-300" style={{ background: 'linear-gradient(to bottom right, var(--color-primary-dark), var(--color-primary-light))' }}></div>
 
         <div className="flex items-center justify-between mb-4">
           <div className="w-16 h-16 rounded-full flex items-center justify-center bg-white/10 transition-transform group-hover:rotate-6">
@@ -337,7 +337,6 @@ const AboutPage = () => {
   const statsData = useMemo(() => [
     {
       icon: Code,
-      color: "from-[#6366f1] to-[#a855f7]",
       value: totalProjects,
       label: "Total Projects",
       description: "Innovative web solutions crafted",
@@ -346,7 +345,6 @@ const AboutPage = () => {
     },
     {
       icon: Award,
-      color: "from-[#a855f7] to-[#6366f1]",
       value: totalCertificates,
       label: "Certificates",
       description: "Professional skills validated",
@@ -355,7 +353,6 @@ const AboutPage = () => {
     },
     {
       icon: Globe,
-      color: "from-[#6366f1] to-[#a855f7]",
       value: YearExperienceDecimal,
       label: "Years of Experience",
       description: YearExperienceLabel || "Continuous learning journey",
@@ -382,7 +379,7 @@ const AboutPage = () => {
               data-aos="fade-right"
               data-aos-duration="1000"
             >
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6366f1] to-[#a855f7]">
+              <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))', WebkitBackgroundClip: 'text', backgroundClip: 'text' }}>
                 Hello, I&apos;m
               </span>
               <span
@@ -406,16 +403,20 @@ const AboutPage = () => {
 
             {/* Quote Section */}
             <div
-              className="relative bg-gradient-to-br from-[#6366f1]/5 via-transparent to-[#a855f7]/5 border border-gradient-to-r border-[#6366f1]/30 rounded-2xl p-4 my-6 backdrop-blur-md shadow-2xl overflow-hidden"
+              className="relative border rounded-2xl p-4 my-6 backdrop-blur-md shadow-2xl overflow-hidden"
+              style={{
+                background: 'linear-gradient(135deg, rgba(var(--color-primary-dark-rgb),0.05) 0%, transparent 50%, rgba(var(--color-primary-light-rgb),0.05) 100%)',
+                borderColor: 'rgba(var(--color-primary-dark-rgb),0.3)'
+              }}
               data-aos="fade-up"
               data-aos-duration="1700"
             >
               {/* Floating orbs background */}
-              <div className="absolute top-2 right-4 w-16 h-16 bg-gradient-to-r from-[#6366f1]/20 to-[#a855f7]/20 rounded-full blur-xl"></div>
-              <div className="absolute -bottom-4 -left-2 w-12 h-12 bg-gradient-to-r from-[#a855f7]/20 to-[#6366f1]/20 rounded-full blur-lg"></div>
+              <div className="absolute top-2 right-4 w-16 h-16 rounded-full blur-xl" style={{ background: 'linear-gradient(90deg, rgba(var(--color-primary-dark-rgb),0.2), rgba(var(--color-primary-light-rgb),0.2))' }}></div>
+              <div className="absolute -bottom-4 -left-2 w-12 h-12 rounded-full blur-lg" style={{ background: 'linear-gradient(90deg, rgba(var(--color-primary-light-rgb),0.2), rgba(var(--color-primary-dark-rgb),0.2))' }}></div>
 
               {/* Quote icon */}
-              <div className="absolute top-3 left-4 text-[#6366f1] opacity-30">
+              <div className="absolute top-3 left-4 opacity-30" style={{ color: 'var(--color-primary-dark)' }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z" />
                 </svg>

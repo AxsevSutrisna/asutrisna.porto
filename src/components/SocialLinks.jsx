@@ -107,7 +107,7 @@ const SocialLinks = () => {
       icon: ICONS[iconKey] || ICONS[fallback.icon] || ExternalLink,
       url: item.url || fallback.url || '#',
       color: item.color || fallback.color || '#9ca3af',
-      gradient: item.gradient || fallback.gradient || 'from-[#6366f1] to-[#a855f7]',
+      gradient: item.gradient || fallback.gradient || 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))',
       isPrimary: Boolean(item.is_primary),
     };
   };

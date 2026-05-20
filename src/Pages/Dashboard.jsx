@@ -39,8 +39,8 @@ export default function Dashboard() {
       {/* Logo */}
       <div className="flex items-center gap-3 px-1 shrink-0">
         <div className="relative">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-[#6366f1] to-[#a855f7] rounded-xl blur opacity-50" />
-          <div className="relative w-9 h-9 bg-[#030014] rounded-xl border border-white/15 flex items-center justify-center">
+          <div className="absolute -inset-0.5 rounded-xl blur opacity-50" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
+          <div className="relative w-9 h-9 rounded-xl border border-white/15 flex items-center justify-center" style={{ backgroundColor: 'var(--color-backdrop-base)' }}>
             <LayoutDashboard className="w-4 h-4 text-indigo-400" />
           </div>
         </div>

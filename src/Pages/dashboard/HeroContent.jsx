@@ -360,8 +360,8 @@ export default function HeroContentDashboard() {
             <div className="flex items-center justify-between gap-4 flex-wrap">
                 <div className="flex items-center gap-3">
                     <div className="relative">
-                        <div className="absolute -inset-0.5 bg-gradient-to-r from-[#6366f1] to-[#a855f7] rounded-xl blur opacity-50" />
-                        <div className="relative w-9 h-9 bg-[#030014] rounded-xl border border-white/15 flex items-center justify-center">
+                        <div className="absolute -inset-0.5 rounded-xl blur opacity-50" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
+                        <div className="relative w-9 h-9 rounded-xl border border-white/15 flex items-center justify-center" style={{ backgroundColor: 'var(--color-backdrop-base)' }}>
                             <Paintbrush className="w-4 h-4 text-indigo-400" />
                         </div>
                     </div>
@@ -593,8 +593,8 @@ export default function HeroContentDashboard() {
                             {isAtBottom ? (
                                 <div className="p-2 bg-transparent">
                                     <div className="relative">
-                                        <div className="absolute -inset-0.5 bg-gradient-to-r from-[#4f52c9] to-[#8644c5] rounded-t-lg opacity-60 blur" />
-                                        <div className="relative bg-[#030014] rounded-t-lg border-t border-white/10 px-6 py-4 flex items-center justify-center">
+                                        <div className="absolute -inset-0.5 rounded-t-lg opacity-60 blur" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
+                                        <div className="relative rounded-t-lg border-t border-white/10 px-6 py-4 flex items-center justify-center" style={{ backgroundColor: 'var(--color-backdrop-base)' }}>
                                             <button
                                                 onClick={handleSave}
                                                 disabled={uploading}
@@ -624,7 +624,7 @@ export default function HeroContentDashboard() {
                                         className="relative group rounded-full px-3 py-2 shadow-lg text-sm transition-all duration-200 hover:shadow-xl hover:shadow-indigo-500/30 active:scale-95"
                                         style={{ minHeight: 40 }}
                                     >
-                                        <div className="absolute -inset-0.5 bg-gradient-to-r from-[#4f52c9] to-[#8644c5] rounded-full opacity-60 blur group-hover:opacity-100 group-hover:shadow-lg transition duration-300" />
+                                        <div className="absolute -inset-0.5 rounded-full opacity-60 blur group-hover:opacity-100 group-hover:shadow-lg transition duration-300" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
                                         <div className="relative flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500/5 to-purple-500/5 rounded-full border border-white/10 text-gray-200 font-medium px-3 py-1.5 transition-all duration-300 group-hover:border-indigo-500/50 group-hover:from-indigo-500/30 group-hover:to-purple-500/30">
                                             {uploading ? (
                                                 <>

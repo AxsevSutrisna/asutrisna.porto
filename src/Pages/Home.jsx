@@ -329,9 +329,9 @@ const Home = () => {
                   {/* Status Badge - Dynamic */}
                   <div className="inline-block animate-float lg:mx-0" data-aos="zoom-in" data-aos-delay="400">
                     <div className="relative group">
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-[#6366f1] to-[#a855f7] rounded-full blur opacity-30 group-hover:opacity-50 transition duration-1000"></div>
+                      <div className="absolute -inset-0.5 rounded-full blur opacity-30 group-hover:opacity-50 transition duration-1000" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }}></div>
                       <div className="relative px-3 sm:px-4 py-2 rounded-full bg-black/40 backdrop-blur-xl border border-white/10">
-                        <span className="bg-gradient-to-r from-[#6366f1] to-[#a855f7] text-transparent bg-clip-text sm:text-sm text-[0.7rem] font-medium flex items-center">
+                        <span className="text-transparent bg-clip-text sm:text-sm text-[0.7rem] font-medium flex items-center" style={{ backgroundImage: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))', WebkitBackgroundClip: 'text', backgroundClip: 'text' }}>
                           <Sparkles className="sm:w-4 sm:h-4 w-3 h-3 mr-2 text-blue-400" />
                           {heroData.badge_text}
                         </span>
@@ -343,15 +343,15 @@ const Home = () => {
                   <div className="space-y-2" data-aos="fade-up" data-aos-delay="600">
                     <h1 className="text-5xl sm:text-6xl md:text-6xl lg:text-6xl xl:text-7xl font-bold tracking-tight">
                       <span className="relative inline-block">
-                        <span className="absolute -inset-2 bg-gradient-to-r from-[#6366f1] to-[#a855f7] blur-2xl opacity-20"></span>
-                        <span className="relative bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent">
+                        <span className="absolute -inset-2 blur-2xl opacity-20" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }}></span>
+                        <span className="relative bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(90deg, var(--color-text-primary), var(--color-text-secondary))', WebkitBackgroundClip: 'text', backgroundClip: 'text' }}>
                           {heroData.title_line_1}
                         </span>
                       </span>
                       <br />
                       <span className="relative inline-block mt-2">
-                        <span className="absolute -inset-2 bg-gradient-to-r from-[#6366f1] to-[#a855f7] blur-2xl opacity-20"></span>
-                        <span className="relative bg-gradient-to-r from-[#6366f1] to-[#a855f7] bg-clip-text text-transparent">
+                        <span className="absolute -inset-2 blur-2xl opacity-20" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }}></span>
+                        <span className="relative bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))', WebkitBackgroundClip: 'text', backgroundClip: 'text' }}>
                           {heroData.title_line_2}
                         </span>
                       </span>

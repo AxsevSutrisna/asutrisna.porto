@@ -16,7 +16,7 @@ const PAGE_SIZE = 10;
 
 const Card = ({ children, className = "" }) => (
   <div className={`relative group ${className}`}>
-    <div className="absolute -inset-0.5 bg-gradient-to-r from-[#6366f1] to-[#a855f7] rounded-2xl blur opacity-10 group-hover:opacity-20 transition duration-500 pointer-events-none" />
+    <div className="absolute -inset-0.5 rounded-2xl blur opacity-10 group-hover:opacity-20 transition duration-500 pointer-events-none" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
     <div className="relative bg-white/5 backdrop-blur-xl border border-white/12 rounded-2xl h-full">
       {children}
     </div>
@@ -100,8 +100,8 @@ export default function Comments() {
       <div className="flex items-start sm:items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-[#6366f1] to-[#a855f7] rounded-xl blur opacity-50 pointer-events-none" />
-            <div className="relative w-9 h-9 bg-[#030014] rounded-xl border border-white/15 flex items-center justify-center">
+            <div className="absolute -inset-0.5 rounded-xl blur opacity-50 pointer-events-none" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
+            <div className="relative w-9 h-9 rounded-xl border border-white/15 flex items-center justify-center" style={{ backgroundColor: 'var(--color-backdrop-base)' }}>
               <MessageSquare className="w-4 h-4 text-indigo-400" />
             </div>
           </div>
@@ -125,15 +125,15 @@ export default function Comments() {
               key={tab.value}
               onClick={() => setFilter(tab.value)}
               className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm transition-all duration-200 ${filter === tab.value
-                  ? "bg-gradient-to-r from-indigo-500/25 to-purple-500/20 border border-indigo-500/35 text-white font-medium"
-                  : "text-gray-500 hover:text-gray-300"
+                ? "bg-gradient-to-r from-indigo-500/25 to-purple-500/20 border border-indigo-500/35 text-white font-medium"
+                : "text-gray-500 hover:text-gray-300"
                 }`}
             >
               {tab.label}
               <span
                 className={`px-1.5 py-0.5 rounded-full text-xs ${filter === tab.value
-                    ? "bg-indigo-500/25 text-indigo-300"
-                    : "bg-white/8 text-gray-500"
+                  ? "bg-indigo-500/25 text-indigo-300"
+                  : "bg-white/8 text-gray-500"
                   }`}
               >
                 {tab.count}
@@ -215,12 +215,12 @@ export default function Comments() {
           {paginated.map((comment) => (
             <div key={comment.id} className="relative group">
               {comment.is_pinned && (
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-[#6366f1] to-[#a855f7] rounded-2xl blur opacity-15 pointer-events-none" />
+                <div className="absolute -inset-0.5 rounded-2xl blur opacity-15 pointer-events-none" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
               )}
               <div
                 className={`relative bg-white/5 backdrop-blur-xl border rounded-2xl px-4 py-4 sm:px-5 transition-all duration-200 ${comment.is_pinned
-                    ? "border-indigo-500/30"
-                    : "border-white/10 hover:border-white/18"
+                  ? "border-indigo-500/30"
+                  : "border-white/10 hover:border-white/18"
                   }`}
               >
                 <div className="flex items-start gap-3 sm:gap-4">
@@ -264,8 +264,8 @@ export default function Comments() {
                       onClick={() => pin(comment.id, !comment.is_pinned)}
                       title={comment.is_pinned ? "Unpin" : "Pin"}
                       className={`p-2 rounded-lg border transition-all duration-200 ${comment.is_pinned
-                          ? "border-indigo-500/30 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20"
-                          : "border-white/10 text-gray-500 hover:text-indigo-400 hover:border-indigo-500/25"
+                        ? "border-indigo-500/30 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20"
+                        : "border-white/10 text-gray-500 hover:text-indigo-400 hover:border-indigo-500/25"
                         }`}
                     >
                       {comment.is_pinned ? (
@@ -327,8 +327,8 @@ export default function Comments() {
                     key={p}
                     onClick={() => setPage(p)}
                     className={`min-w-[32px] h-8 px-2 rounded-lg text-xs border transition-all duration-200 ${page === p
-                        ? "bg-indigo-500/20 border-indigo-500/40 text-indigo-300 font-medium"
-                        : "border-white/10 text-gray-400 hover:text-white hover:border-white/20"
+                      ? "bg-indigo-500/20 border-indigo-500/40 text-indigo-300 font-medium"
+                      : "border-white/10 text-gray-400 hover:text-white hover:border-white/20"
                       }`}
                   >
                     {p}

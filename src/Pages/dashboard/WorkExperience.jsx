@@ -261,7 +261,7 @@ export default function WorkExperience() {
                             key={exp.id}
                             className="relative group"
                         >
-                            <div className="absolute -inset-0.5 bg-gradient-to-r from-[#6366f1] to-[#a855f7] rounded-2xl blur opacity-10 group-hover:opacity-25 transition duration-500" />
+                            <div className="absolute -inset-0.5 rounded-2xl blur opacity-10 group-hover:opacity-25 transition duration-500" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
 
                             <article className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-5 sm:p-6 shadow-[0_10px_40px_rgba(0,0,0,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:border-white/15 hover:bg-white/10">
                                 <div className="absolute right-0 top-0 h-full w-px bg-gradient-to-b from-white/0 via-white/15 to-white/0" />

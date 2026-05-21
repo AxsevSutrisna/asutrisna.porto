@@ -35,11 +35,12 @@ const ToggleButton = ({ onClick, isShowingMore }) => (
       gap-2
       bg-white/5 
       hover:bg-white/10
-      rounded-md
+      rounded-xl
       border 
-      border-white/10
-      hover:border-white/20
-      backdrop-blur-sm
+      border-white/15
+      hover:border-white/30
+      backdrop-blur-xl
+      shadow-xl
       group
       relative
       overflow-hidden
@@ -242,8 +243,8 @@ export default function FullWidthTabs() {
               left: 0,
               right: 0,
               bottom: 0,
-              background: "linear-gradient(180deg, rgba(139, 92, 246, 0.03) 0%, rgba(59, 130, 246, 0.03) 100%)",
-              backdropFilter: "blur(10px)",
+              background: "rgba(255, 255, 255, 0.03)",
+              backdropFilter: "blur(20px)",
               zIndex: 0,
             },
           }}
@@ -270,7 +271,7 @@ export default function FullWidthTabs() {
                 borderRadius: "12px",
                 "&:hover": {
                   color: "#ffffff",
-                  backgroundColor: "rgba(139, 92, 246, 0.1)",
+                  backgroundColor: "rgba(255, 255, 255, 0.05)",
                   transform: "translateY(-2px)",
                   "& .lucide": {
                     transform: "scale(1.1) rotate(5deg)",
@@ -278,8 +279,9 @@ export default function FullWidthTabs() {
                 },
                 "&.Mui-selected": {
                   color: "#fff",
-                  background: "linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2))",
-                  boxShadow: "0 4px 15px -3px rgba(139, 92, 246, 0.2)",
+                  background: "rgba(255, 255, 255, 0.1)",
+                  boxShadow: "0 4px 15px -3px rgba(0, 0, 0, 0.1)",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
                   "& .lucide": {
                     color: "#a78bfa",
                   },

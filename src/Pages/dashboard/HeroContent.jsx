@@ -38,7 +38,7 @@ const InputField = ({ label, value, onChange, placeholder, type = 'text', requir
             onChange={onChange}
             placeholder={placeholder}
             required={required}
-            className="w-full bg-[#0d0d22] border border-white/10 rounded-lg px-4 py-3 text-gray-200 placeholder-gray-600 text-sm outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/20 transition-all"
+            className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-gray-200 placeholder-gray-500 text-sm outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/20 transition-all"
         />
         {hint && <p className="text-[11px] text-gray-500">{hint}</p>}
     </div>
@@ -53,7 +53,7 @@ const TextAreaField = ({ label, value, onChange, placeholder, rows = 4, required
             placeholder={placeholder}
             rows={rows}
             required={required}
-            className="w-full bg-[#0d0d22] border border-white/10 rounded-lg px-4 py-3 text-gray-200 placeholder-gray-600 text-sm outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/20 transition-all resize-none"
+            className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-gray-200 placeholder-gray-500 text-sm outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/20 transition-all resize-none"
         />
         {hint && <p className="text-[11px] text-gray-500">{hint}</p>}
     </div>
@@ -85,7 +85,7 @@ const TagInput = ({ label, value, onChange, placeholder, hint }) => {
     return (
         <div className="space-y-1.5">
             <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">{label}</label>
-            <div className="rounded-lg border border-white/10 bg-[#0d0d22] px-3 py-3 space-y-3">
+            <div className="rounded-lg border border-white/10 bg-black/20 px-3 py-3 space-y-3">
                 <div className="flex flex-wrap gap-2 min-h-[38px] items-center">
                     {items.length > 0 ? items.map((item) => (
                         <span
@@ -396,7 +396,7 @@ export default function HeroContentDashboard() {
                     {/* Badge & Titles */}
                     <div className="relative group/card">
                         <div className="absolute -inset-0.5 rounded-2xl blur opacity-10 group-hover/card:opacity-20 transition duration-500" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
-                        <div className="relative bg-[#0a0a1a] border border-white/12 rounded-2xl p-6 space-y-5">
+                        <div className="relative bg-white/5 backdrop-blur-xl border border-white/12 rounded-2xl p-6 space-y-5">
                             <div className="flex items-center gap-2 mb-2 pb-3 border-b border-white/5">
                                 <Type className="w-4 h-4 text-indigo-400" />
                                 <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Main Content</h2>
@@ -416,7 +416,7 @@ export default function HeroContentDashboard() {
                     {/* Typing Words & Tech Badges */}
                     <div className="relative group/card">
                         <div className="absolute -inset-0.5 rounded-2xl blur opacity-10 group-hover/card:opacity-20 transition duration-500" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
-                        <div className="relative bg-[#0a0a1a] border border-white/12 rounded-2xl p-6 space-y-5">
+                        <div className="relative bg-white/5 backdrop-blur-xl border border-white/12 rounded-2xl p-6 space-y-5">
                             <div className="flex items-center gap-2 mb-2 pb-3 border-b border-white/5">
                                 <Sparkles className="w-4 h-4 text-indigo-400" />
                                 <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Dynamic Elements</h2>
@@ -443,7 +443,7 @@ export default function HeroContentDashboard() {
                     {/* Call-to-Action Buttons */}
                     <div className="relative group/card">
                         <div className="absolute -inset-0.5 rounded-2xl blur opacity-10 group-hover/card:opacity-20 transition duration-500" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
-                        <div className="relative bg-[#0a0a1a] border border-white/12 rounded-2xl p-6 space-y-5">
+                        <div className="relative bg-white/5 backdrop-blur-xl border border-white/12 rounded-2xl p-6 space-y-5">
                             <div className="flex items-center justify-between mb-2 pb-3 border-b border-white/5">
                                 <div className="flex items-center gap-2">
                                     <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Call-to-Action Buttons</h2>
@@ -465,7 +465,7 @@ export default function HeroContentDashboard() {
                             {form.cta_buttons && form.cta_buttons.length > 0 ? (
                                 <div className="space-y-4">
                                     {form.cta_buttons.map((cta, idx) => (
-                                        <div key={idx} className="relative group/item p-5 rounded-xl bg-[#0d0d22] border border-white/5 space-y-4 hover:border-white/10 transition-colors">
+                                        <div key={idx} className="relative group/item p-5 rounded-xl bg-black/20 border border-white/5 space-y-4 hover:border-white/10 transition-colors">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-2">
                                                     <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white/5 text-[10px] text-gray-400 font-medium">
@@ -517,7 +517,7 @@ export default function HeroContentDashboard() {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="p-8 rounded-xl bg-[#0d0d22] border border-dashed border-white/10 text-center flex flex-col items-center justify-center gap-2">
+                                <div className="p-8 rounded-xl bg-black/20 border border-dashed border-white/10 text-center flex flex-col items-center justify-center gap-2">
                                     <p className="text-gray-500 text-sm">No CTA buttons defined.</p>
                                     <p className="text-gray-600 text-xs">Click the + Add CTA button to create one.</p>
                                 </div>
@@ -528,7 +528,7 @@ export default function HeroContentDashboard() {
                     {/* Image & Styling */}
                     <div className="relative group/card">
                         <div className="absolute -inset-0.5 rounded-2xl blur opacity-10 group-hover/card:opacity-20 transition duration-500" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
-                        <div className="relative bg-[#0a0a1a] border border-white/12 rounded-2xl p-6 space-y-5">
+                        <div className="relative bg-white/5 backdrop-blur-xl border border-white/12 rounded-2xl p-6 space-y-5">
                             <div className="flex items-center gap-2 mb-2 pb-3 border-b border-white/5">
                                 <Paintbrush className="w-4 h-4 text-indigo-400" />
                                 <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Visual Settings</h2>
@@ -536,7 +536,7 @@ export default function HeroContentDashboard() {
 
                             <div>
                                 <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium mb-2 block">Hero Image</label>
-                                <label className="flex items-center gap-4 w-full bg-[#0d0d22] border border-dashed border-white/15 rounded-xl px-4 py-6 cursor-pointer hover:border-indigo-500/40 hover:bg-white/4 transition-all">
+                                <label className="flex items-center gap-4 w-full bg-black/20 border border-dashed border-white/15 rounded-xl px-4 py-6 cursor-pointer hover:border-indigo-500/40 hover:bg-black/40 transition-all">
                                     {imagePreview ? (
                                         <img
                                             src={imagePreview}
@@ -561,7 +561,7 @@ export default function HeroContentDashboard() {
                             <div className="grid grid-cols-2 gap-4 pt-2">
                                 <div className="space-y-1.5">
                                     <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">Accent Start</label>
-                                    <div className="flex items-center gap-3 bg-[#0d0d22] border border-white/10 rounded-xl p-2 focus-within:border-indigo-500/60 transition-colors">
+                                    <div className="flex items-center gap-3 bg-black/20 border border-white/10 rounded-xl p-2 focus-within:border-indigo-500/60 transition-colors">
                                         <input
                                             type="color"
                                             value={form.accent_from}
@@ -579,7 +579,7 @@ export default function HeroContentDashboard() {
 
                                 <div className="space-y-1.5">
                                     <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">Accent End</label>
-                                    <div className="flex items-center gap-3 bg-[#0d0d22] border border-white/10 rounded-xl p-2 focus-within:border-indigo-500/60 transition-colors">
+                                    <div className="flex items-center gap-3 bg-black/20 border border-white/10 rounded-xl p-2 focus-within:border-indigo-500/60 transition-colors">
                                         <input
                                             type="color"
                                             value={form.accent_to}
@@ -627,12 +627,12 @@ export default function HeroContentDashboard() {
 
                 {/* Live Preview Section */}
                 <div className="lg:col-span-1">
-                    <div className="sticky top-6 rounded-lg border border-white/10 bg-[#0a0a1a] p-6 space-y-4">
+                    <div className="sticky top-6 rounded-2xl border border-white/12 bg-white/5 backdrop-blur-xl p-6 space-y-4">
                         <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Live Preview</h2>
 
                         <div className="rounded-lg overflow-hidden border border-white/10 bg-gradient-to-b from-[#030014] to-[#0a0a1a]">
                             {/* Image Preview */}
-                            <div className="aspect-square bg-[#0d0d22] flex items-center justify-center overflow-hidden">
+                            <div className="aspect-square bg-black/40 flex items-center justify-center overflow-hidden">
                                 {imagePreview ? (
                                     <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
                                 ) : (

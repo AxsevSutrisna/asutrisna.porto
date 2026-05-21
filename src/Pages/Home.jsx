@@ -6,7 +6,8 @@ import 'aos/dist/aos.css'
 import { supabase } from '../supabase'
 
 const TechStack = memo(({ tech }) => (
-  <div className="px-4 py-2 hidden sm:block rounded-full bg-white/5 backdrop-blur-sm border border-white/10 text-sm text-gray-300 hover:bg-white/10 transition-colors">
+  <div className="px-4 py-2 hidden sm:flex items-center gap-2 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-sm text-gray-300 hover:bg-white/10 hover:border-white/20 transition-all shadow-lg hover:shadow-indigo-500/10">
+    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
     {tech}
   </div>
 ));
@@ -15,14 +16,14 @@ TechStack.displayName = 'TechStack';
 const CTAButton = memo(({ href, text, icon: Icon }) => (
   <a href={href}>
     <button className="group relative w-[160px]">
-      <div className="absolute -inset-0.5 rounded-xl opacity-50 blur-md group-hover:opacity-90 transition-all duration-700" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }}></div>
-      <div className="relative h-11 backdrop-blur-xl rounded-lg border border-white/10 leading-none overflow-hidden" style={{ backgroundColor: 'var(--color-backdrop-base)' }}>
-        <div className="absolute inset-0 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500" style={{ background: 'linear-gradient(90deg, rgba(var(--color-primary-dark-rgb),0.12), rgba(var(--color-primary-light-rgb),0.12))' }}></div>
+      <div className="absolute -inset-0.5 rounded-xl opacity-40 blur-lg group-hover:opacity-80 transition-all duration-500" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }}></div>
+      <div className="relative h-11 bg-white/5 backdrop-blur-xl rounded-xl border border-white/15 leading-none overflow-hidden hover:bg-white/10 hover:border-white/30 transition-all duration-300 shadow-xl">
+        <div className="absolute inset-0 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500" style={{ background: 'linear-gradient(90deg, rgba(var(--color-primary-dark-rgb),0.15), rgba(var(--color-primary-light-rgb),0.15))' }}></div>
         <span className="absolute inset-0 flex items-center justify-center gap-2 text-sm group-hover:gap-3 transition-all duration-300">
-          <span className="bg-gradient-to-r from-gray-200 to-white bg-clip-text text-transparent font-medium z-10">
+          <span className="text-white font-medium z-10">
             {text}
           </span>
-          <Icon className={`w-4 h-4 text-gray-200 ${text === 'Contact' ? 'group-hover:translate-x-1' : 'group-hover:rotate-45'} transform transition-all duration-300 z-10`} />
+          <Icon className={`w-4 h-4 text-indigo-300 ${text === 'Contact' ? 'group-hover:translate-x-1' : 'group-hover:rotate-45'} transform transition-all duration-300 z-10`} />
         </span>
       </div>
     </button>
@@ -34,9 +35,9 @@ const SocialLink = memo(({ icon: Icon, link, label }) => (
   <a href={link} target="_blank" rel="noopener noreferrer" aria-label={label}>
     <button className="group relative p-3"
       aria-label={label}>
-      <div className="absolute inset-0 rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-300" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }}></div>
-      <div className="relative rounded-xl bg-black/50 backdrop-blur-xl p-2 flex items-center justify-center border border-white/10 group-hover:border-white/20 transition-all duration-300">
-        <Icon className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
+      <div className="absolute -inset-0.5 rounded-xl blur opacity-20 group-hover:opacity-60 transition duration-300" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }}></div>
+      <div className="relative rounded-xl bg-white/5 backdrop-blur-xl p-3 flex items-center justify-center border border-white/15 group-hover:border-white/30 group-hover:bg-white/10 transition-all duration-300 shadow-xl group-hover:scale-110">
+        <Icon className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors" />
       </div>
     </button>
   </a>
@@ -329,10 +330,10 @@ const Home = () => {
                   {/* Status Badge - Dynamic */}
                   <div className="inline-block animate-float lg:mx-0" data-aos="zoom-in" data-aos-delay="400">
                     <div className="relative group">
-                      <div className="absolute -inset-0.5 rounded-full blur opacity-30 group-hover:opacity-50 transition duration-1000" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }}></div>
-                      <div className="relative px-3 sm:px-4 py-2 rounded-full bg-black/40 backdrop-blur-xl border border-white/10">
-                        <span className="text-transparent bg-clip-text sm:text-sm text-[0.7rem] font-medium flex items-center" style={{ backgroundImage: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))', WebkitBackgroundClip: 'text', backgroundClip: 'text' }}>
-                          <Sparkles className="sm:w-4 sm:h-4 w-3 h-3 mr-2 text-blue-400" />
+                      <div className="absolute -inset-0.5 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-1000" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }}></div>
+                      <div className="relative px-4 sm:px-5 py-2.5 rounded-full bg-white/5 backdrop-blur-xl border border-white/15 shadow-xl hover:bg-white/10 transition-all">
+                        <span className="text-transparent bg-clip-text sm:text-sm text-xs font-semibold flex items-center" style={{ backgroundImage: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))', WebkitBackgroundClip: 'text', backgroundClip: 'text' }}>
+                          <Sparkles className="sm:w-4 sm:h-4 w-3.5 h-3.5 mr-2 text-indigo-400" />
                           {heroData.badge_text}
                         </span>
                       </div>

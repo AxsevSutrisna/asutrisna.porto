@@ -32,8 +32,8 @@ const ExperienceCard = ({ experience }) => {
 
     return (
         <div className="relative group">
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-theme-primary-dark to-theme-primary-light rounded-2xl blur opacity-10 group-hover:opacity-20 transition duration-500" />
-            <article className="relative h-full rounded-2xl border border-white/10 bg-[#090918]/80 backdrop-blur-xl p-5 sm:p-6 overflow-hidden">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-theme-primary-dark to-theme-primary-light rounded-2xl blur opacity-10 group-hover:opacity-30 transition duration-500" />
+            <article className="relative h-full rounded-2xl border border-white/15 bg-white/5 backdrop-blur-xl p-5 sm:p-6 overflow-hidden group-hover:bg-white/10 group-hover:border-white/30 transition-all duration-500 shadow-xl">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                     <div className="space-y-3 min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
@@ -57,7 +57,7 @@ const ExperienceCard = ({ experience }) => {
                     </div>
 
                     <div className="flex flex-col items-start sm:items-end gap-2 shrink-0">
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-300 text-xs">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-gray-300 text-xs hover:bg-white/10 transition-colors shadow-sm">
                             <CalendarDays className="w-3.5 h-3.5 text-theme-primary-light" />
                             {formatDateRange(
                                 experience.start_month,
@@ -69,7 +69,7 @@ const ExperienceCard = ({ experience }) => {
                         </div>
 
                         {experience.location && (
-                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-400 text-xs">
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-gray-400 text-xs hover:bg-white/10 transition-colors shadow-sm">
                                 <MapPin className="w-3.5 h-3.5 text-theme-primary-light" />
                                 {experience.location}
                             </div>
@@ -88,7 +88,7 @@ const ExperienceCard = ({ experience }) => {
                         {techStack.map((tech) => (
                             <span
                                 key={tech}
-                                className="px-3 py-1.5 rounded-full bg-indigo-500/15 border border-indigo-500/20 text-indigo-200 text-xs"
+                                className="px-3 py-1.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-gray-300 text-xs hover:bg-white/10 hover:border-white/20 transition-colors shadow-sm"
                             >
                                 {tech}
                             </span>

@@ -116,11 +116,11 @@ const StatCard = memo(({ icon: Icon, color, value, label, description, animation
       className="relative group block h-full"
       href={href}
     >
-      <div className="relative z-10 bg-gray-900/50 backdrop-blur-lg rounded-2xl p-6 border border-white/10 overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl h-full flex flex-col justify-between">
+      <div className="relative z-10 bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/15 overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:bg-white/10 hover:border-white/30 h-full flex flex-col justify-between shadow-[0_0_15px_rgba(0,0,0,0.1)]">
         <div className="absolute -z-10 inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-300" style={{ background: 'linear-gradient(to bottom right, var(--color-primary-dark), var(--color-primary-light))' }}></div>
 
         <div className="flex items-center justify-between mb-4">
-          <div className="w-16 h-16 rounded-full flex items-center justify-center bg-white/10 transition-transform group-hover:rotate-6">
+          <div className="w-16 h-16 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/20 transition-transform duration-500 group-hover:rotate-12 group-hover:bg-white/20">
             <Icon className="w-8 h-8 text-white" />
           </div>
           <span
@@ -403,11 +403,7 @@ const AboutPage = () => {
 
             {/* Quote Section */}
             <div
-              className="relative border rounded-2xl p-4 my-6 backdrop-blur-md shadow-2xl overflow-hidden"
-              style={{
-                background: 'linear-gradient(135deg, rgba(var(--color-primary-dark-rgb),0.05) 0%, transparent 50%, rgba(var(--color-primary-light-rgb),0.05) 100%)',
-                borderColor: 'rgba(var(--color-primary-dark-rgb),0.3)'
-              }}
+              className="relative rounded-2xl p-4 my-6 bg-white/5 backdrop-blur-xl border border-white/15 shadow-2xl overflow-hidden hover:bg-white/10 hover:border-white/30 transition-all duration-300 group"
               data-aos="fade-up"
               data-aos-duration="1700"
             >
@@ -432,10 +428,7 @@ const AboutPage = () => {
                 <button
                   data-aos="fade-up"
                   data-aos-duration="800"
-                  className="w-full lg:w-auto sm:px-6 py-2 sm:py-3 rounded-lg text-white font-medium transition-all duration-300 hover:scale-105 flex items-center justify-center lg:justify-start gap-2 shadow-lg hover:shadow-xl"
-                  style={{
-                    backgroundImage: 'linear-gradient(to right, var(--color-button-primary-from), var(--color-button-primary-to))'
-                  }}
+                  className="w-full lg:w-auto sm:px-6 py-2 sm:py-3 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 text-white font-medium transition-all duration-300 hover:scale-105 hover:bg-white/20 hover:border-white/40 flex items-center justify-center lg:justify-start gap-2 shadow-lg hover:shadow-xl"
                 >
                   <FileText className="w-4 h-4 sm:w-5 sm:h-5" /> Download CV
                 </button>
@@ -444,15 +437,7 @@ const AboutPage = () => {
                 <button
                   data-aos="fade-up"
                   data-aos-duration="1000"
-                  className="w-full lg:w-auto sm:px-6 py-2 sm:py-3 rounded-lg border font-medium transition-all duration-300 hover:scale-105 flex items-center justify-center lg:justify-start gap-2"
-                  style={{
-                    borderColor: 'var(--color-button-secondary-from)',
-                    color: 'var(--color-button-secondary-from)',
-                    backgroundColor: 'transparent'
-                  }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--color-button-secondary-from)'
-                  }
-                  onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                  className="w-full lg:w-auto sm:px-6 py-2 sm:py-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/15 text-gray-300 font-medium transition-all duration-300 hover:scale-105 hover:bg-white/10 hover:border-white/30 hover:text-white flex items-center justify-center lg:justify-start gap-2 shadow-lg hover:shadow-xl group"
                 >
                   <Code className="w-4 h-4 sm:w-5 sm:h-5" /> View Projects
                 </button>

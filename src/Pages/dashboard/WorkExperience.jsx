@@ -288,7 +288,7 @@ const SkeletonRow = () => (
             <div className="w-0.5 flex-1 bg-white/5 min-h-[60px]" />
         </div>
         <div className="flex-1 pb-8">
-            <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-5 space-y-3">
+            <div className="rounded-2xl border border-white/12 bg-white/5 backdrop-blur-xl p-5 space-y-3">
                 <div className="flex justify-between">
                     <div className="space-y-2 flex-1">
                         <div className="h-4 bg-white/5 rounded-lg w-1/3" />
@@ -341,7 +341,7 @@ const ExperienceCard = ({ experience, onEdit, onDelete, isLast }) => {
             {/* Card */}
             <div className="flex-1 pb-6 group" onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
                 <div
-                    className="relative rounded-2xl border border-white/8 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/18 transition-all duration-300 overflow-hidden"
+                    className="relative rounded-2xl border border-white/12 bg-white/5 backdrop-blur-xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 overflow-hidden"
                     style={{ boxShadow: hovered ? '0 0 32px -8px rgba(99,102,241,0.2)' : 'none' }}
                 >
                     {/* Top glow */}

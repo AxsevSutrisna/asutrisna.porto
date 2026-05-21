@@ -23,8 +23,8 @@ const CardProject = ({ Img, Title, Description, Link: ProjectLink, id }) => {
 
   return (
     <div className="group relative w-full">
-      <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 backdrop-blur-lg border border-white/10 shadow-2xl transition-all duration-300 hover:shadow-purple-500/20">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
+      <div className="relative overflow-hidden rounded-2xl bg-white/5 backdrop-blur-xl border border-white/15 shadow-2xl transition-all duration-300 hover:bg-white/10 hover:border-white/30 group-hover:scale-[1.02]">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
 
         <div className="relative p-5 z-10">
           <div className="relative overflow-hidden rounded-lg">
@@ -66,7 +66,7 @@ const CardProject = ({ Img, Title, Description, Link: ProjectLink, id }) => {
                 <Link
                   to={`/project/${toSlug(Title)}`}
                   onClick={handleDetails}
-                  className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/90 transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                  className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white/90 transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none"
                 >
                   <span className="text-sm font-medium">Details</span>
                   <ArrowRight className="w-4 h-4" />
@@ -79,7 +79,7 @@ const CardProject = ({ Img, Title, Description, Link: ProjectLink, id }) => {
             </div>
           </div>
 
-          <div className="absolute inset-0 border border-white/0 group-hover:border-purple-500/50 rounded-xl transition-colors duration-300 -z-50"></div>
+          <div className="absolute inset-0 border border-white/0 group-hover:border-white/20 rounded-2xl transition-colors duration-300 -z-50"></div>
         </div>
       </div>
     </div>

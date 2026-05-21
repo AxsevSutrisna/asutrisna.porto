@@ -13,24 +13,7 @@ const ABOUT_FALLBACK = {
   cv_url: "https://drive.google.com/file/d/14D0m6vlfyBZ3VZB2q66yCtnVf54iTc3E/view?usp=sharing",
 }
 
-const normalizeCvPath = (value) => {
-  if (!value) return ''
-  if (!value.startsWith('http')) return value
-
-  try {
-    const url = new URL(value)
-    const segments = url.pathname.split('/').filter(Boolean)
-    const bucketIndex = segments.findIndex((segment) => segment === 'about-cv')
-
-    if (bucketIndex >= 0) {
-      return segments.slice(bucketIndex + 1).join('/')
-    }
-
-    return ''
-  } catch {
-    return ''
-  }
-}
+// No normalizeCvPath needed
 
 // Memoized Components
 const Header = memo(({ name }) => (
@@ -277,33 +260,12 @@ const AboutPage = () => {
         return
       }
 
-      if (!cvValue.startsWith('http')) {
-        const { data, error } = await supabase.storage
-          .from('about-cv')
-          .createSignedUrl(cvValue, 60 * 60)
-
-        if (!error && data?.signedUrl) {
-          setCvDownloadUrl(data.signedUrl)
-          return
-        }
-
-        setCvDownloadUrl('')
-        return
-      }
-
-      const normalizedPath = normalizeCvPath(cvValue)
-      if (normalizedPath) {
-        const { data, error } = await supabase.storage
-          .from('about-cv')
-          .createSignedUrl(normalizedPath, 60 * 60)
-
-        if (!error && data?.signedUrl) {
-          setCvDownloadUrl(data.signedUrl)
-          return
-        }
-      }
-
-      setCvDownloadUrl(cvValue)
+      // Force download by appending ?download= if it's a Supabase URL
+      const finalUrl = cvValue.includes('supabase.co') && !cvValue.includes('?download')
+        ? `${cvValue}?download=`
+        : cvValue;
+        
+      setCvDownloadUrl(finalUrl)
     }
 
     resolveCvDownloadUrl()

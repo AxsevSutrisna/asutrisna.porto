@@ -171,7 +171,7 @@ const ProjectDetails = () => {
             Img: found.img || found.Img || "",
             Images: normalizedImages,
             Link: found.link || found.Link || "#",
-            Github: found.github || found.Github || "https://github.com/EkiZR",
+            Github: found.github || found.Github || "https://github.com/AxsevSutrisna",
             Features: normalizedFeatures,
             TechStack: normalizedTechStack,
           }
@@ -209,7 +209,7 @@ const ProjectDetails = () => {
             Img: selectedProject.img || selectedProject.Img || "",
             Images: normalizedImages,
             Link: selectedProject.link || selectedProject.Link || "#",
-            Github: selectedProject.github || selectedProject.Github || "https://github.com/EkiZR",
+            Github: selectedProject.github || selectedProject.Github || "https://github.com/AxsevSutrisna",
             Features: normalizedFeatures,
             TechStack: normalizedTechStack,
           }
@@ -248,7 +248,7 @@ const ProjectDetails = () => {
             Img: selectedProject.img || selectedProject.Img || "",
             Images: normalizedImages,
             Link: selectedProject.link || selectedProject.Link || "#",
-            Github: selectedProject.github || selectedProject.Github || "https://github.com/EkiZR",
+            Github: selectedProject.github || selectedProject.Github || "https://github.com/AxsevSutrisna",
             Features: normalizedFeatures,
             TechStack: normalizedTechStack,
           }
@@ -295,7 +295,7 @@ const ProjectDetails = () => {
     );
   }
 
-  const projectUrl = `https://ekizr.com/project/${toSlug(project.Title)}`;
+  const projectUrl = `https://github.com/AxsevSutrisna/project/${toSlug(project.Title)}`;
   const projectImages = normalizeProjectImages(project);
   const heroImage = projectImages[0] || project.img || project.Img;
 

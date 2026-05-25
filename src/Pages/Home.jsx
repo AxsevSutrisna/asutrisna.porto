@@ -4,6 +4,14 @@ import { Github, Linkedin, Mail, ExternalLink, Instagram, Sparkles } from "lucid
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 import { supabase } from '../supabase'
+import {
+  buildPersonSchema,
+  buildWebPageSchema,
+  buildWebSiteSchema,
+  resolveAbsoluteUrl,
+  resolveSiteUrl,
+  serializeJsonLd,
+} from '../utils/seoSchema'
 
 const TechStack = memo(({ tech }) => (
   <div className="px-4 py-2 hidden sm:flex items-center gap-2 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-sm text-gray-300 hover:bg-white/10 hover:border-white/20 transition-all shadow-lg hover:shadow-indigo-500/10">
@@ -155,18 +163,54 @@ const Home = () => {
     return heroData.hero_image_alt?.trim() || `${buildPageTitle(heroData)} illustration`.trim()
   }, [heroData])
   const canonicalUrl = useMemo(() => (siteOrigin ? `${siteOrigin}/` : ''), [siteOrigin])
-  const structuredData = useMemo(() => {
-    if (!heroData) return null
+  const jsonLdSchemas = useMemo(() => {
+    if (!heroData) return []
 
-    return {
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "name": pageTitle || undefined,
-      "jobTitle": heroData.title_line_2 || pageTitle || '',
-      "url": canonicalUrl || undefined,
-      "sameAs": socialLinks.map((social) => social.link).filter((link) => Boolean(link) && link !== '#')
-    }
-  }, [canonicalUrl, heroData, pageTitle, socialLinks])
+    const sameAs = socialLinks
+      .map((social) => resolveAbsoluteUrl(social.link, canonicalUrl || siteOrigin))
+      .filter((link) => Boolean(link) && link !== '#')
+
+    const person = buildPersonSchema({
+      name: pageTitle || 'Asep Sutrisna Suhada Putra',
+      jobTitle: heroData.title_line_2 || 'Full-Stack Web Developer',
+      url: canonicalUrl || resolveSiteUrl(siteOrigin),
+      image: resolveAbsoluteUrl(heroData.hero_image_url || '/Photo.jpg', canonicalUrl || siteOrigin),
+      description: pageDescription || heroData.description || ABOUT_FALLBACK?.description,
+      sameAs,
+    })
+
+    const webSite = buildWebSiteSchema({
+      name: 'asutrisnadev',
+      url: canonicalUrl || resolveSiteUrl(siteOrigin),
+      description: pageDescription || heroData.description || '',
+      publisher: {
+        '@type': 'Person',
+        name: 'Asep Sutrisna Suhada Putra',
+      },
+    })
+
+    const webPage = buildWebPageSchema({
+      name: pageTitle || 'Asep Sutrisna Suhada Putra | Full-Stack Web Developer',
+      url: canonicalUrl || resolveSiteUrl(siteOrigin),
+      description: pageDescription || heroData.description || '',
+      primaryImageOfPage: resolveAbsoluteUrl(heroData.hero_image_url || '/Meta.png', canonicalUrl || siteOrigin),
+      about: {
+        '@type': 'Person',
+        name: 'Asep Sutrisna Suhada Putra',
+      },
+      isPartOf: {
+        '@type': 'WebSite',
+        name: 'asutrisnadev',
+        url: canonicalUrl || resolveSiteUrl(siteOrigin),
+      },
+      author: {
+        '@type': 'Person',
+        name: 'Asep Sutrisna Suhada Putra',
+      },
+    })
+
+    return [webSite, webPage, person]
+  }, [canonicalUrl, heroData, pageDescription, pageTitle, siteOrigin, socialLinks])
 
   // Fetch hero content from database
   useEffect(() => {
@@ -313,7 +357,11 @@ const Home = () => {
         {pageDescription && <meta property="og:description" content={pageDescription} />}
         {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
         <meta property="og:type" content="website" />
-        {structuredData && <script type="application/ld+json">{JSON.stringify(structuredData)}</script>}
+        {jsonLdSchemas.map((schema) => (
+          <script key={`${schema['@type']}-${schema.name || schema.url || 'schema'}`} type="application/ld+json">
+            {serializeJsonLd(schema)}
+          </script>
+        ))}
       </Helmet>
 
       <div className="min-h-screen overflow-hidden px-[5%] sm:px-[5%] lg:px-[10%]" id="Hero" style={{ backgroundColor: 'var(--color-backdrop-base)' }}>

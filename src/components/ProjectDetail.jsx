@@ -19,6 +19,14 @@ import {
 import Swal from "sweetalert2";
 import { toSlug } from "../utils/slug";
 import { normalizeProjectImages } from "../utils/projectImages";
+import {
+  buildCreativeWorkSchema,
+  buildPersonSchema,
+  buildWebPageSchema,
+  resolveAbsoluteUrl,
+  resolveSiteUrl,
+  serializeJsonLd,
+} from "../utils/seoSchema";
 
 const TECH_ICONS = {
   React: Globe,
@@ -125,6 +133,7 @@ const ProjectDetails = () => {
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
   const [isResolved, setIsResolved] = useState(false);
+  const [siteOrigin, setSiteOrigin] = useState(typeof window !== 'undefined' ? window.location.origin : 'https://asutrisna.dev');
 
 
   useEffect(() => {
@@ -265,6 +274,12 @@ const ProjectDetails = () => {
     return () => { mounted = false }
   }, [slug]);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setSiteOrigin(window.location.origin)
+    }
+  }, [])
+
   if (!isResolved) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--color-backdrop-base)' }}>
@@ -295,9 +310,40 @@ const ProjectDetails = () => {
     );
   }
 
-  const projectUrl = `https://github.com/AxsevSutrisna/project/${toSlug(project.Title)}`;
+  const projectUrl = resolveSiteUrl(siteOrigin, `/project/${toSlug(project.Title)}`);
   const projectImages = normalizeProjectImages(project);
   const heroImage = projectImages[0] || project.img || project.Img;
+  const jsonLdSchemas = [
+    buildWebPageSchema({
+      name: `${project.Title} — Asep Sutrisna Suhada Putra`,
+      url: projectUrl,
+      description: project.Description?.slice(0, 155) || `Project ${project.Title} oleh Asep Sutrisna Suhada Putra.`,
+      primaryImageOfPage: resolveAbsoluteUrl(heroImage, projectUrl),
+      about: {
+        '@type': 'CreativeWork',
+        name: project.Title,
+      },
+      isPartOf: {
+        '@type': 'WebSite',
+        name: 'asutrisnadev',
+        url: resolveSiteUrl(siteOrigin),
+      },
+      author: {
+        '@type': 'Person',
+        name: 'Asep Sutrisna Suhada Putra',
+      },
+    }),
+    buildCreativeWorkSchema({
+      name: project.Title,
+      description: project.Description?.slice(0, 155) || `Project ${project.Title} oleh Asep Sutrisna Suhada Putra.`,
+      url: projectUrl,
+      image: resolveAbsoluteUrl(heroImage, projectUrl),
+      author: buildPersonSchema({
+        name: 'Asep Sutrisna Suhada Putra',
+        url: resolveSiteUrl(siteOrigin),
+      }),
+    }),
+  ]
 
   return (
     <>
@@ -324,20 +370,11 @@ const ProjectDetails = () => {
         <meta property="og:url" content={projectUrl} />
         <meta property="og:type" content="website" />
         {heroImage && <meta property="og:image" content={heroImage} />}
-        <script type="application/ld+json">{`
-          {
-            "@context": "https://schema.org",
-            "@type": "CreativeWork",
-            "name": "${project.Title}",
-            "description": "${project.Description?.replace(/"/g, '\\"')}",
-            "url": "${projectUrl}",
-            "author": {
-              "@type": "Person",
-              "name": "Asep Sutrisna Suhada Putra",
-              "url": "https://asutrisna.dev"
-            }
-          }
-        `}</script>
+        {jsonLdSchemas.map((schema) => (
+          <script key={`${schema['@type']}-${schema.name || schema.url || 'schema'}`} type="application/ld+json">
+            {serializeJsonLd(schema)}
+          </script>
+        ))}
       </Helmet>
 
       <div className="min-h-screen px-[2%] sm:px-0 relative overflow-hidden" style={{ backgroundColor: 'var(--color-backdrop-base)' }}>

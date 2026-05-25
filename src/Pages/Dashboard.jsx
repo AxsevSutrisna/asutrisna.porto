@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Routes, Route, Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import { supabase } from '../supabase'
 import Projects from './dashboard/Projects'
 import Certificates from './dashboard/Certificates'
@@ -91,61 +92,68 @@ export default function Dashboard() {
   )
 
   return (
-    // Kunci: TIDAK pakai overflow-hidden di sini supaya scrollbar main bisa diklik
-    <div className="flex text-white" style={{ height: '100dvh' }}>
-      {/* Mobile overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-20 bg-black/60 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+    <>
+      <Helmet>
+        <title>Dashboard Admin | asutrisnadev</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
 
-      {/* Sidebar - desktop: sticky, tinggi 100dvh */}
-      <aside
-        className="hidden lg:flex w-60 shrink-0 flex-col border-r border-white/8 bg-white/3 backdrop-blur-xl"
-        style={{ height: '100dvh', position: 'sticky', top: 0 }}
-      >
-        <SidebarContent />
-      </aside>
+      {/* Kunci: TIDAK pakai overflow-hidden di sini supaya scrollbar main bisa diklik */}
+      <div className="flex text-white" style={{ height: '100dvh' }}>
+        {/* Mobile overlay */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 z-20 bg-black/60 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
 
-      {/* Sidebar - mobile drawer */}
-      <aside
-        className={`fixed inset-y-0 left-0 z-30 w-60 flex flex-col border-r border-white/8 bg-[#0a0a1a] backdrop-blur-xl transition-transform duration-300 lg:hidden ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
-      >
-        <SidebarContent />
-      </aside>
+        {/* Sidebar - desktop: sticky, tinggi 100dvh */}
+        <aside
+          className="hidden lg:flex w-60 shrink-0 flex-col border-r border-white/8 bg-white/3 backdrop-blur-xl"
+          style={{ height: '100dvh', position: 'sticky', top: 0 }}
+        >
+          <SidebarContent />
+        </aside>
 
-      {/* Main area */}
-      <div className="flex-1 flex flex-col min-w-0 min-h-0">
-        {/* Mobile topbar */}
-        <div className="lg:hidden flex items-center gap-3 px-4 py-3 border-b border-white/8 bg-white/3 backdrop-blur-xl shrink-0">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-lg border border-white/10 text-gray-400 hover:text-white transition-colors"
-          >
-            <Menu className="w-4 h-4" />
-          </button>
-          <span className="text-sm font-medium text-white">Dashboard</span>
+        {/* Sidebar - mobile drawer */}
+        <aside
+          className={`fixed inset-y-0 left-0 z-30 w-60 flex flex-col border-r border-white/8 bg-[#0a0a1a] backdrop-blur-xl transition-transform duration-300 lg:hidden ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
+        >
+          <SidebarContent />
+        </aside>
+
+        {/* Main area */}
+        <div className="flex-1 flex flex-col min-w-0 min-h-0">
+          {/* Mobile topbar */}
+          <div className="lg:hidden flex items-center gap-3 px-4 py-3 border-b border-white/8 bg-white/3 backdrop-blur-xl shrink-0">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 rounded-lg border border-white/10 text-gray-400 hover:text-white transition-colors"
+            >
+              <Menu className="w-4 h-4" />
+            </button>
+            <span className="text-sm font-medium text-white">Dashboard</span>
+          </div>
+
+          {/* Hanya main yang overflow-y-auto — scrollbar bisa diklik normal */}
+          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <Routes>
+              <Route index element={<Navigate to="projects" replace />} />
+              <Route path="projects" element={<Projects />} />
+              <Route path="work-experience" element={<WorkExperience />} />
+              <Route path="hero-content" element={<HeroContent />} />
+              <Route path="about" element={<About />} />
+              <Route path="tech-stacks" element={<TechStacks />} />
+              <Route path="social-links" element={<SocialLinks />} />
+              <Route path="certificates" element={<Certificates />} />
+              <Route path="comments" element={<Comments />} />
+              <Route path="theme-manager" element={<ThemeManager />} />
+            </Routes>
+          </main>
         </div>
-
-        {/* Hanya main yang overflow-y-auto — scrollbar bisa diklik normal */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-          <Routes>
-            <Route index element={<Navigate to="projects" replace />} />
-            <Route path="projects" element={<Projects />} />
-            <Route path="work-experience" element={<WorkExperience />} />
-            <Route path="hero-content" element={<HeroContent />} />
-            <Route path="about" element={<About />} />
-            <Route path="tech-stacks" element={<TechStacks />} />
-            <Route path="social-links" element={<SocialLinks />} />
-            <Route path="certificates" element={<Certificates />} />
-            <Route path="comments" element={<Comments />} />
-            <Route path="theme-manager" element={<ThemeManager />} />
-          </Routes>
-        </main>
       </div>
-    </div>
+    </>
   )
 }

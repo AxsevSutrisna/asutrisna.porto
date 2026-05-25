@@ -11,7 +11,7 @@ import {
 const FieldError = ({ message }) =>
     message ? <p className="text-[11px] text-red-400 mt-1">{message}</p> : null
 
-const InputField = ({ label, value, onChange, placeholder, error, type = 'text', required = false }) => (
+const InputField = ({ label, value, onChange, placeholder, error, type = 'text' }) => (
     <div className="space-y-1.5">
         <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">
             {label}
@@ -21,7 +21,6 @@ const InputField = ({ label, value, onChange, placeholder, error, type = 'text',
             value={value}
             onChange={onChange}
             placeholder={placeholder}
-            required={required}
             className={`w-full bg-[#0d0d22] border rounded-xl px-4 py-2.5 text-gray-200 placeholder-gray-600 text-sm outline-none transition-all focus:ring-1 ${error ? 'border-red-500/50 focus:border-red-500/60 focus:ring-red-500/20' : 'border-white/10 focus:border-indigo-500/60 focus:ring-indigo-500/20'}`}
         />
         <FieldError message={error} />
@@ -175,6 +174,7 @@ export default function WorkExperienceForm({
                 event.preventDefault()
                 onSubmit(form)
             }}
+            noValidate
             className="p-5 sm:p-6 space-y-5"
         >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -184,7 +184,6 @@ export default function WorkExperienceForm({
                         value={form.position}
                         onChange={set('position')}
                         placeholder="e.g. Frontend Developer"
-                        required
                         error={errors.position}
                     />
                 </div>
@@ -203,7 +202,6 @@ export default function WorkExperienceForm({
                     value={form.company}
                     onChange={set('company')}
                     placeholder="e.g. PT Teknologi Nusantara"
-                    required
                     error={errors.company}
                 />
 

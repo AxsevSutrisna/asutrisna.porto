@@ -26,38 +26,6 @@ import {
   Eye,
 } from "lucide-react";
 
-const Card = ({ children, className = "" }) => (
-  <div className={`relative group ${className}`}>
-    <div className="absolute -inset-0.5 rounded-2xl blur opacity-10 group-hover:opacity-25 transition duration-500" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
-    <div className="relative bg-white/5 backdrop-blur-xl border border-white/12 rounded-2xl h-full">
-      {children}
-    </div>
-  </div>
-);
-
-const InputField = ({
-  label,
-  value,
-  onChange,
-  placeholder,
-  type = "text",
-  required = false,
-}) => (
-  <div className="space-y-1.5">
-    <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">
-      {label}
-    </label>
-    <input
-      type={type}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      required={required}
-      className="w-full bg-[#0d0d22] border border-white/10 rounded-xl px-4 py-2.5 text-gray-200 placeholder-gray-600 text-sm outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/20 transition-all"
-    />
-  </div>
-);
-
 const SkeletonCard = () => (
   <div className="relative">
     <div className="absolute -inset-0.5 rounded-2xl blur opacity-10" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
@@ -84,6 +52,42 @@ const SkeletonCard = () => (
     </div>
   </div>
 );
+
+const isValidHttpUrl = (value) => {
+  if (!value) return false;
+
+  try {
+    const parsedUrl = new URL(value);
+    return parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:";
+  } catch {
+    return false;
+  }
+};
+
+const validateProjectForm = (form, imageItems = []) => {
+  const errors = {};
+  const title = (form?.title || "").trim();
+  const liveUrl = (form?.link || "").trim();
+  const githubUrl = (form?.github || "").trim();
+
+  if (!title) {
+    errors.title = "Project Title wajib diisi.";
+  }
+
+  if (!Array.isArray(imageItems) || imageItems.length === 0) {
+    errors.images = "Minimal 1 image project wajib diupload.";
+  }
+
+  if (liveUrl && !isValidHttpUrl(liveUrl)) {
+    errors.link = "Live URL harus berupa link valid yang diawali http:// atau https://.";
+  }
+
+  if (githubUrl && !isValidHttpUrl(githubUrl)) {
+    errors.github = "GitHub URL harus berupa link valid yang diawali http:// atau https://.";
+  }
+
+  return errors;
+};
 
 /* ── Premium Project Card (Grid View) ── */
 const ProjectCard = ({ project, onDelete, onEdit }) => {
@@ -133,11 +137,10 @@ const ProjectCard = ({ project, onDelete, onEdit }) => {
         )}
 
         {/* Status badge */}
-        <div className={`absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border backdrop-blur-sm ${
-          isPublished
-            ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300"
-            : "bg-amber-500/20 border-amber-500/40 text-amber-300"
-        }`}>
+        <div className={`absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border backdrop-blur-sm ${isPublished
+          ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300"
+          : "bg-amber-500/20 border-amber-500/40 text-amber-300"
+          }`}>
           {isPublished ? <CheckCircle2 className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
           {isPublished ? "Published" : "Draft"}
         </div>
@@ -294,11 +297,10 @@ const ProjectRow = ({ project, onDelete, onEdit, index }) => {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
           <p className="text-sm font-semibold text-white truncate">{title}</p>
-          <span className={`shrink-0 flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border ${
-            isPublished
-              ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-300"
-              : "bg-amber-500/15 border-amber-500/30 text-amber-300"
-          }`}>
+          <span className={`shrink-0 flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border ${isPublished
+            ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-300"
+            : "bg-amber-500/15 border-amber-500/30 text-amber-300"
+            }`}>
             {isPublished ? <CheckCircle2 className="w-2.5 h-2.5" /> : <Clock className="w-2.5 h-2.5" />}
             {isPublished ? "Published" : "Draft"}
           </span>
@@ -400,6 +402,8 @@ const ProjectForm = ({
   submitLabel = "Save Project",
   uploading,
 }) => {
+  const [touched, setTouched] = useState({});
+  const [errors, setErrors] = useState({});
   const [imageItems, setImageItems] = useState(() =>
     normalizeProjectImages(initial).map((url, index) => ({
       id: `existing-${index}-${url}`,
@@ -426,7 +430,28 @@ const ProjectForm = ({
     github: initial?.github || initial?.Github || "",
   });
 
-  const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
+  const set = (key) => (e) => {
+    const value = e.target.value;
+    setForm((f) => ({ ...f, [key]: value }));
+    setTouched((current) => ({ ...current, [key]: true }));
+    setErrors((current) => {
+      if (!current[key]) return current;
+      const next = { ...current };
+      delete next[key];
+      return next;
+    });
+  };
+
+  const markTouched = (key) => () => {
+    setTouched((current) => ({ ...current, [key]: true }));
+  };
+
+  const getFieldError = (key) => (touched[key] || errors[key] ? errors[key] : "");
+
+  useEffect(() => {
+    if (Object.keys(touched).length === 0) return;
+    setErrors(validateProjectForm(form, imageItems));
+  }, [form, imageItems, touched]);
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files || []);
@@ -447,6 +472,13 @@ const ProjectForm = ({
     }));
 
     setImageItems((current) => [...current, ...nextItems]);
+    setTouched((current) => ({ ...current, images: true }));
+    setErrors((current) => {
+      if (!current.images) return current;
+      const next = { ...current };
+      delete next.images;
+      return next;
+    });
     e.target.value = "";
   };
 
@@ -458,10 +490,33 @@ const ProjectForm = ({
       }
       return current.filter((item) => item.id !== id);
     });
+    setTouched((current) => ({ ...current, images: true }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const nextErrors = validateProjectForm(form, imageItems);
+    setTouched({
+      title: true,
+      link: true,
+      github: true,
+      images: true,
+    });
+    setErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length > 0) {
+      const firstInvalidKey = Object.keys(nextErrors)[0];
+      const fieldSelectorMap = {
+        title: '[data-project-field="title"]',
+        link: '[data-project-field="link"]',
+        github: '[data-project-field="github"]',
+        images: '[data-project-field="images"]',
+      };
+      const targetField = document.querySelector(fieldSelectorMap[firstInvalidKey]);
+      targetField?.scrollIntoView?.({ behavior: "smooth", block: "center" });
+      return;
+    }
+
     onSubmit(form, imageItems);
   };
 
@@ -480,17 +535,23 @@ const ProjectForm = ({
     <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {sectionTitle(<FolderGit2 className="w-3 h-3" />, "Basic Info")}
-        
+
         <div className="sm:col-span-2 space-y-1.5">
           <label className={labelCls}>Project Title *</label>
           <input
+            data-project-field="title"
             type="text"
             value={form.title}
             onChange={set("title")}
+            onBlur={markTouched("title")}
             placeholder="e.g. My Portfolio Website"
             required
-            className={inputCls}
+            aria-invalid={Boolean(getFieldError("title"))}
+            className={`${inputCls} ${getFieldError("title") ? "border-red-500/50 focus:border-red-500/70 focus:ring-red-500/20" : ""}`}
           />
+          {getFieldError("title") && (
+            <p className="text-xs text-red-300">{getFieldError("title")}</p>
+          )}
         </div>
 
         <div className="sm:col-span-2 space-y-1.5">
@@ -541,13 +602,21 @@ const ProjectForm = ({
           <div className="relative">
             <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
             <input
+              data-project-field="link"
               type="url"
               value={form.link}
               onChange={set("link")}
+              onBlur={markTouched("link")}
               placeholder="https://yourproject.com"
-              className={`${inputCls} pl-10`}
+              aria-invalid={Boolean(getFieldError("link"))}
+              className={`${inputCls} pl-10 ${getFieldError("link") ? "border-red-500/50 focus:border-red-500/70 focus:ring-red-500/20" : ""}`}
             />
           </div>
+          {getFieldError("link") ? (
+            <p className="text-xs text-red-300">{getFieldError("link")}</p>
+          ) : (
+            <p className="text-[11px] text-gray-500">Opsional, tapi jika diisi harus link valid dengan http:// atau https://.</p>
+          )}
         </div>
 
         <div className="space-y-1.5">
@@ -555,23 +624,31 @@ const ProjectForm = ({
           <div className="relative">
             <Github className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
             <input
+              data-project-field="github"
               type="url"
               value={form.github}
               onChange={set("github")}
+              onBlur={markTouched("github")}
               placeholder="https://github.com/username/repo"
-              className={`${inputCls} pl-10`}
+              aria-invalid={Boolean(getFieldError("github"))}
+              className={`${inputCls} pl-10 ${getFieldError("github") ? "border-red-500/50 focus:border-red-500/70 focus:ring-red-500/20" : ""}`}
             />
           </div>
+          {getFieldError("github") ? (
+            <p className="text-xs text-red-300">{getFieldError("github")}</p>
+          ) : (
+            <p className="text-[11px] text-gray-500">Opsional, tapi jika diisi harus link valid dengan http:// atau https://.</p>
+          )}
         </div>
 
         {sectionTitle(<ImageIcon className="w-3 h-3" />, "Media")}
 
         <div className="sm:col-span-2 space-y-1.5">
           <label className={labelCls}>
-            Project Images (max {MAX_PROJECT_IMAGES})
+            Project Images (max {MAX_PROJECT_IMAGES}) *
           </label>
           <div className="space-y-3">
-            <label className="flex items-center gap-4 w-full bg-[#0d0d22] border border-dashed border-white/15 rounded-xl px-4 py-4 cursor-pointer hover:border-indigo-500/40 hover:bg-white/4 transition-all">
+            <label data-project-field="images" className={`flex items-center gap-4 w-full bg-[#0d0d22] border border-dashed rounded-xl px-4 py-4 cursor-pointer transition-all ${getFieldError("images") ? "border-red-500/50 hover:border-red-400/70 bg-red-500/5" : "border-white/15 hover:border-indigo-500/40 hover:bg-white/4"}`}>
               {imageItems.length > 0 ? (
                 <div className="flex -space-x-3">
                   {imageItems.slice(0, 3).map((item) => (
@@ -583,9 +660,9 @@ const ProjectForm = ({
                     />
                   ))}
                   {imageItems.length > 3 && (
-                     <div className="h-16 w-16 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center text-xs text-gray-300 ring-2 ring-[#0d0d22]">
-                       +{imageItems.length - 3}
-                     </div>
+                    <div className="h-16 w-16 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center text-xs text-gray-300 ring-2 ring-[#0d0d22]">
+                      +{imageItems.length - 3}
+                    </div>
                   )}
                 </div>
               ) : (
@@ -598,7 +675,7 @@ const ProjectForm = ({
                   {imageItems.length > 0 ? "Add more images" : "Click to upload images"}
                 </p>
                 <p className="text-xs text-gray-600 mt-0.5">
-                  PNG, JPG, WEBP supported
+                  PNG, JPG, WEBP supported. Minimal 1 image wajib.
                 </p>
               </div>
               <input
@@ -610,6 +687,10 @@ const ProjectForm = ({
                 disabled={imageItems.length >= MAX_PROJECT_IMAGES}
               />
             </label>
+
+            {getFieldError("images") && (
+              <p className="text-xs text-red-300">{getFieldError("images")}</p>
+            )}
 
             {imageItems.length > 0 && (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -716,6 +797,14 @@ export default function Projects() {
 
   const handleCreate = async (form, imageItems) => {
     setUploading(true);
+    const validationErrors = validateProjectForm(form, imageItems);
+    const validationError = Object.values(validationErrors).find(Boolean);
+    if (validationError) {
+      pushToast("error", validationError);
+      setUploading(false);
+      return;
+    }
+
     const images = await uploadProjectImages(imageItems);
     await supabase.from("projects").insert({
       title: form.title,
@@ -735,6 +824,14 @@ export default function Projects() {
 
   const handleEdit = async (form, imageItems) => {
     setUploading(true);
+    const validationErrors = validateProjectForm(form, imageItems);
+    const validationError = Object.values(validationErrors).find(Boolean);
+    if (validationError) {
+      pushToast("error", validationError);
+      setUploading(false);
+      return;
+    }
+
     const images = await uploadProjectImages(imageItems);
     await supabase
       .from("projects")
@@ -816,22 +913,20 @@ export default function Projects() {
             <button
               onClick={() => setViewMode("grid")}
               title="Grid view"
-              className={`p-2 rounded-lg transition-all duration-200 ${
-                viewMode === "grid"
-                  ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
-                  : "text-gray-500 hover:text-gray-300 border border-transparent"
-              }`}
+              className={`p-2 rounded-lg transition-all duration-200 ${viewMode === "grid"
+                ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                : "text-gray-500 hover:text-gray-300 border border-transparent"
+                }`}
             >
               <LayoutGrid className="w-4 h-4" />
             </button>
             <button
               onClick={() => setViewMode("list")}
               title="List view"
-              className={`p-2 rounded-lg transition-all duration-200 ${
-                viewMode === "list"
-                  ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
-                  : "text-gray-500 hover:text-gray-300 border border-transparent"
-              }`}
+              className={`p-2 rounded-lg transition-all duration-200 ${viewMode === "list"
+                ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                : "text-gray-500 hover:text-gray-300 border border-transparent"
+                }`}
             >
               <List className="w-4 h-4" />
             </button>

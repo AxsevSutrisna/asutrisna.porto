@@ -28,10 +28,10 @@ const getInitials = (company = '') =>
 
 const EMPLOYMENT_STYLES = {
     'Full Time': { bg: 'bg-emerald-500/15', border: 'border-emerald-500/30', text: 'text-emerald-300', dot: 'bg-emerald-400' },
-    'Magang':    { bg: 'bg-sky-500/15',     border: 'border-sky-500/30',     text: 'text-sky-300',     dot: 'bg-sky-400'     },
-    'Kontrak':   { bg: 'bg-violet-500/15',  border: 'border-violet-500/30',  text: 'text-violet-300',  dot: 'bg-violet-400'  },
-    'Freelance': { bg: 'bg-amber-500/15',   border: 'border-amber-500/30',   text: 'text-amber-300',   dot: 'bg-amber-400'   },
-    'Part Time': { bg: 'bg-rose-500/15',    border: 'border-rose-500/30',    text: 'text-rose-300',    dot: 'bg-rose-400'    },
+    'Magang': { bg: 'bg-sky-500/15', border: 'border-sky-500/30', text: 'text-sky-300', dot: 'bg-sky-400' },
+    'Kontrak': { bg: 'bg-violet-500/15', border: 'border-violet-500/30', text: 'text-violet-300', dot: 'bg-violet-400' },
+    'Freelance': { bg: 'bg-amber-500/15', border: 'border-amber-500/30', text: 'text-amber-300', dot: 'bg-amber-400' },
+    'Part Time': { bg: 'bg-rose-500/15', border: 'border-rose-500/30', text: 'text-rose-300', dot: 'bg-rose-400' },
 }
 const getEmpStyle = (type) =>
     EMPLOYMENT_STYLES[type] ?? { bg: 'bg-gray-500/15', border: 'border-gray-500/30', text: 'text-gray-300', dot: 'bg-gray-400' }
@@ -58,9 +58,43 @@ const parseTechStack = (stack) => {
     }
 }
 
-const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const CURRENT_YEAR = new Date().getFullYear()
 const YEARS = Array.from({ length: 15 }, (_, i) => CURRENT_YEAR - i)
+
+const validateExperienceForm = (form) => {
+    const errors = {}
+
+    if (!String(form.position || '').trim()) {
+        errors.position = 'Position wajib diisi.'
+    }
+
+    if (!String(form.company || '').trim()) {
+        errors.company = 'Company wajib diisi.'
+    }
+
+    if (!form.start_month) {
+        errors.start_month = 'Start month wajib diisi.'
+    }
+
+    if (!form.start_year) {
+        errors.start_year = 'Start year wajib diisi.'
+    }
+
+    if (!form.is_current) {
+        if (!form.end_month) {
+            errors.end_month = 'End month wajib diisi jika ini bukan current role.'
+        }
+        if (!form.end_year) {
+            errors.end_year = 'End year wajib diisi jika ini bukan current role.'
+        }
+    }
+
+    return errors
+}
+
+const FieldError = ({ message }) =>
+    message ? <p className="mt-2 text-sm text-red-400">{message}</p> : null
 
 /* ── Modal wrapper ── */
 const Modal = ({ title, onClose, children }) => (
@@ -84,22 +118,31 @@ const Modal = ({ title, onClose, children }) => (
 /* ── Inline Experience Form ── */
 const ExperienceForm = ({ initial = null, onSubmit, onCancel, submitting }) => {
     const [form, setForm] = useState({
-        position:        initial?.position        ?? '',
-        company:         initial?.company         ?? '',
+        position: initial?.position ?? '',
+        company: initial?.company ?? '',
         employment_type: initial?.employment_type ?? 'Full Time',
-        location:        initial?.location        ?? '',
-        start_month:     initial?.start_month     ?? '',
-        start_year:      initial?.start_year      ?? CURRENT_YEAR,
-        end_month:       initial?.end_month       ?? '',
-        end_year:        initial?.end_year        ?? CURRENT_YEAR,
-        is_current:      initial?.is_current      ?? false,
-        description:     initial?.description     ?? '',
+        location: initial?.location ?? '',
+        start_month: initial?.start_month ?? '',
+        start_year: initial?.start_year ?? CURRENT_YEAR,
+        end_month: initial?.end_month ?? '',
+        end_year: initial?.end_year ?? CURRENT_YEAR,
+        is_current: initial?.is_current ?? false,
+        description: initial?.description ?? '',
     })
     const [techStack, setTechStack] = useState(() => parseTechStack(initial?.tech_stack))
     const [techDraft, setTechDraft] = useState('')
+    const [errors, setErrors] = useState({})
 
-    const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }))
-    const setCheck = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.checked }))
+    const set = (key) => (e) => {
+        const value = e.target.value
+        setForm((f) => ({ ...f, [key]: value }))
+        setErrors((current) => {
+            if (!current[key]) return current
+            const next = { ...current }
+            delete next[key]
+            return next
+        })
+    }
 
     const addTech = () => {
         const value = techDraft.trim()
@@ -116,18 +159,21 @@ const ExperienceForm = ({ initial = null, onSubmit, onCancel, submitting }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        if (!form.is_current && (!form.end_month || !form.end_year)) {
-            alert('Please fill end month and end year, or mark the role as current.')
+
+        const nextErrors = validateExperienceForm(form)
+        setErrors(nextErrors)
+
+        if (Object.keys(nextErrors).length > 0) {
             return
         }
 
         const payload = {
             ...form,
-            start_month:  form.start_month  ? parseInt(form.start_month)  : null,
-            start_year:   form.start_year   ? parseInt(form.start_year)   : null,
-            end_month:    form.is_current ? null : (form.end_month  ? parseInt(form.end_month)  : null),
-            end_year:     form.is_current ? null : (form.end_year   ? parseInt(form.end_year)   : null),
-            tech_stack:   techStack,
+            start_month: form.start_month ? parseInt(form.start_month) : null,
+            start_year: form.start_year ? parseInt(form.start_year) : null,
+            end_month: form.is_current ? null : (form.end_month ? parseInt(form.end_month) : null),
+            end_year: form.is_current ? null : (form.end_year ? parseInt(form.end_year) : null),
+            tech_stack: techStack,
         }
         onSubmit(payload)
     }
@@ -144,20 +190,28 @@ const ExperienceForm = ({ initial = null, onSubmit, onCancel, submitting }) => {
     const inputCls = 'w-full bg-[#0d0d22] border border-white/10 rounded-xl px-4 py-2.5 text-gray-200 placeholder-gray-600 text-sm outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/20 transition-all'
     const selectCls = inputCls + ' cursor-pointer'
 
+    const getInputClass = (field) =>
+        `${inputCls} ${errors[field] ? 'border-red-500/50 focus:border-red-500/60 focus:ring-red-500/20' : ''}`
+
+    const getSelectClass = (field, extraClass = '') =>
+        `${selectCls} ${errors[field] ? 'border-red-500/50 focus:border-red-500/60 focus:ring-red-500/20' : ''} ${extraClass}`.trim()
+
     return (
-        <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-5">
+        <form onSubmit={handleSubmit} noValidate className="p-5 sm:p-6 space-y-5">
             {sectionTitle(<Briefcase className="w-3 h-3" />, "Role & Company")}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2 space-y-1.5">
                     <label className={labelCls}>Position *</label>
-                    <input type="text" value={form.position} onChange={set('position')} placeholder="e.g. Full-Stack Developer" required className={inputCls} />
+                    <input type="text" value={form.position} onChange={set('position')} placeholder="e.g. Full-Stack Developer" className={getInputClass('position')} />
+                    <FieldError message={errors.position} />
                 </div>
                 <div className="space-y-1.5">
                     <label className={labelCls}>Company *</label>
                     <div className="relative">
                         <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                        <input type="text" value={form.company} onChange={set('company')} placeholder="e.g. Kazee" required className={`${inputCls} pl-10`} />
+                        <input type="text" value={form.company} onChange={set('company')} placeholder="e.g. Kazee" className={`${getInputClass('company')} pl-10`} />
                     </div>
+                    <FieldError message={errors.company} />
                 </div>
                 <div className="space-y-1.5">
                     <label className={labelCls}>Employment Type</label>
@@ -182,29 +236,35 @@ const ExperienceForm = ({ initial = null, onSubmit, onCancel, submitting }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                     <label className={labelCls}>Start Month *</label>
-                    <select value={form.start_month} onChange={set('start_month')} required className={selectCls}>
+                    <select value={form.start_month} onChange={set('start_month')} className={getSelectClass('start_month')}>
                         <option value="">Select month</option>
                         {MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
                     </select>
+                    <FieldError message={errors.start_month} />
                 </div>
                 <div className="space-y-1.5">
                     <label className={labelCls}>Start Year *</label>
-                    <select value={form.start_year} onChange={set('start_year')} required className={selectCls}>
+                    <select value={form.start_year} onChange={set('start_year')} className={getSelectClass('start_year')}>
+                        <option value="">Select year</option>
                         {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
                     </select>
+                    <FieldError message={errors.start_year} />
                 </div>
                 <div className="space-y-1.5">
                     <label className={`${labelCls} ${form.is_current ? 'opacity-40' : ''}`}>End Month</label>
-                    <select value={form.end_month} onChange={set('end_month')} disabled={form.is_current} className={`${selectCls} ${form.is_current ? 'opacity-40 cursor-not-allowed' : ''}`}>
+                    <select value={form.end_month} onChange={set('end_month')} disabled={form.is_current} className={getSelectClass('end_month', form.is_current ? 'opacity-40 cursor-not-allowed' : '')}>
                         <option value="">Select month</option>
                         {MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
                     </select>
+                    <FieldError message={!form.is_current ? errors.end_month : ''} />
                 </div>
                 <div className="space-y-1.5">
                     <label className={`${labelCls} ${form.is_current ? 'opacity-40' : ''}`}>End Year</label>
-                    <select value={form.end_year} onChange={set('end_year')} disabled={form.is_current} className={`${selectCls} ${form.is_current ? 'opacity-40 cursor-not-allowed' : ''}`}>
+                    <select value={form.end_year} onChange={set('end_year')} disabled={form.is_current} className={getSelectClass('end_year', form.is_current ? 'opacity-40 cursor-not-allowed' : '')}>
+                        <option value="">Select year</option>
                         {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
                     </select>
+                    <FieldError message={!form.is_current ? errors.end_year : ''} />
                 </div>
 
                 {/* Modern Toggle for Currently Working Here */}
@@ -217,7 +277,17 @@ const ExperienceForm = ({ initial = null, onSubmit, onCancel, submitting }) => {
                             type="checkbox"
                             className="hidden"
                             checked={form.is_current}
-                            onChange={(e) => setForm((f) => ({ ...f, is_current: e.target.checked, end_month: '', end_year: CURRENT_YEAR }))}
+                            onChange={(e) => {
+                                setForm((f) => ({ ...f, is_current: e.target.checked, end_month: '', end_year: '' }))
+                                if (e.target.checked) {
+                                    setErrors((current) => {
+                                        const next = { ...current }
+                                        delete next.end_month
+                                        delete next.end_year
+                                        return next
+                                    })
+                                }
+                            }}
                         />
                         <span className={`text-sm transition-colors ${form.is_current ? 'text-white font-medium' : 'text-gray-400 group-hover:text-gray-300'}`}>
                             I currently work here
@@ -270,6 +340,9 @@ const ExperienceForm = ({ initial = null, onSubmit, onCancel, submitting }) => {
 
             {/* Buttons */}
             <div className="flex justify-end gap-2 pt-4 border-t border-white/5">
+                {Object.keys(errors).length > 0 && (
+                    <p className="mr-auto self-center text-sm text-red-400">Masih ada field wajib yang belum diisi.</p>
+                )}
                 <button type="button" onClick={onCancel} className="px-4 py-2 rounded-xl border border-white/10 text-gray-400 hover:text-white text-sm transition-colors">
                     Cancel
                 </button>
@@ -455,13 +528,6 @@ export default function WorkExperience() {
     const [showCreate, setShowCreate] = useState(false)
     const [editExperience, setEditExperience] = useState(null)
     const [submitting, setSubmitting] = useState(false)
-
-    const compareStartDateDesc = (a, b) => {
-        const aYear = Number(a.start_year) || 0
-        const bYear = Number(b.start_year) || 0
-        if (aYear !== bYear) return bYear - aYear
-        return (Number(b.start_month) || 0) - (Number(a.start_month) || 0)
-    }
 
     const fetchExperiences = async () => {
         setLoading(true)

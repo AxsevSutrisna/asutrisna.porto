@@ -9,7 +9,7 @@ const CardProject = ({ Img, Title, Description, Link: ProjectLink, id }) => {
     if (!ProjectLink) {
       console.log("ProjectLink kosong");
       e.preventDefault();
-      alert("Live demo link is not available");
+      alert("Visit Link link is not available");
     }
   };
 
@@ -53,12 +53,12 @@ const CardProject = ({ Img, Title, Description, Link: ProjectLink, id }) => {
                   onClick={handleLiveDemo}
                   className="inline-flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors duration-200"
                 >
-                  <span className="text-sm font-medium">Live Demo</span>
+                  <span className="text-sm font-medium">Visit Link</span>
                   <ExternalLink className="w-4 h-4" />
                 </a>
               ) : (
                 <span className="text-gray-500 text-sm">
-                  Demo Not Available
+                  Visit Link Not Available
                 </span>
               )}
 

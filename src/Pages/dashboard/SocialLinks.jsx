@@ -72,9 +72,9 @@ const Modal = ({ title, onClose, children }) => (
     </div>
 )
 
-const InputField = ({ label, value, onChange, placeholder, type = 'text', required = false, min }) => (
+const InputField = ({ label, value, onChange, placeholder, type = 'text', required = false, min, error }) => (
     <div className="space-y-1.5">
-        <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">{label}</label>
+        <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">{label}{required ? ' *' : ''}</label>
         <input
             type={type}
             value={value}
@@ -82,8 +82,9 @@ const InputField = ({ label, value, onChange, placeholder, type = 'text', requir
             placeholder={placeholder}
             required={required}
             min={min}
-            className="w-full bg-[#0d0d22] border border-white/10 rounded-xl px-4 py-2.5 text-gray-200 placeholder-gray-600 text-sm outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/20 transition-all"
+            className={`w-full bg-[#0d0d22] border rounded-xl px-4 py-2.5 text-gray-200 placeholder-gray-600 text-sm outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/20 transition-all ${error ? 'border-red-500/50 focus:border-red-500/60 focus:ring-red-500/20' : 'border-white/10'}`}
         />
+        <FieldError message={error} />
     </div>
 )
 
@@ -110,6 +111,29 @@ const GRADIENT_PRESETS = [
 
 const isValidUrl = (value) => { try { new URL(value); return true } catch { return false } }
 const normalizeUrl = (value) => { if (!value) return ''; try { return new URL(value).toString() } catch { return '' } }
+
+const validateSocialLinkForm = (form) => {
+    const errors = {}
+
+    if (!String(form.platform || '').trim()) {
+        errors.platform = 'Platform wajib diisi.'
+    }
+
+    if (!String(form.display_name || '').trim()) {
+        errors.display_name = 'Display name wajib diisi.'
+    }
+
+    if (!String(form.url || '').trim()) {
+        errors.url = 'URL wajib diisi.'
+    } else if (!isValidUrl(form.url)) {
+        errors.url = 'URL tidak valid.'
+    }
+
+    return errors
+}
+
+const FieldError = ({ message }) =>
+    message ? <p className="mt-2 text-sm text-red-400">{message}</p> : null
 
 /* ── Premium Social Link Card ── */
 const SocialLinkCard = ({ item, onEdit, onDelete, onToggleActive, onSetPrimary, isDragging, isDropTarget }) => {
@@ -214,6 +238,7 @@ const SocialLinkForm = ({ initial, onSubmit, onCancel, uploading }) => {
     const [colorDraft, setColorDraft] = useState(initial?.color || '#6366f1')
     const [iconFile, setIconFile] = useState(null)
     const [iconPreview, setIconPreview] = useState(initial?.icon || null)
+    const [errors, setErrors] = useState({})
 
     const applyPreset = (preset) => {
         setForm(f => ({ ...f, platform: preset.platform, display_name: preset.display_name, sub_text: preset.sub_text, icon: preset.icon, color: preset.color, gradient: preset.gradient }))
@@ -222,10 +247,35 @@ const SocialLinkForm = ({ initial, onSubmit, onCancel, uploading }) => {
 
     const set = (key) => (e) => {
         let val = e.target.type === 'checkbox' ? e.target.checked : e.target.value
-        if (key === 'display_name') return setForm(f => ({ ...f, display_name: val, platform: f.platform || val }))
+        if (key === 'display_name') {
+            setForm(f => ({ ...f, display_name: val, platform: f.platform || val }))
+            setErrors((current) => {
+                const next = { ...current }
+                delete next.display_name
+                if (String(val || '').trim()) delete next.platform
+                return next
+            })
+            return
+        }
         if (key === 'platform') {
             setForm(f => ({ ...f, platform: val }))
             const p = getPlatformPreset(val); if (p) applyPreset(p)
+            setErrors((current) => {
+                if (!current.platform) return current
+                const next = { ...current }
+                delete next.platform
+                return next
+            })
+            return
+        }
+        if (key === 'url') {
+            setForm(f => ({ ...f, [key]: val }))
+            setErrors((current) => {
+                if (!current.url) return current
+                const next = { ...current }
+                delete next.url
+                return next
+            })
             return
         }
         if (key === 'color') setColorDraft(val)
@@ -240,6 +290,20 @@ const SocialLinkForm = ({ initial, onSubmit, onCancel, uploading }) => {
         try { setIconPreview(URL.createObjectURL(file)) } catch { setIconPreview(null) }
     }
 
+    const handleSubmit = (e) => {
+        e.preventDefault()
+
+        const nextErrors = validateSocialLinkForm(form)
+        setErrors(nextErrors)
+
+        if (Object.keys(nextErrors).length > 0) return
+
+        onSubmit(form, iconFile)
+    }
+
+    const getInputClass = (field, extra = '') =>
+        `w-full bg-[#0d0d22] border rounded-xl px-4 py-2.5 text-gray-200 placeholder-gray-600 text-sm outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/20 transition-all ${errors[field] ? 'border-red-500/50 focus:border-red-500/60 focus:ring-red-500/20' : 'border-white/10'} ${extra}`.trim()
+
     const sectionTitle = (icon, text) => (
         <div className="flex items-center gap-2 text-[11px] text-gray-500 uppercase tracking-widest my-1">
             <div className="flex-1 h-px bg-white/6" />
@@ -249,10 +313,10 @@ const SocialLinkForm = ({ initial, onSubmit, onCancel, uploading }) => {
     )
 
     return (
-        <form onSubmit={(e) => { e.preventDefault(); onSubmit(form, iconFile) }} className="p-5 sm:p-6 space-y-5">
-            
+        <form onSubmit={handleSubmit} noValidate className="p-5 sm:p-6 space-y-5">
+
             {sectionTitle(<Settings2 className="w-3 h-3" />, "Presets & Info")}
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
                     <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-white/10">
@@ -268,10 +332,10 @@ const SocialLinkForm = ({ initial, onSubmit, onCancel, uploading }) => {
                     </div>
                 </div>
 
-                <InputField label="Platform" value={form.platform} onChange={set('platform')} placeholder="e.g. LinkedIn" required />
-                <InputField label="Display Name" value={form.display_name} onChange={set('display_name')} placeholder="e.g. Let's Connect" required />
+                <InputField label="Platform" value={form.platform} onChange={set('platform')} placeholder="e.g. LinkedIn" required error={errors.platform} />
+                <InputField label="Display Name" value={form.display_name} onChange={set('display_name')} placeholder="e.g. Let's Connect" required error={errors.display_name} />
                 <InputField label="Sub Text" value={form.sub_text} onChange={set('sub_text')} placeholder="e.g. on LinkedIn" />
-                <InputField label="URL" value={form.url} onChange={set('url')} placeholder="https://example.com" required />
+                <InputField label="URL" value={form.url} onChange={set('url')} placeholder="https://example.com" required error={errors.url} />
             </div>
 
             {sectionTitle(<Palette className="w-3 h-3" />, "Styling")}
@@ -336,7 +400,7 @@ const SocialLinkForm = ({ initial, onSubmit, onCancel, uploading }) => {
             </div>
 
             {sectionTitle(<ExternalLink className="w-3 h-3" />, "Visibility & Order")}
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <InputField label="Sort Order" type="number" value={form.sort_order} onChange={set('sort_order')} placeholder="Empty = bottom" min="0" />
                 <div className="space-y-3 pt-6">

@@ -34,6 +34,34 @@ const formatDate = (dateStr) => {
     return new Date(dateStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
+const validateAboutForm = (form, photoFile, cvFile, initial) => {
+    const errors = {}
+
+    const hasPhoto = Boolean(photoFile || initial?.photo_url)
+    const hasCv = Boolean(cvFile || initial?.cv_url)
+
+    if (!hasPhoto) {
+        errors.photo = 'Photo profile wajib diisi.'
+    }
+
+    if (!String(form.name || '').trim()) {
+        errors.name = 'Full name wajib diisi.'
+    }
+
+    if (!String(form.description || '').trim()) {
+        errors.description = 'Bio wajib diisi.'
+    }
+
+    if (!hasCv) {
+        errors.cv = 'CV / Resume wajib diisi.'
+    }
+
+    return errors
+}
+
+const FieldError = ({ message }) =>
+    message ? <p className="mt-2 text-sm text-red-400">{message}</p> : null
+
 /* ── Modal ── */
 const Modal = ({ title, onClose, children }) => (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6">
@@ -99,11 +127,10 @@ const AboutCard = ({ item, onEdit, onDelete, onTogglePublish, onViewCv }) => {
                         <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a1a]/60 via-transparent to-transparent sm:bg-gradient-to-r sm:from-transparent sm:to-[#0a0a1a]/80" />
 
                         {/* Published badge on photo */}
-                        <div className={`absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold border backdrop-blur-sm ${
-                            item.is_published
+                        <div className={`absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold border backdrop-blur-sm ${item.is_published
                                 ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
                                 : 'bg-gray-500/20 border-gray-500/30 text-gray-400'
-                        }`}>
+                            }`}>
                             {item.is_published ? <CheckCircle2 className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
                             {item.is_published ? 'Published' : 'Draft'}
                         </div>
@@ -133,11 +160,10 @@ const AboutCard = ({ item, onEdit, onDelete, onTogglePublish, onViewCv }) => {
                             <button
                                 onClick={() => onTogglePublish(item)}
                                 title={item.is_published ? 'Unpublish' : 'Publish'}
-                                className={`p-2 rounded-lg border text-xs transition-all duration-200 ${
-                                    item.is_published
+                                className={`p-2 rounded-lg border text-xs transition-all duration-200 ${item.is_published
                                         ? 'border-emerald-500/25 text-emerald-400 hover:bg-emerald-500/15'
                                         : 'border-white/10 text-gray-500 hover:text-white hover:border-white/20 hover:bg-white/5'
-                                }`}
+                                    }`}
                             >
                                 {item.is_published ? <Globe className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
                             </button>
@@ -200,23 +226,39 @@ const AboutCard = ({ item, onEdit, onDelete, onTogglePublish, onViewCv }) => {
 const AboutForm = ({ initial, onSubmit, onCancel, uploading, onViewCv }) => {
     const isEditing = Boolean(initial)
     const [form, setForm] = useState({
-        name:         initial?.name         ?? '',
-        description:  initial?.description  ?? '',
-        quote:        initial?.quote        ?? '',
+        name: initial?.name ?? '',
+        description: initial?.description ?? '',
+        quote: initial?.quote ?? '',
         is_published: initial?.is_published ?? true,
     })
-    const [photoFile,    setPhotoFile]    = useState(null)
-    const [cvFile,       setCvFile]       = useState(null)
+    const [photoFile, setPhotoFile] = useState(null)
+    const [cvFile, setCvFile] = useState(null)
     const [photoPreview, setPhotoPreview] = useState(isEditing ? (initial?.photo_url || null) : null)
-    const [cvLabel,      setCvLabel]      = useState(isEditing && initial?.cv_url ? initial.cv_url.split('/').pop() : null)
+    const [cvLabel, setCvLabel] = useState(isEditing && initial?.cv_url ? initial.cv_url.split('/').pop() : null)
+    const [errors, setErrors] = useState({})
 
-    const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }))
+    const set = (key) => (e) => {
+        const value = e.target.value
+        setForm((f) => ({ ...f, [key]: value }))
+        setErrors((current) => {
+            if (!current[key]) return current
+            const next = { ...current }
+            delete next[key]
+            return next
+        })
+    }
 
     const handlePhotoChange = (e) => {
         const file = e.target.files[0]
         if (!file) return
         setPhotoFile(file)
         setPhotoPreview(URL.createObjectURL(file))
+        setErrors((current) => {
+            if (!current.photo) return current
+            const next = { ...current }
+            delete next.photo
+            return next
+        })
     }
 
     const handleCvChange = (e) => {
@@ -224,13 +266,38 @@ const AboutForm = ({ initial, onSubmit, onCancel, uploading, onViewCv }) => {
         if (!file) return
         setCvFile(file)
         setCvLabel(file.name)
+        setErrors((current) => {
+            if (!current.cv) return current
+            const next = { ...current }
+            delete next.cv
+            return next
+        })
     }
 
     const inputCls = 'w-full bg-[#0d0d22] border border-white/10 rounded-xl px-4 py-2.5 text-gray-200 placeholder-gray-600 text-sm outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/20 transition-all'
     const labelCls = 'text-xs text-indigo-300/70 uppercase tracking-wider font-medium'
+    const getInputClass = (field) =>
+        `${inputCls} ${errors[field] ? 'border-red-500/50 focus:border-red-500/60 focus:ring-red-500/20' : ''}`
+
+    const getUploadClass = (field) =>
+        `flex items-center gap-4 w-full bg-[#0d0d22] border rounded-xl px-4 py-3.5 cursor-pointer transition-all group/cv ${errors[field]
+            ? 'border-red-500/50 hover:border-red-500/70'
+            : 'border-dashed border-white/12 hover:border-indigo-500/40 hover:bg-white/3'
+        }`
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+
+        const nextErrors = validateAboutForm(form, photoFile, cvFile, initial)
+        setErrors(nextErrors)
+
+        if (Object.keys(nextErrors).length > 0) return
+
+        onSubmit(form, photoFile, cvFile)
+    }
 
     return (
-        <form onSubmit={(e) => { e.preventDefault(); onSubmit(form, photoFile, cvFile) }} className="p-5 sm:p-6 space-y-5">
+        <form onSubmit={handleSubmit} noValidate className="p-5 sm:p-6 space-y-5">
 
             {/* ── Section: Identity ── */}
             <div className="space-y-4">
@@ -243,27 +310,30 @@ const AboutForm = ({ initial, onSubmit, onCancel, uploading, onViewCv }) => {
                 {/* Photo + Name side by side */}
                 <div className="flex gap-4 items-start">
                     {/* Photo uploader */}
-                    <label className="relative shrink-0 cursor-pointer group/photo">
-                        <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-dashed border-white/15 group-hover/photo:border-indigo-500/50 transition-colors bg-white/5">
-                            {photoPreview ? (
-                                <img src={photoPreview} alt="preview" className="w-full h-full object-cover" />
-                            ) : (
-                                <div className="w-full h-full flex flex-col items-center justify-center gap-1">
-                                    <ImageIcon className="w-6 h-6 text-gray-600" />
-                                    <span className="text-[9px] text-gray-600 text-center leading-tight">Upload<br />Photo</span>
+                    <div className="space-y-1.5 shrink-0">
+                        <label className="relative shrink-0 cursor-pointer group/photo block">
+                            <div className={`w-24 h-24 rounded-2xl overflow-hidden border-2 border-dashed transition-colors bg-white/5 ${errors.photo ? 'border-red-500/50 group-hover/photo:border-red-500/70' : 'border-white/15 group-hover/photo:border-indigo-500/50'}`}>
+                                {photoPreview ? (
+                                    <img src={photoPreview} alt="preview" className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full flex flex-col items-center justify-center gap-1">
+                                        <ImageIcon className="w-6 h-6 text-gray-600" />
+                                        <span className="text-[9px] text-gray-600 text-center leading-tight">Upload<br />Photo</span>
+                                    </div>
+                                )}
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/photo:opacity-100 transition-opacity flex items-center justify-center rounded-2xl">
+                                    <Upload className="w-5 h-5 text-white" />
+                                </div>
+                            </div>
+                            <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
+                            {photoFile && (
+                                <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-[#0a0a1a] flex items-center justify-center">
+                                    <CheckCircle2 className="w-3 h-3 text-white" />
                                 </div>
                             )}
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/photo:opacity-100 transition-opacity flex items-center justify-center rounded-2xl">
-                                <Upload className="w-5 h-5 text-white" />
-                            </div>
-                        </div>
-                        <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
-                        {photoFile && (
-                            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-[#0a0a1a] flex items-center justify-center">
-                                <CheckCircle2 className="w-3 h-3 text-white" />
-                            </div>
-                        )}
-                    </label>
+                        </label>
+                        <FieldError message={errors.photo} />
+                    </div>
 
                     {/* Name field */}
                     <div className="flex-1 space-y-1.5">
@@ -273,10 +343,10 @@ const AboutForm = ({ initial, onSubmit, onCancel, uploading, onViewCv }) => {
                             value={form.name}
                             onChange={set('name')}
                             placeholder="e.g. Asep Sutrisna"
-                            required
-                            className={inputCls}
+                            className={getInputClass('name')}
                         />
                         <p className="text-[10px] text-gray-600">Displayed as the main heading on your About page</p>
+                        <FieldError message={errors.name} />
                     </div>
                 </div>
             </div>
@@ -297,10 +367,10 @@ const AboutForm = ({ initial, onSubmit, onCancel, uploading, onViewCv }) => {
                         onChange={set('description')}
                         placeholder="Describe yourself — your skills, experience, and what drives you..."
                         rows={5}
-                        required
-                        className={inputCls + ' resize-none'}
+                        className={getInputClass('description') + ' resize-none'}
                     />
                     <p className="text-[10px] text-gray-600">{form.description.length} characters</p>
+                    <FieldError message={errors.description} />
                 </div>
 
                 {/* Quote */}
@@ -335,7 +405,7 @@ const AboutForm = ({ initial, onSubmit, onCancel, uploading, onViewCv }) => {
                 {/* CV Upload */}
                 <div className="space-y-1.5">
                     <label className={labelCls}>CV / Resume</label>
-                    <label className="flex items-center gap-4 w-full bg-[#0d0d22] border border-dashed border-white/12 rounded-xl px-4 py-3.5 cursor-pointer hover:border-indigo-500/40 hover:bg-white/3 transition-all group/cv">
+                    <label className={getUploadClass('cv')}>
                         <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border transition-all ${cvLabel ? 'bg-emerald-500/15 border-emerald-500/30' : 'bg-white/5 border-white/10 group-hover/cv:border-indigo-500/30'}`}>
                             <FileText className={`w-5 h-5 ${cvLabel ? 'text-emerald-300' : 'text-gray-600'}`} />
                         </div>
@@ -352,6 +422,7 @@ const AboutForm = ({ initial, onSubmit, onCancel, uploading, onViewCv }) => {
                         )}
                         <input type="file" accept="application/pdf,.doc,.docx" onChange={handleCvChange} className="hidden" />
                     </label>
+                    <FieldError message={errors.cv} />
                     {isEditing && initial?.cv_url && !cvFile && (
                         <button type="button" onClick={() => onViewCv(initial.cv_url)}
                             className="inline-flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 transition-colors mt-1">
@@ -370,13 +441,11 @@ const AboutForm = ({ initial, onSubmit, onCancel, uploading, onViewCv }) => {
                 <button
                     type="button"
                     onClick={() => setForm((f) => ({ ...f, is_published: !f.is_published }))}
-                    className={`relative w-11 h-6 rounded-full border transition-all duration-300 ${
-                        form.is_published ? 'bg-indigo-500 border-indigo-400' : 'bg-white/10 border-white/15'
-                    }`}
+                    className={`relative w-11 h-6 rounded-full border transition-all duration-300 ${form.is_published ? 'bg-indigo-500 border-indigo-400' : 'bg-white/10 border-white/15'
+                        }`}
                 >
-                    <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300 ${
-                        form.is_published ? 'left-[22px]' : 'left-0.5'
-                    }`} />
+                    <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300 ${form.is_published ? 'left-[22px]' : 'left-0.5'
+                        }`} />
                 </button>
             </div>
 

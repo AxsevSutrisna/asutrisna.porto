@@ -396,7 +396,7 @@ const ProjectDetails = () => {
                   >
                     <div className="absolute inset-0 translate-y-[100%] bg-gradient-to-r from-blue-600/10 to-purple-600/10 transition-transform duration-300 group-hover:translate-y-[0%]" />
                     <ExternalLink className="relative w-4 h-4 md:w-5 md:h-5 group-hover:rotate-12 transition-transform" />
-                    <span className="relative font-medium">Live Demo</span>
+                    <span className="relative font-medium">Visit Link</span>
                   </a>
 
                   <a

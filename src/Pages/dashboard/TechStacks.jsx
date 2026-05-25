@@ -64,6 +64,24 @@ const toSlug = (value) =>
         .replace(/\s+/g, '-')
         .replace(/[^a-z0-9-]/g, '')
 
+const validateTechStackForm = (form, iconFile, initial) => {
+    const errors = {}
+
+    if (!String(form.name || '').trim()) {
+        errors.name = 'Name wajib diisi.'
+    }
+
+    const hasIcon = Boolean(iconFile || initial?.icon_url)
+    if (!hasIcon) {
+        errors.icon = 'Icon wajib diupload.'
+    }
+
+    return errors
+}
+
+const FieldError = ({ message }) =>
+    message ? <p className="mt-2 text-sm text-red-400">{message}</p> : null
+
 const TechStackCard = ({ item, onEdit, onDelete, onToggleActive }) => (
     <Card>
         <div className="p-4 flex flex-col h-full gap-4">
@@ -139,6 +157,7 @@ const TechStackForm = ({ initial, onSubmit, onCancel, uploading }) => {
     const [iconFile, setIconFile] = useState(null)
     const [preview, setPreview] = useState(initial?.icon_url || null)
     const [autoGenerateSlug, setAutoGenerateSlug] = useState(!initial)
+    const [errors, setErrors] = useState({})
 
     const set = (key) => (event) => {
         const value = key === 'is_active' ? event.target.checked : event.target.value
@@ -149,6 +168,12 @@ const TechStackForm = ({ initial, onSubmit, onCancel, uploading }) => {
                 name: value,
                 slug: autoGenerateSlug ? toSlug(value) : current.slug,
             }))
+            setErrors((current) => {
+                if (!current.name) return current
+                const next = { ...current }
+                delete next.name
+                return next
+            })
             return
         }
 
@@ -172,18 +197,55 @@ const TechStackForm = ({ initial, onSubmit, onCancel, uploading }) => {
         if (!file) return
         setIconFile(file)
         setPreview(URL.createObjectURL(file))
+        setErrors((current) => {
+            if (!current.icon) return current
+            const next = { ...current }
+            delete next.icon
+            return next
+        })
     }
+
+    const handleSubmit = (event) => {
+        event.preventDefault()
+
+        const nextErrors = validateTechStackForm(form, iconFile, initial)
+        setErrors(nextErrors)
+
+        if (Object.keys(nextErrors).length > 0) {
+            return
+        }
+
+        onSubmit(form, iconFile)
+    }
+
+    const inputClass = (field) =>
+        `w-full bg-[#0d0d22] border rounded-xl px-4 py-2.5 text-gray-200 placeholder-gray-600 text-sm outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/20 transition-all ${errors[field] ? 'border-red-500/50 focus:border-red-500/60 focus:ring-red-500/20' : 'border-white/10'
+        }`
+
+    const uploadClass =
+        `flex items-center gap-4 w-full bg-[#0d0d22] border rounded-xl px-4 py-4 cursor-pointer transition-all ${errors.icon
+            ? 'border-red-500/50 hover:border-red-500/70'
+            : 'border-dashed border-white/15 hover:border-indigo-500/40 hover:bg-white/4'
+        }`
 
     return (
         <form
-            onSubmit={(event) => {
-                event.preventDefault()
-                onSubmit(form, iconFile)
-            }}
+            onSubmit={handleSubmit}
+            noValidate
             className="p-5 sm:p-6 space-y-4"
         >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <InputField label="Name" value={form.name} onChange={set('name')} placeholder="e.g. ReactJS" required />
+                <div className="space-y-1.5">
+                    <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">Name *</label>
+                    <input
+                        type="text"
+                        value={form.name}
+                        onChange={set('name')}
+                        placeholder="e.g. ReactJS"
+                        className={inputClass('name')}
+                    />
+                    <FieldError message={errors.name} />
+                </div>
                 <div className="space-y-1.5">
                     <InputField label="Slug" value={form.slug} onChange={set('slug')} placeholder="Auto-generated from name" />
                     <p className="text-[11px] text-gray-500">Optional. If left empty, slug will be generated from the name.</p>
@@ -204,8 +266,8 @@ const TechStackForm = ({ initial, onSubmit, onCancel, uploading }) => {
                 </div>
 
                 <div className="sm:col-span-2 space-y-1.5">
-                    <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">Icon</label>
-                    <label className="flex items-center gap-4 w-full bg-[#0d0d22] border border-dashed border-white/15 rounded-xl px-4 py-4 cursor-pointer hover:border-indigo-500/40 hover:bg-white/4 transition-all">
+                    <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">Icon *</label>
+                    <label className={uploadClass}>
                         <div className="w-16 h-16 rounded-lg bg-white/5 border border-white/10 overflow-hidden flex items-center justify-center">
                             {preview ? (
                                 <img src={preview} alt="preview" className="w-full h-full object-contain p-2" />
@@ -219,6 +281,7 @@ const TechStackForm = ({ initial, onSubmit, onCancel, uploading }) => {
                         </div>
                         <input type="file" accept="image/*" onChange={handleFile} className="hidden" />
                     </label>
+                    <FieldError message={errors.icon} />
                 </div>
 
                 <label className="flex items-center gap-3 sm:col-span-2 text-sm text-gray-300">

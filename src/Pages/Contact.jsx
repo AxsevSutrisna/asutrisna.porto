@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { Share2, User, Mail, MessageSquare, Send } from "lucide-react";
+import { Share2, User, Mail, MessageSquare, Send, Loader2 } from "lucide-react";
+import { Button } from "../components/ui/button";
+import { Card } from "../components/ui/card";
 import SocialLinks from "../components/SocialLinks";
 import Komentar from "../components/Commentar";
 import Swal from "sweetalert2";
@@ -112,13 +114,7 @@ const ContactPage = () => {
         <h2
           data-aos="fade-down"
           data-aos-duration="1000"
-          className="inline-block text-3xl md:text-5xl font-bold text-center mx-auto text-transparent bg-clip-text"
-          style={{
-            backgroundImage: 'linear-gradient(45deg, var(--color-button-primary-from), var(--color-button-primary-to))',
-            WebkitBackgroundClip: 'text',
-            backgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}
+          className="inline-block text-3xl md:text-5xl font-display font-bold text-center mx-auto text-white"
         >
           <span>Hubungi Saya</span>
         </h2>
@@ -136,25 +132,17 @@ const ContactPage = () => {
         id="Contact"
       >
         <div className="container px-[1%] grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-[45%_55%] 2xl:grid-cols-[35%_65%] gap-12" >
-          <div
-
-            className="bg-white/5 backdrop-blur-xl rounded-3xl shadow-2xl p-5 py-10 sm:p-10 transform transition-all duration-500"
-            style={{
-              '--shadow-color': 'var(--color-shadow-primary)'
-            }}
-          >
+          <Card className="p-5 py-10 sm:p-10 transform transition-all duration-500">
             <div className="flex justify-between items-start mb-8">
               <div>
-                <h2 className="text-4xl font-bold mb-3 text-transparent bg-clip-text" style={{
-                  backgroundImage: 'linear-gradient(to right, var(--color-button-primary-from), var(--color-button-primary-to))'
-                }}>
+                <h2 className="text-4xl font-display font-bold mb-3 text-white">
                   Hubungi
                 </h2>
-                <p className="text-gray-400">
+                <p className="text-gray-300">
                   Ada yang ingin didiskusikan? Kirim saya pesan dan mari kita bicara.
                 </p>
               </div>
-              <Share2 className="w-10 h-10 opacity-50" style={{ color: 'var(--color-button-primary-from)' }} />
+              <Share2 className="w-10 h-10 opacity-50 text-white" />
             </div>
 
             <form
@@ -174,7 +162,7 @@ const ContactPage = () => {
                   value={formData.name}
                   onChange={handleChange}
                   disabled={isSubmitting}
-                  className="w-full p-4 pl-12 bg-white/10 rounded-xl border placeholder-gray-500 text-white focus:outline-none transition-all duration-300 disabled:opacity-50"
+                  className="neo-input w-full p-4 pl-12 placeholder-gray-400 transition-all duration-300 disabled:opacity-50"
                   style={{ borderColor: 'var(--color-input-border)' }}
                   required
                 />
@@ -192,7 +180,7 @@ const ContactPage = () => {
                   value={formData.email}
                   onChange={handleChange}
                   disabled={isSubmitting}
-                  className="w-full p-4 pl-12 bg-white/10 rounded-xl border placeholder-gray-500 text-white focus:outline-none transition-all duration-300 disabled:opacity-50"
+                  className="neo-input w-full p-4 pl-12 placeholder-gray-400 transition-all duration-300 disabled:opacity-50"
                   style={{ borderColor: 'var(--color-input-border)' }}
                   required
                 />
@@ -209,32 +197,42 @@ const ContactPage = () => {
                   value={formData.message}
                   onChange={handleChange}
                   disabled={isSubmitting}
-                  className="w-full resize-none p-4 pl-12 bg-white/10 rounded-xl border placeholder-gray-500 text-white focus:outline-none transition-all duration-300 h-[9.9rem] disabled:opacity-50"
+                  className="neo-input w-full resize-none p-4 pl-12 placeholder-gray-400 transition-all duration-300 h-[9.9rem] disabled:opacity-50"
                   style={{ borderColor: 'var(--color-input-border)' }}
                   required
                 />
               </div>
-              <button
-                data-aos="fade-up"
-                data-aos-delay="400"
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full text-white py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))', boxShadow: 'hover:0 0 20px rgba(var(--color-primary-dark-rgb),0.3)' }}
-              >
-                <Send className="w-5 h-5" />
-                {isSubmitting ? 'Mengirim...' : 'Kirim Pesan'}
-              </button>
+              <div data-aos="fade-up" data-aos-delay="400">
+                <Button
+                  variant="default"
+                  size="default"
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="h-11 px-5 w-full justify-center disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 text-indigo-300 animate-spin" />
+                      <span className="font-medium">Mengirim...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 text-indigo-300" />
+                      <span className="font-medium">Kirim Pesan</span>
+                    </>
+                  )}
+                </Button>
+              </div>
             </form>
 
             <div className="mt-10 pt-6 border-t border-white/10 flex justify-center space-x-6">
               <SocialLinks />
             </div>
-          </div>
+          </Card>
 
-          <div className="  bg-white/5 backdrop-blur-xl rounded-3xl p-3 py-3 md:p-10 md:py-8 shadow-2xl transform transition-all duration-500 hover:shadow-[#6366f1]/10">
+          <Card className="p-3 py-3 md:p-10 md:py-8 transform transition-all duration-500">
             <Komentar />
-          </div>
+          </Card>
         </div>
       </div>
     </div>

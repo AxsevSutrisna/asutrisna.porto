@@ -67,14 +67,14 @@ export default function Dashboard() {
               key={to}
               to={to}
               onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-sm font-medium shrink-0 ${active
-                ? 'bg-gradient-to-r from-indigo-500/20 to-purple-500/15 border border-indigo-500/30 text-white'
-                : 'text-gray-400 hover:text-gray-200 hover:bg-white/5 border border-transparent'
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-sm font-medium shrink-0 border ${active
+                ? 'bg-white text-black border-black shadow-[4px_4px_0_rgba(0,0,0,0.55)]'
+                : 'text-gray-400 hover:text-gray-200 hover:bg-white/5 border-transparent'
                 }`}
             >
-              <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-indigo-400' : ''}`} />
+              <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-black' : ''}`} />
               {label}
-              {active && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-400" />}
+              {active && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-black" />}
             </Link>
           )
         })}
@@ -82,6 +82,7 @@ export default function Dashboard() {
 
       {/* Logout */}
       <button
+        type="button"
         onClick={handleLogout}
         className="shrink-0 flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:text-red-400 hover:bg-red-500/5 border border-transparent hover:border-red-500/15 transition-all duration-200 text-sm"
       >
@@ -99,7 +100,7 @@ export default function Dashboard() {
       </Helmet>
 
       {/* Kunci: TIDAK pakai overflow-hidden di sini supaya scrollbar main bisa diklik */}
-      <div className="flex text-white" style={{ height: '100dvh' }}>
+      <div className="dashboard-admin flex text-white" style={{ height: '100dvh' }}>
         {/* Mobile overlay */}
         {sidebarOpen && (
           <div

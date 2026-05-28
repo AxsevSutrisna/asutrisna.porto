@@ -10,15 +10,12 @@ import {
     Eye,
     EyeOff,
     Star,
-    StarOff,
     ExternalLink,
     Link2,
     GripVertical,
-    Upload,
     Palette,
     Settings2,
 } from 'lucide-react'
-import { HexColorPicker, HexColorInput } from 'react-colorful'
 
 /* ── Fallback Icon Mapping ── */
 import {
@@ -137,7 +134,6 @@ const FieldError = ({ message }) =>
 
 /* ── Premium Social Link Card ── */
 const SocialLinkCard = ({ item, onEdit, onDelete, onToggleActive, onSetPrimary, isDragging, isDropTarget }) => {
-    const [hovered, setHovered] = useState(false)
     const urlDomain = useMemo(() => {
         try { return new URL(item.url).hostname.replace('www.', '') }
         catch { return item.url.slice(0, 30) }
@@ -148,11 +144,7 @@ const SocialLinkCard = ({ item, onEdit, onDelete, onToggleActive, onSetPrimary, 
 
     return (
         <Card className={`${isDragging ? 'opacity-40 scale-95' : ''} ${isDropTarget ? 'ring-2 ring-indigo-500/80 ring-offset-2 ring-offset-[#0a0a1a]' : ''}`}>
-            <div
-                className="relative flex flex-col h-full p-5 gap-4 group/card"
-                onMouseEnter={() => setHovered(true)}
-                onMouseLeave={() => setHovered(false)}
-            >
+            <div className="relative flex flex-col h-full p-5 gap-4 group/card">
                 {/* Drag Handle Area */}
                 <div className="absolute left-0 top-0 bottom-0 w-8 flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity cursor-grab active:cursor-grabbing hover:bg-white/5 border-r border-white/5">
                     <GripVertical className="w-4 h-4 text-gray-500" />
@@ -235,14 +227,12 @@ const SocialLinkForm = ({ initial, onSubmit, onCancel, uploading }) => {
         is_primary: initial?.is_primary ?? false,
         is_active: initial?.is_active ?? true,
     })
-    const [colorDraft, setColorDraft] = useState(initial?.color || '#6366f1')
     const [iconFile, setIconFile] = useState(null)
     const [iconPreview, setIconPreview] = useState(initial?.icon || null)
     const [errors, setErrors] = useState({})
 
     const applyPreset = (preset) => {
         setForm(f => ({ ...f, platform: preset.platform, display_name: preset.display_name, sub_text: preset.sub_text, icon: preset.icon, color: preset.color, gradient: preset.gradient }))
-        setColorDraft(preset.color)
     }
 
     const set = (key) => (e) => {
@@ -278,7 +268,6 @@ const SocialLinkForm = ({ initial, onSubmit, onCancel, uploading }) => {
             })
             return
         }
-        if (key === 'color') setColorDraft(val)
         if (key === 'sort_order') val = val === '' ? '' : Math.max(0, Number(val) || 0)
         setForm(f => ({ ...f, [key]: val }))
     }
@@ -300,9 +289,6 @@ const SocialLinkForm = ({ initial, onSubmit, onCancel, uploading }) => {
 
         onSubmit(form, iconFile)
     }
-
-    const getInputClass = (field, extra = '') =>
-        `w-full bg-[#0d0d22] border rounded-xl px-4 py-2.5 text-gray-200 placeholder-gray-600 text-sm outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/20 transition-all ${errors[field] ? 'border-red-500/50 focus:border-red-500/60 focus:ring-red-500/20' : 'border-white/10'} ${extra}`.trim()
 
     const sectionTitle = (icon, text) => (
         <div className="flex items-center gap-2 text-[11px] text-gray-500 uppercase tracking-widest my-1">
@@ -365,7 +351,7 @@ const SocialLinkForm = ({ initial, onSubmit, onCancel, uploading }) => {
                     <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">Brand Color</label>
                     <div className="flex gap-2 flex-wrap">
                         {COLOR_PALETTE.slice(0, 8).map(color => (
-                            <button key={color} type="button" onClick={() => { setColorDraft(color); setForm(f => ({ ...f, color })) }}
+                            <button key={color} type="button" onClick={() => setForm(f => ({ ...f, color }))}
                                 className={`w-8 h-8 rounded-full border-2 transition-transform ${form.color === color ? 'border-white scale-110' : 'border-transparent hover:scale-105'}`}
                                 style={{ backgroundColor: color }} />
                         ))}
@@ -502,7 +488,7 @@ export default function SocialLinksDashboard() {
 
         try {
             await persistOrder(nextItems)
-        } catch (err) {
+        } catch {
             pushToast('error', 'Failed to reorder')
         } finally {
             setDraggingId(null); setDropTargetId(null)
@@ -573,7 +559,7 @@ export default function SocialLinksDashboard() {
             const { error } = await supabase.from('social_links').update({ is_primary: true }).eq('id', item.id)
             if (error) throw error
             pushToast('success', 'Primary link updated!'); fetchItems()
-        } catch (err) { pushToast('error', 'Failed to set primary') }
+        } catch { pushToast('error', 'Failed to set primary') }
     }
 
     const activePrimary = useMemo(() => items.find((i) => i.is_primary), [items])

@@ -40,7 +40,7 @@ export default function Login() {
         <div className="w-full max-w-md">
           <div className="relative group">
             <div className="absolute -inset-0.5 rounded-2xl blur opacity-30 group-hover:opacity-50 transition duration-700" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
-            <div className="relative bg-white/5 backdrop-blur-xl border border-white/15 rounded-2xl p-8 space-y-7">
+            <div className="neo-card relative p-8 space-y-7">
 
               {/* Header */}
               <div className="text-center space-y-3">
@@ -48,7 +48,7 @@ export default function Login() {
                   <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
                   <span className="text-indigo-300 text-xs font-medium">Admin Portal</span>
                 </div>
-                <h1 className="text-3xl font-bold text-white">Welcome Back</h1>
+                <h1 className="text-3xl font-display font-bold text-white">Welcome Back</h1>
                 <p className="text-gray-400 text-sm">Sign in to manage your portfolio</p>
               </div>
 
@@ -56,7 +56,7 @@ export default function Login() {
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-1.5">
                   <label className="text-xs text-gray-400 uppercase tracking-wider">Email</label>
-                  <div className="flex items-center bg-white/8 border border-white/15 rounded-xl overflow-hidden focus-within:border-indigo-500/60 transition-colors">
+                  <div className="neo-input flex items-center overflow-hidden focus-within:border-indigo-500/60 transition-colors">
                     <Mail className="w-4 h-4 text-gray-500 ml-4 shrink-0" />
                     <input
                       type="email"
@@ -71,7 +71,7 @@ export default function Login() {
 
                 <div className="space-y-1.5">
                   <label className="text-xs text-gray-400 uppercase tracking-wider">Password</label>
-                  <div className="flex items-center bg-white/8 border border-white/15 rounded-xl overflow-hidden focus-within:border-indigo-500/60 transition-colors">
+                  <div className="neo-input flex items-center overflow-hidden focus-within:border-indigo-500/60 transition-colors">
                     <Lock className="w-4 h-4 text-gray-500 ml-4 shrink-0" />
                     <input
                       type={showPassword ? 'text' : 'password'}
@@ -95,10 +95,9 @@ export default function Login() {
                   </div>
                 </div>
 
-                <button type="submit" disabled={loading} className="relative group/btn w-full mt-1">
-                  <div className="absolute -inset-0.5 rounded-xl opacity-70 blur group-hover/btn:opacity-100 transition duration-300" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
-                  <div className="relative h-11 rounded-xl border border-white/10 flex items-center justify-center gap-2 overflow-hidden" style={{ backgroundColor: 'var(--color-backdrop-base)' }}>
-                    <div className="absolute inset-0 scale-x-0 group-hover/btn:scale-x-100 origin-left transition-transform duration-500" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark-rgb, 99, 102, 241) / 0.2, var(--color-primary-light-rgb, 168, 85, 247) / 0.2)' }} />
+                <button type="submit" disabled={loading} className="neo-button neo-button-primary relative group/btn w-full mt-1">
+                  <div className="relative h-11 rounded-[0.85rem] flex items-center justify-center gap-2 overflow-hidden" style={{ backgroundColor: 'transparent' }}>
+                    <div className="absolute inset-0 scale-x-0 group-hover/btn:scale-x-100 origin-left transition-transform duration-500" style={{ background: 'linear-gradient(90deg, rgba(var(--color-primary-dark-rgb, 99, 102, 241), 0.2), rgba(var(--color-primary-light-rgb, 168, 85, 247), 0.2))' }} />
                     {loading ? (
                       <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                     ) : (

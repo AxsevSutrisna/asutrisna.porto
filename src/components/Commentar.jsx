@@ -3,6 +3,7 @@ import { MessageCircle, UserCircle2, Loader2, AlertCircle, Send, ImagePlus, X, P
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { supabase } from '../supabase';
+import { Button } from './ui/button';
 
 
 const Comment = memo(({ comment, formatDate, isPinned = false }) => (
@@ -158,18 +159,20 @@ const CommentForm = memo(({ onSubmit, isSubmitting }) => {
                                 alt="Profile preview"
                                 className="w-16 h-16 rounded-full object-cover border-2 border-indigo-500/50"
                             />
-                            <button
+                            <Button
                                 type="button"
                                 onClick={() => {
                                     setImagePreview(null);
                                     setImageFile(null);
                                     if (fileInputRef.current) fileInputRef.current.value = '';
                                 }}
-                                className="flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all group"
+                                variant="neutral"
+                                size="default"
+                                className="flex items-center gap-2 rounded-full justify-center text-red-300"
                             >
                                 <X className="w-4 h-4" />
                                 <span>Remove Photo</span>
-                            </button>
+                            </Button>
                         </div>
                     ) : (
                         <div className="w-full">
@@ -180,14 +183,16 @@ const CommentForm = memo(({ onSubmit, isSubmitting }) => {
                                 accept="image/*"
                                 className="hidden"
                             />
-                            <button
+                            <Button
                                 type="button"
                                 onClick={() => fileInputRef.current?.click()}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30 transition-all border border-dashed border-indigo-500/50 hover:border-indigo-500 group"
+                                variant="default"
+                                size="default"
+                                className="w-full justify-center gap-2 rounded-xl text-indigo-100"
                             >
                                 <ImagePlus className="w-5 h-5 group-hover:scale-110 transition-transform" />
                                 <span>Choose Profile Photo</span>
-                            </button>
+                            </Button>
                             <p className="text-center text-gray-400 text-sm mt-2">
                                 Max file size: 5MB
                             </p>
@@ -196,30 +201,27 @@ const CommentForm = memo(({ onSubmit, isSubmitting }) => {
                 </div>
             </div>
 
-            <button
-                type="submit"
-                disabled={isSubmitting}
-                data-aos="fade-up" data-aos-duration="1000"
-                className="relative w-full h-12 rounded-xl font-medium text-white overflow-hidden group transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed"
-                style={{
-                    backgroundImage: 'linear-gradient(to right, var(--color-button-primary-from), var(--color-button-primary-to))'
-                }}
-            >
-                <div className="absolute inset-0 bg-white/20 translate-y-12 group-hover:translate-y-0 transition-transform duration-300" />
-                <div className="relative flex items-center justify-center gap-2">
+            <div data-aos="fade-up" data-aos-duration="1000">
+                <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    variant="default"
+                    size="default"
+                    className="h-11 px-5 w-full justify-center disabled:cursor-not-allowed"
+                >
                     {isSubmitting ? (
                         <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            <span>Posting...</span>
+                            <Loader2 className="w-4 h-4 text-indigo-300 animate-spin" />
+                            <span className="font-medium">Posting...</span>
                         </>
                     ) : (
                         <>
-                            <Send className="w-4 h-4" />
-                            <span>Post Comment</span>
+                            <Send className="w-4 h-4 text-indigo-300" />
+                            <span className="font-medium">Post Comment</span>
                         </>
                     )}
-                </div>
-            </button>
+                </Button>
+            </div>
         </form>
     );
 });

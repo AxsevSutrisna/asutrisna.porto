@@ -56,7 +56,7 @@ const ApplyPresetModal = ({ preset, onApply, onClose }) => {
     <div
       ref={backdropRef}
       onClick={handleBackdropClick}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md"
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md"
     >
       <div
         className="relative w-full max-w-xl rounded-2xl border border-white/10 overflow-hidden shadow-2xl shadow-black/80 flex flex-col"

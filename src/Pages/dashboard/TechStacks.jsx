@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import ReactDOM from 'react-dom'
 import { supabase } from '../../supabase'
 import { useToast } from '../../hooks/useToast'
 import ToastStack from '../../components/ToastStack'
@@ -24,23 +25,26 @@ const Card = ({ children, className = '' }) => (
     </div>
 )
 
-const Modal = ({ title, onClose, children }) => (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6">
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-        <div className="relative z-10 w-full max-w-2xl flex flex-col" style={{ maxHeight: 'calc(100vh - 24px)' }}>
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-[#6366f1] to-[#a855f7] rounded-2xl blur opacity-20 pointer-events-none" />
-            <div className="relative bg-[#0a0a1a] border border-white/12 rounded-2xl flex flex-col overflow-hidden">
-                <div className="flex items-center justify-between px-5 py-4 border-b border-white/8 shrink-0">
-                    <h2 className="text-base font-semibold text-white">{title}</h2>
-                    <button type="button" onClick={onClose} className="p-1 text-gray-500 hover:text-white transition-colors">
-                        <X className="w-5 h-5" />
-                    </button>
+const Modal = ({ title, onClose, children }) =>
+    ReactDOM.createPortal(
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-6">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+            <div className="relative z-10 w-full max-w-2xl flex flex-col" style={{ maxHeight: 'calc(100vh - 24px)' }}>
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-[#6366f1] to-[#a855f7] rounded-2xl blur opacity-20 pointer-events-none" />
+                <div className="relative bg-[#0a0a1a] border border-white/12 rounded-2xl flex flex-col overflow-hidden">
+                    <div className="flex items-center justify-between px-5 py-4 border-b border-white/8 shrink-0">
+                        <h2 className="text-base font-semibold text-white">{title}</h2>
+                        <button type="button" onClick={onClose} className="p-1 text-gray-500 hover:text-white transition-colors">
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
+                    <div className="overflow-y-auto flex-1">{children}</div>
                 </div>
-                <div className="overflow-y-auto flex-1">{children}</div>
             </div>
-        </div>
-    </div>
-)
+        </div>,
+        document.body
+    )
+
 
 const InputField = ({ label, value, onChange, placeholder, type = 'text', required = false }) => (
     <div className="space-y-1.5">

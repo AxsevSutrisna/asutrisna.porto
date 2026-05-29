@@ -29,6 +29,71 @@ const SectionHeader = memo(() => (
 ))
 SectionHeader.displayName = 'SectionHeader'
 
+/**
+ * Parses a description string into structured blocks:
+ * - Lines starting with '- ' or '• ' → rendered as <ul><li> list (semantic, SEO-friendly)
+ * - Blank lines → paragraph break
+ * - Other text → rendered as a <p>
+ *
+ * Groups consecutive bullet lines together into a single <ul>.
+ */
+function renderDescription(text) {
+    if (!text) return null
+
+    const lines = text.split('\n')
+    const blocks = [] // array of { type: 'bullet'|'text', content: string }
+
+    lines.forEach((raw) => {
+        const line = raw.trim()
+        if (!line) return // skip empty lines
+        const isBullet = /^[-•–]\s+/.test(line)
+        if (isBullet) {
+            blocks.push({ type: 'bullet', content: line.replace(/^[-•–]\s+/, '') })
+        } else {
+            blocks.push({ type: 'text', content: line })
+        }
+    })
+
+    if (!blocks.length) return null
+
+    // Group consecutive bullets into <ul>, interleave with <p> for text
+    const elements = []
+    let i = 0
+    while (i < blocks.length) {
+        if (blocks[i].type === 'bullet') {
+            // Collect all consecutive bullet items
+            const items = []
+            while (i < blocks.length && blocks[i].type === 'bullet') {
+                items.push(blocks[i].content)
+                i++
+            }
+            elements.push(
+                <ul key={`ul-${i}`} className="space-y-1.5 list-none">
+                    {items.map((item, j) => (
+                        <li key={j} className="flex items-start gap-2 text-sm sm:text-base text-gray-200 leading-relaxed">
+                            <span
+                                className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0"
+                                style={{ backgroundColor: 'var(--color-primary-light)' }}
+                                aria-hidden="true"
+                            />
+                            <span>{item}</span>
+                        </li>
+                    ))}
+                </ul>
+            )
+        } else {
+            elements.push(
+                <p key={`p-${i}`} className="text-sm sm:text-base text-gray-200 leading-relaxed">
+                    {blocks[i].content}
+                </p>
+            )
+            i++
+        }
+    }
+
+    return <div className="space-y-2">{elements}</div>
+}
+
 const ExperienceCard = ({ experience }) => {
     const techStack = Array.isArray(experience.tech_stack) ? experience.tech_stack : []
 
@@ -80,9 +145,9 @@ const ExperienceCard = ({ experience }) => {
                 </div>
 
                 {experience.description && (
-                    <p className="mt-5 text-sm sm:text-base text-gray-200 leading-relaxed">
-                        {experience.description}
-                    </p>
+                    <div className="mt-5">
+                        {renderDescription(experience.description)}
+                    </div>
                 )}
 
                 {techStack.length > 0 && (

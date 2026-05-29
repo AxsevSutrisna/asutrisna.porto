@@ -205,7 +205,7 @@ export default function ThemeManager() {
                 {pickerOpen === fieldKey && (
                     <div
                         ref={modalRef}
-                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+                        className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
                         onClick={(e) => {
                             // Only close if clicking directly on the backdrop, not the modal content
                             if (e.target === modalRef.current) {

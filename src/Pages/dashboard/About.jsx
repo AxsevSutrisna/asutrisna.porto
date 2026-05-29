@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import ReactDOM from 'react-dom'
 import { supabase } from '../../supabase'
 import { useToast } from '../../hooks/useToast'
 import ToastStack from '../../components/ToastStack'
@@ -57,23 +58,25 @@ const FieldError = ({ message }) =>
     message ? <p className="mt-2 text-sm text-red-400">{message}</p> : null
 
 /* ── Modal ── */
-const Modal = ({ title, onClose, children }) => (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6">
-        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-        <div className="relative z-10 w-full max-w-3xl flex flex-col" style={{ maxHeight: 'calc(100vh - 24px)' }}>
-            <div className="absolute -inset-0.5 rounded-2xl blur opacity-25 pointer-events-none" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
-            <div className="relative bg-[#0a0a1a] border border-white/10 rounded-2xl flex flex-col overflow-hidden">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-white/8 shrink-0">
-                    <h2 className="text-base font-semibold text-white">{title}</h2>
-                    <button type="button" onClick={onClose} className="p-1.5 rounded-lg text-gray-500 hover:text-white hover:bg-white/8 transition-all">
-                        <X className="w-4 h-4" />
-                    </button>
+const Modal = ({ title, onClose, children }) =>
+    ReactDOM.createPortal(
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-6">
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+            <div className="relative z-10 w-full max-w-3xl flex flex-col" style={{ maxHeight: 'calc(100vh - 24px)' }}>
+                <div className="absolute -inset-0.5 rounded-2xl blur opacity-25 pointer-events-none" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
+                <div className="relative bg-[#0a0a1a] border border-white/12 rounded-2xl flex flex-col overflow-hidden">
+                    <div className="flex items-center justify-between px-5 py-4 border-b border-white/8 shrink-0">
+                        <h2 className="text-base font-semibold text-white">{title}</h2>
+                        <button type="button" onClick={onClose} className="p-1 text-gray-500 hover:text-white transition-colors">
+                            <span className="text-xl leading-none">×</span>
+                        </button>
+                    </div>
+                    <div className="overflow-y-auto flex-1">{children}</div>
                 </div>
-                <div className="overflow-y-auto flex-1">{children}</div>
             </div>
-        </div>
-    </div>
-)
+        </div>,
+        document.body
+    )
 
 /* ── Premium About Card ── */
 const AboutCard = ({ item, onEdit, onDelete, onTogglePublish, onViewCv }) => {
@@ -435,7 +438,7 @@ const AboutForm = ({ initial, onSubmit, onCancel, uploading, onViewCv }) => {
                 <button
                     type="button"
                     onClick={() => setForm((f) => ({ ...f, is_published: !f.is_published }))}
-                    className={`relative w-11 h-6 rounded-full border transition-all duration-300 ${form.is_published ? 'bg-indigo-500 border-indigo-400' : 'bg-white/10 border-white/15'
+                    className={`relative w-11 h-6 rounded-full border transition-all duration-300 no-neo ${form.is_published ? 'bg-indigo-500 border-indigo-400' : 'bg-white/10 border-white/15'
                         }`}
                 >
                     <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300 ${form.is_published ? 'left-[22px]' : 'left-0.5'
@@ -446,7 +449,7 @@ const AboutForm = ({ initial, onSubmit, onCancel, uploading, onViewCv }) => {
             {/* ── Actions ── */}
             <div className="flex justify-end gap-2 pt-1 border-t border-white/6">
                 <button type="button" onClick={onCancel}
-                    className="px-4 py-2 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:border-white/20 text-sm transition-all">
+                    className="px-4 py-2 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:border-white/20 text-sm transition-all no-neo">
                     Cancel
                 </button>
                 <button type="submit" disabled={uploading} className="relative group/s">

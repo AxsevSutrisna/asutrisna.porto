@@ -321,7 +321,7 @@ export default function WorkExperienceForm({
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="px-4 py-2 rounded-xl border border-white/10 text-gray-400 hover:text-white text-sm transition-colors"
+                    className="px-4 py-2 rounded-xl border border-white/10 text-gray-400 hover:text-white text-sm transition-colors no-neo"
                 >
                     Cancel
                 </button>

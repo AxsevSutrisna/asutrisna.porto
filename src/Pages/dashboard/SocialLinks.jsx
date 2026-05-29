@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import ReactDOM from 'react-dom'
 import { supabase } from '../../supabase'
 import { useToast } from '../../hooks/useToast'
 import ToastStack from '../../components/ToastStack'
@@ -51,23 +52,26 @@ const Card = ({ children, className = '' }) => (
     </div>
 )
 
-const Modal = ({ title, onClose, children }) => (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6">
-        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-        <div className="relative z-10 w-full max-w-2xl flex flex-col" style={{ maxHeight: 'calc(100vh - 24px)' }}>
-            <div className="absolute -inset-0.5 rounded-2xl blur opacity-20 pointer-events-none" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
-            <div className="relative bg-[#0a0a1a] border border-white/10 rounded-2xl flex flex-col overflow-hidden">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-white/8 shrink-0">
-                    <h2 className="text-base font-semibold text-white">{title}</h2>
-                    <button type="button" onClick={onClose} className="p-1.5 text-gray-500 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
-                        <X className="w-5 h-5" />
-                    </button>
+const Modal = ({ title, onClose, children }) =>
+    ReactDOM.createPortal(
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-6">
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+            <div className="relative z-10 w-full max-w-2xl flex flex-col" style={{ maxHeight: 'calc(100vh - 24px)' }}>
+                <div className="absolute -inset-0.5 rounded-2xl blur opacity-20 pointer-events-none" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
+                <div className="relative bg-[#0a0a1a] border border-white/10 rounded-2xl flex flex-col overflow-hidden">
+                    <div className="flex items-center justify-between px-6 py-4 border-b border-white/8 shrink-0">
+                        <h2 className="text-base font-semibold text-white">{title}</h2>
+                        <button type="button" onClick={onClose} className="p-1.5 text-gray-500 hover:text-white hover:bg-white/5 rounded-lg transition-colors no-neo">
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
+                    <div className="overflow-y-auto flex-1">{children}</div>
                 </div>
-                <div className="overflow-y-auto flex-1">{children}</div>
             </div>
-        </div>
-    </div>
-)
+        </div>,
+        document.body
+    )
+
 
 const InputField = ({ label, value, onChange, placeholder, type = 'text', required = false, min, error }) => (
     <div className="space-y-1.5">
@@ -309,7 +313,7 @@ const SocialLinkForm = ({ initial, onSubmit, onCancel, uploading }) => {
                         {Object.values(PLATFORM_PRESETS).map(preset => (
                             <button
                                 key={preset.platform} type="button" onClick={() => applyPreset(preset)}
-                                className={`shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium transition-all ${normalizePlatformKey(form.platform) === normalizePlatformKey(preset.platform) ? 'border-indigo-500/50 bg-indigo-500/15 text-indigo-200' : 'border-white/10 bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
+                                className={`shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium transition-all no-neo ${normalizePlatformKey(form.platform) === normalizePlatformKey(preset.platform) ? 'border-indigo-500/50 bg-indigo-500/15 text-indigo-200' : 'border-white/10 bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
                             >
                                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: preset.color }} />
                                 {preset.platform}
@@ -352,7 +356,7 @@ const SocialLinkForm = ({ initial, onSubmit, onCancel, uploading }) => {
                     <div className="flex gap-2 flex-wrap">
                         {COLOR_PALETTE.slice(0, 8).map(color => (
                             <button key={color} type="button" onClick={() => setForm(f => ({ ...f, color }))}
-                                className={`w-8 h-8 rounded-full border-2 transition-transform ${form.color === color ? 'border-white scale-110' : 'border-transparent hover:scale-105'}`}
+                                className={`w-8 h-8 rounded-full border-2 transition-transform no-neo ${form.color === color ? 'border-white scale-110' : 'border-transparent hover:scale-105'}`}
                                 style={{ backgroundColor: color }} />
                         ))}
                     </div>
@@ -372,7 +376,7 @@ const SocialLinkForm = ({ initial, onSubmit, onCancel, uploading }) => {
                 <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
                     {GRADIENT_PRESETS.map(preset => (
                         <button key={preset.label} type="button" onClick={() => setForm(f => ({ ...f, gradient: preset.value }))}
-                            className={`shrink-0 w-24 h-12 rounded-lg relative overflow-hidden border transition-all ${form.gradient === preset.value ? 'border-white ring-2 ring-indigo-500/40' : 'border-white/10 hover:border-white/30'}`}
+                            className={`shrink-0 w-24 h-12 rounded-lg relative overflow-hidden border transition-all no-neo ${form.gradient === preset.value ? 'border-white ring-2 ring-indigo-500/40' : 'border-white/10 hover:border-white/30'}`}
                         >
                             <div className={`absolute inset-0 bg-gradient-to-br ${preset.value} opacity-80`} />
                             <span className="absolute bottom-1 left-1.5 text-[9px] font-bold text-white drop-shadow-md">{preset.label}</span>
@@ -402,7 +406,7 @@ const SocialLinkForm = ({ initial, onSubmit, onCancel, uploading }) => {
             </div>
 
             <div className="flex justify-end gap-2 pt-3 border-t border-white/5">
-                <button type="button" onClick={onCancel} className="px-4 py-2 rounded-xl border border-white/10 text-gray-400 hover:text-white text-sm transition-colors">
+                <button type="button" onClick={onCancel} className="px-4 py-2 rounded-xl border border-white/10 text-gray-400 hover:text-white text-sm transition-colors no-neo">
                     Cancel
                 </button>
                 <button type="submit" disabled={uploading} className="relative group/s">

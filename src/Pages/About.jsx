@@ -3,6 +3,8 @@ import { FileText, Code, Award, Globe, ArrowUpRight, Sparkles } from "lucide-rea
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 import { supabase } from "../supabase"
+import PublicCtaButton from "../components/ui/public-cta-button"
+import { Badge } from "@/components/ui/badge"
 
 const ABOUT_FALLBACK = {
   name: "Asep Sutrisna Suhada Putra",
@@ -34,10 +36,7 @@ const Header = memo(({ name }) => (
   <div className="text-center lg:mb-8 mb-2 px-[5%]">
     <div className="inline-block relative group">
       <h2
-        className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text"
-        style={{
-          backgroundImage: 'linear-gradient(to right, var(--color-button-primary-from), var(--color-button-primary-to))'
-        }}
+        className="text-4xl md:text-5xl font-display font-bold text-white"
         data-aos="zoom-in-up"
         data-aos-duration="600"
       >
@@ -73,8 +72,8 @@ const ProfileImage = memo(({ photoUrl }) => (
       </div>
 
       <div className="relative">
-        <div className="w-72 h-72 sm:w-80 sm:h-80 rounded-full overflow-hidden shadow-[0_0_40px_rgba(120,119,198,0.3)] transform transition-all duration-700 group-hover:scale-105">
-          <div className="absolute inset-0 border-4 border-white/20 rounded-full z-20 transition-all duration-700 group-hover:border-white/40 group-hover:scale-105" />
+        <div className="w-72 h-72 sm:w-80 sm:h-80 rounded-full overflow-hidden transform transition-all duration-700 group-hover:scale-105 neo-photo bg-black/20">
+          <div className="absolute inset-0 rounded-full z-20 transition-all duration-700 group-hover:scale-105" />
 
           {/* Optimized overlay effects - disabled on mobile */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40 z-10 transition-opacity duration-700 group-hover:opacity-0 hidden sm:block" />
@@ -113,8 +112,8 @@ const StatCard = memo(({ icon: Icon, value, label, description, animation, href 
       className="relative group block h-full"
       href={href}
     >
-      <div className="relative z-10 bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/15 overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:bg-white/10 hover:border-white/30 h-full flex flex-col justify-between shadow-[0_0_15px_rgba(0,0,0,0.1)]">
-        <div className="absolute -z-10 inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-300" style={{ background: 'linear-gradient(to bottom right, var(--color-primary-dark), var(--color-primary-light))' }}></div>
+      <div className="relative z-10 p-6 h-full flex flex-col justify-between rounded-xl border-2 border-white/10 bg-white/5 shadow-[6px_6px_0_rgba(255,255,255,0.15)] hover:translate-x-[6px] hover:translate-y-[6px] hover:shadow-none hover:border-white/30 transition-all duration-200">
+        <div className="absolute -z-10 inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-300 rounded-xl" style={{ background: 'linear-gradient(to bottom right, var(--color-primary-dark), var(--color-primary-light))' }}></div>
 
         <div className="flex items-center justify-between mb-4">
           <div className="w-16 h-16 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/20 transition-transform duration-500 group-hover:rotate-12 group-hover:bg-white/20">
@@ -264,6 +263,12 @@ const AboutPage = () => {
 
   const content = aboutContent || ABOUT_FALLBACK
 
+  const initAOS = () => {
+    AOS.init({
+      once: false,
+    })
+  }
+
   const handleCvDownload = async (event) => {
     const cvValue = content.cv_url || ABOUT_FALLBACK.cv_url
 
@@ -298,7 +303,6 @@ const AboutPage = () => {
       document.body.appendChild(link)
       link.click()
       link.remove()
-
       URL.revokeObjectURL(objectUrl)
     } catch (error) {
       console.error('Failed to download CV:', error)
@@ -306,14 +310,7 @@ const AboutPage = () => {
     }
   }
 
-  // Optimized AOS initialization
   useEffect(() => {
-    const initAOS = () => {
-      AOS.init({
-        once: false,
-      });
-    };
-
     initAOS();
 
     // Debounced resize handler
@@ -376,9 +373,7 @@ const AboutPage = () => {
               data-aos="fade-right"
               data-aos-duration="1000"
             >
-              <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))', WebkitBackgroundClip: 'text', backgroundClip: 'text' }}>
-                Hello, I&apos;m
-              </span>
+              <span className="font-display text-white">Hello, I&apos;m</span>
               <span
                 className="block mt-2 text-gray-200"
                 data-aos="fade-right"
@@ -399,46 +394,51 @@ const AboutPage = () => {
             </p>
 
             {/* Quote Section */}
-            <div
-              className="relative rounded-2xl p-4 my-6 bg-white/5 backdrop-blur-xl border border-white/15 shadow-2xl overflow-hidden hover:bg-white/10 hover:border-white/30 transition-all duration-300 group"
+            <Badge
+              asChild
+              variant="default"
+              className="relative p-4 my-6 w-full flex justify-start rounded-xl whitespace-normal overflow-hidden group text-left"
               data-aos="fade-up"
               data-aos-duration="1700"
             >
-              {/* Floating orbs background */}
-              <div className="absolute top-2 right-4 w-16 h-16 rounded-full blur-xl" style={{ background: 'linear-gradient(90deg, rgba(var(--color-primary-dark-rgb),0.2), rgba(var(--color-primary-light-rgb),0.2))' }}></div>
-              <div className="absolute -bottom-4 -left-2 w-12 h-12 rounded-full blur-lg" style={{ background: 'linear-gradient(90deg, rgba(var(--color-primary-light-rgb),0.2), rgba(var(--color-primary-dark-rgb),0.2))' }}></div>
+              <div>
+                {/* Floating orbs background */}
+                <div className="absolute top-2 right-4 w-16 h-16 rounded-full blur-xl" style={{ background: 'linear-gradient(90deg, rgba(var(--color-primary-dark-rgb),0.2), rgba(var(--color-primary-light-rgb),0.2))' }}></div>
+                <div className="absolute -bottom-4 -left-2 w-12 h-12 rounded-full blur-lg" style={{ background: 'linear-gradient(90deg, rgba(var(--color-primary-light-rgb),0.2), rgba(var(--color-primary-dark-rgb),0.2))' }}></div>
 
-              {/* Quote icon */}
-              <div className="absolute top-3 left-4 opacity-30" style={{ color: 'var(--color-primary-dark)' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z" />
-                </svg>
+                {/* Quote icon */}
+                <div className="absolute top-3 left-4 opacity-30" style={{ color: 'var(--color-primary-dark)' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z" />
+                  </svg>
+                </div>
+
+                <blockquote className="text-center lg:text-left italic font-medium text-sm relative z-10 pl-6" style={{ color: 'var(--color-text-secondary)' }}>
+                  &quot;{content.quote || ABOUT_FALLBACK.quote}&quot;
+                </blockquote>
               </div>
+            </Badge>
 
-              <blockquote className="text-center lg:text-left italic font-medium text-sm relative z-10 pl-6" style={{ color: 'var(--color-text-secondary)' }}>
-                &quot;{content.quote || ABOUT_FALLBACK.quote}&quot;
-              </blockquote>
-            </div>
-
-            <div className="flex flex-col lg:flex-row items-center lg:items-start gap-4 lg:gap-4 lg:px-0 w-full">
-              <a href={content.cv_url || ABOUT_FALLBACK.cv_url} onClick={handleCvDownload} className="w-full lg:w-auto" target="_blank" rel="noopener noreferrer">
-                <button
-                  data-aos="fade-up"
-                  data-aos-duration="800"
-                  className="w-full lg:w-auto sm:px-6 py-2 sm:py-3 rounded-xl bg-white/10 backdrop-blur-xl border border-white/20 text-white font-medium transition-all duration-300 hover:scale-105 hover:bg-white/20 hover:border-white/40 flex items-center justify-center lg:justify-start gap-2 shadow-lg hover:shadow-xl"
-                >
-                  <FileText className="w-4 h-4 sm:w-5 sm:h-5" /> Download CV
-                </button>
-              </a>
-              <a href="#Portofolio" className="w-full lg:w-auto">
-                <button
-                  data-aos="fade-up"
-                  data-aos-duration="1000"
-                  className="w-full lg:w-auto sm:px-6 py-2 sm:py-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/15 text-gray-300 font-medium transition-all duration-300 hover:scale-105 hover:bg-white/10 hover:border-white/30 hover:text-white flex items-center justify-center lg:justify-start gap-2 shadow-lg hover:shadow-xl group"
-                >
-                  <Code className="w-4 h-4 sm:w-5 sm:h-5" /> View Projects
-                </button>
-              </a>
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 w-full">
+              <div data-aos="fade-up" data-aos-duration="800" className="w-full sm:w-auto">
+                <PublicCtaButton
+                  href={content.cv_url || ABOUT_FALLBACK.cv_url}
+                  text="Download CV"
+                  icon={FileText}
+                  onClick={handleCvDownload}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto"
+                />
+              </div>
+              <div data-aos="fade-up" data-aos-duration="1000" className="w-full sm:w-auto">
+                <PublicCtaButton
+                  href="#Portofolio"
+                  text="View Projects"
+                  icon={Code}
+                  className="w-full sm:w-auto"
+                />
+              </div>
             </div>
           </div>
 

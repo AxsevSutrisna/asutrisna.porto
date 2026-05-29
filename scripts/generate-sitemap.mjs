@@ -8,7 +8,7 @@ const __dirname = dirname(__filename)
 const projectRoot = resolve(__dirname, '..')
 const outputPath = resolve(projectRoot, 'public', 'sitemap.xml')
 
-const SITE_URL = (process.env.SITE_URL || process.env.VITE_SITE_URL || 'https://asutrisna.dev').replace(/\/$/, '')
+const SITE_URL = (process.env.SITE_URL || process.env.VITE_SITE_URL || 'https://asutrisna-porto.vercel.app/').replace(/\/$/, '')
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY
 

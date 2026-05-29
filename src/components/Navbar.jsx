@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import { Button } from "./ui/button";
+import { Menubar, MenubarMenu, MenubarTrigger } from "./ui/menubar";
+
+const navItems = [
+    { href: "#Hero", label: "Home" },
+    { href: "#About", label: "About" },
+    { href: "#WorkExperience", label: "Work Experience" },
+    { href: "#Portofolio", label: "Portofolio" },
+    { href: "#Contact", label: "Contact" },
+];
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [activeSection, setActiveSection] = useState("Hero");
-
-    const navItems = [
-        { href: "#Hero", label: "Home" },
-        { href: "#About", label: "About" },
-        { href: "#WorkExperience", label: "Work Experience" },
-        { href: "#Portofolio", label: "Portofolio" },
-        { href: "#Contact", label: "Contact" },
-    ];
 
     useEffect(() => {
         const handleScroll = () => {
@@ -70,9 +72,9 @@ const Navbar = () => {
         ? { backgroundColor: 'var(--color-backdrop-base)' }
         : scrolled
             ? {
-                backgroundColor: 'rgba(var(--color-backdrop-base-rgb), 0.55)',
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)',
+                backgroundColor: 'rgba(var(--color-backdrop-base-rgb), 0.88)',
+                backdropFilter: 'blur(14px)',
+                WebkitBackdropFilter: 'blur(14px)',
             }
             : undefined;
 
@@ -82,14 +84,13 @@ const Navbar = () => {
                 }`}
             style={navStyle}
         >
-            <div className="mx-auto px-[5%] sm:px-[5%] lg:px-[10%]">
-                <div className="flex items-center justify-between h-16">
-                    {/* Logo */}
+            <div className="mx-auto px-[5%] sm:px-[5%] lg:px-[10%] pt-3">
+                <div className="neo-shell flex items-center justify-between h-16 px-4 sm:px-5" style={{ backgroundColor: 'rgba(255, 255, 255, 0.04)' }}>
                     <div className="flex-shrink-0">
                         <a
                             href="#Hero"
                             onClick={(e) => scrollToSection(e, "#Hero")}
-                            className="text-xl font-bold bg-gradient-to-r from-theme-primary-light to-theme-primary-dark bg-clip-text text-transparent"
+                            className="text-lg sm:text-xl font-display font-bold text-white tracking-tight"
                         >
                             asutrisnadev
                         </a>
@@ -97,46 +98,39 @@ const Navbar = () => {
 
                     {/* Desktop Navigation */}
                     <div className="hidden md:block">
-                        <div className="ml-8 flex items-center space-x-8">
+                        <Menubar className="ml-8 border-none bg-transparent shadow-none h-auto py-1">
                             {navItems.map((item) => (
-                                <a
-                                    key={item.label}
-                                    href={item.href}
-                                    onClick={(e) => scrollToSection(e, item.href)}
-                                    className="group relative px-1 py-2 text-sm font-medium"
-                                >
-                                    <span
-                                        className={`relative z-10 transition-colors duration-300 ${activeSection === item.href.substring(1)
-                                            ? "bg-gradient-to-r from-theme-primary-dark to-theme-primary-light bg-clip-text text-transparent font-semibold"
-                                            : "text-[#e2d3fd] group-hover:text-white"
+                                <MenubarMenu key={item.label}>
+                                    <MenubarTrigger
+                                        asChild
+                                        className={`cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 ${activeSection === item.href.substring(1)
+                                            ? "bg-white text-black hover:bg-white hover:text-black focus:bg-white focus:text-black data-[state=open]:bg-white data-[state=open]:text-black shadow-[4px_4px_0_var(--color-shadow-primary)]"
+                                            : "text-[color:var(--color-text-secondary)] hover:text-white hover:bg-white/10"
                                             }`}
                                     >
-                                        {item.label}
-                                    </span>
-                                    <span
-                                        className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-theme-primary-dark to-theme-primary-light transform origin-left transition-transform duration-300 ${activeSection === item.href.substring(1)
-                                            ? "scale-x-100"
-                                            : "scale-x-0 group-hover:scale-x-100"
-                                            }`}
-                                    />
-                                </a>
+                                        <a href={item.href} onClick={(e) => scrollToSection(e, item.href)}>
+                                            {item.label}
+                                        </a>
+                                    </MenubarTrigger>
+                                </MenubarMenu>
                             ))}
-                        </div>
+                        </Menubar>
                     </div>
 
                     {/* Mobile Menu Button */}
                     <div className="md:hidden">
-                        <button
+                        <Button
                             onClick={() => setIsOpen(!isOpen)}
-                            className={`relative p-2 text-theme-text-secondary hover:text-white transition-transform duration-300 ease-in-out transform ${isOpen ? "rotate-90 scale-125" : "rotate-0 scale-100"
-                                }`}
+                            variant="ghost"
+                            size="icon"
+                            className={`relative transition-transform duration-300 ease-in-out transform ${isOpen ? "rotate-90 scale-105" : "rotate-0 scale-100"}`}
                         >
                             {isOpen ? (
                                 <X className="w-6 h-6" />
                             ) : (
                                 <Menu className="w-6 h-6" />
                             )}
-                        </button>
+                        </Button>
                     </div>
                 </div>
             </div>
@@ -148,15 +142,15 @@ const Navbar = () => {
                     : "max-h-0 opacity-0 overflow-hidden"
                     }`}
             >
-                <div className="px-4 py-6 space-y-4">
+                <div className="mx-[5%] mt-3 neo-shell px-4 py-4 space-y-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.04)' }}>
                     {navItems.map((item, index) => (
-                        <a
+                        <Button
                             key={item.label}
-                            href={item.href}
-                            onClick={(e) => scrollToSection(e, item.href)}
-                            className={`block px-4 py-3 text-lg font-medium transition-all duration-300 ease ${activeSection === item.href.substring(1)
-                                ? "bg-gradient-to-r from-theme-primary-dark to-theme-primary-light bg-clip-text text-transparent font-semibold"
-                                : "text-[#e2d3fd] hover:text-white"
+                            asChild
+                            variant={activeSection === item.href.substring(1) ? "default" : "ghost"}
+                            className={`w-full justify-start rounded-2xl px-4 py-3 text-base font-medium transition-all duration-300 ease ${activeSection === item.href.substring(1)
+                                ? "neo-button-primary text-white"
+                                : "text-[var(--color-text-secondary)] border-white/15"
                                 }`}
                             style={{
                                 transitionDelay: `${index * 100}ms`,
@@ -164,8 +158,10 @@ const Navbar = () => {
                                 opacity: isOpen ? 1 : 0,
                             }}
                         >
-                            {item.label}
-                        </a>
+                            <a href={item.href} onClick={(e) => scrollToSection(e, item.href)}>
+                                {item.label}
+                            </a>
+                        </Button>
                     ))}
                 </div>
             </div>

@@ -14,7 +14,6 @@ export default function ThemeManager() {
     const [copiedField, setCopiedField] = useState(null)
     const [pickerOpen, setPickerOpen] = useState(null) // Track which color picker is open
     const modalRef = useRef(null)
-    const isClosingRef = useRef(false)
     const { toasts, pushToast, removeToast } = useToast()
 
     useEffect(() => {
@@ -122,8 +121,7 @@ export default function ThemeManager() {
         const backdropBase = colors.backdrop_base || DEFAULT_THEME.backdrop_base
         const backdropGlow = colors.backdrop_glow || DEFAULT_THEME.backdrop_glow
         const gridLine = colors.background_grid_line || DEFAULT_THEME.background_grid_line
-        const blobOne = colors.background_blob_one || DEFAULT_THEME.background_blob_one
-        const blobTwo = colors.background_blob_two || DEFAULT_THEME.background_blob_two
+        // background blobs are referenced directly in preview elements below
 
         return {
             background: `
@@ -178,7 +176,7 @@ export default function ThemeManager() {
                         <button
                             type="button"
                             onClick={() => handleCopyToClipboard(value, fieldKey)}
-                            className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition shrink-0"
+                            className="p-2 text-gray-400 hover:text-white transition shrink-0"
                             title="Copy color code"
                         >
                             {copiedField === fieldKey ? (
@@ -192,7 +190,7 @@ export default function ThemeManager() {
                         <button
                             type="button"
                             onClick={() => handleResetField(fieldKey)}
-                            className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition shrink-0"
+                            className="p-2 text-gray-400 hover:text-white transition shrink-0"
                             title="Reset to default"
                         >
                             <RotateCcw className="w-4 h-4" />
@@ -231,7 +229,7 @@ export default function ThemeManager() {
                                 <h3 className="text-white font-semibold">{label}</h3>
                                 <button
                                     onClick={() => setPickerOpen(null)}
-                                    className="p-1 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition"
+                                    className="p-1 text-gray-400 hover:text-white transition"
                                     onMouseDown={(e) => e.stopPropagation()}
                                 >
                                     <X className="w-5 h-5" />
@@ -292,14 +290,14 @@ export default function ThemeManager() {
                                     <button
                                         onClick={() => handleResetField(fieldKey)}
                                         onMouseDown={(e) => e.stopPropagation()}
-                                        className="flex-1 px-3 py-2 bg-gray-600/20 hover:bg-gray-600/30 text-gray-300 rounded-lg text-sm transition"
+                                        className="flex-1 px-3 py-2 text-sm"
                                     >
                                         Reset to Default
                                     </button>
                                     <button
                                         onClick={() => setPickerOpen(null)}
                                         onMouseDown={(e) => e.stopPropagation()}
-                                        className="flex-1 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm transition font-medium"
+                                        className="flex-1 px-3 py-2 text-sm font-medium"
                                     >
                                         Done
                                     </button>
@@ -324,7 +322,7 @@ export default function ThemeManager() {
                 </div>
                 <button
                     onClick={handleReset}
-                    className="flex items-center gap-2 px-4 py-2 text-gray-300 hover:bg-red-500/10 hover:text-red-400 rounded-lg transition border border-red-500/20"
+                    className="flex items-center gap-2 px-4 py-2 text-gray-300 hover:text-red-400 transition border border-red-500/20"
                 >
                     <RotateCcw className="w-4 h-4" />
                     Reset All
@@ -636,11 +634,11 @@ export default function ThemeManager() {
                         cursor: saving || Object.values(invalidFields).some(Boolean) ? 'not-allowed' : 'pointer'
                     }}
                 >
-                    <div 
-                        className="absolute -inset-1.5 rounded-full blur-md opacity-60 group-hover:opacity-100 transition duration-500" 
-                        style={{ background: `linear-gradient(135deg, ${colors.button_primary_from || colors.primary_color_dark}, ${colors.button_primary_to || colors.primary_color_light})` }} 
+                    <div
+                        className="absolute -inset-1.5 rounded-full blur-md opacity-60 group-hover:opacity-100 transition duration-500"
+                        style={{ background: `linear-gradient(135deg, ${colors.button_primary_from || colors.primary_color_dark}, ${colors.button_primary_to || colors.primary_color_light})` }}
                     />
-                    <div 
+                    <div
                         className="relative flex items-center gap-2 px-8 py-4 rounded-full shadow-2xl border border-white/20 transition-all duration-300"
                         style={{ background: `linear-gradient(135deg, ${colors.button_primary_from || colors.primary_color_dark}, ${colors.button_primary_to || colors.primary_color_light})` }}
                     >

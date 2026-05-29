@@ -8,23 +8,19 @@
  * - Derive filter categories dynamically from the data
  * - Filter displayed presets when user selects a category tab
  * - Open a full-detail preview modal on Preview click
- * - On Apply (card or modal): map preset color_scheme → ThemeManager field names
- *   and call onPresetApply({ ...mapped colors })
+ * - On Apply (card or modal): pass all color_scheme fields directly to onPresetApply
+ *   since the DB now stores all 44 color configurations matching site_theme columns
  *
- * Color key mapping
- * -----------------
- * DB preset color_scheme         → ThemeManager colors state
- *   primary_dark                 →  primary_color_dark
- *   primary_light                →  primary_color_light
- *   secondary_dark               →  secondary_color_dark
- *   secondary_light              →  secondary_color_light
- *   backdrop_base                →  backdrop_base          (same)
- *   backdrop_glow                →  backdrop_glow          (same)
+ * Color key mapping (after migration)
+ * ------------------------------------
+ * DB preset color_scheme keys are now IDENTICAL to site_theme column names:
+ *   primary_color_dark, primary_color_light, secondary_color_dark,
+ *   secondary_color_light, backdrop_base, backdrop_glow,
+ *   background_blob_one ... overlay_bg_color (44 fields total)
  *
- * Additionally the preset primary/secondary colors are propagated to the
- * derivative fields (buttons, blobs, links, glows) for a full one-click
- * theme experience. Callers may override this by handling onPresetApply
- * themselves.
+ * Backward compatibility:
+ *   If a preset still has the old 6-key format (primary_dark, primary_light, etc.),
+ *   mapPresetToTheme will derive the remaining fields as a fallback.
  *
  * Props
  * -----
@@ -44,10 +40,24 @@ import ApplyPresetModal from './ApplyPresetModal'
 
 /**
  * Maps a preset's color_scheme (DB keys) → ThemeManager color field names.
- * Also fans out primary/secondary into buttons, blobs, links, glows so the
- * whole theme coheres after a single preset apply.
+ *
+ * NEW behavior (after migration):
+ *   color_scheme sudah berisi semua 44 field dengan nama yang sama persis
+ *   dengan kolom site_theme → langsung return tanpa derivasi.
+ *
+ * FALLBACK (backward compat, preset belum ter-migrate):
+ *   Jika color_scheme masih menggunakan format lama (primary_dark, primary_light, ...)
+ *   dengan hanya 6 kunci, lakukan derivasi seperti sebelumnya.
  */
 function mapPresetToTheme(colorScheme) {
+  // ── Deteksi format baru: kunci menggunakan nama kolom site_theme langsung ──
+  // Format baru memiliki 'primary_color_dark' (bukan 'primary_dark')
+  if (colorScheme.primary_color_dark) {
+    // Semua field sudah siap pakai, langsung pass ke ThemeManager
+    return { ...colorScheme }
+  }
+
+  // ── Fallback: format lama (6 kunci pendek) ────────────────────────────────
   const {
     primary_dark    = '#6366f1',
     primary_light   = '#a855f7',
@@ -74,6 +84,7 @@ function mapPresetToTheme(colorScheme) {
     background_blob_three:      secondary_light,
     background_blob_four:       secondary_dark,
     background_grid_line:       primary_dark,
+    background_grid_line_soft:  primary_dark,
     background_gradient_from:   primary_dark,
     background_gradient_to:     primary_light,
 
@@ -107,11 +118,28 @@ function mapPresetToTheme(colorScheme) {
 
 /**
  * Checks whether the current ThemeManager colors match a preset's core palette.
- * Returns true when the 6 main fields all match.
+ *
+ * Mendukung dua format color_scheme:
+ * - Format baru: key = nama kolom site_theme (primary_color_dark, dll)
+ * - Format lama: key pendek (primary_dark, dll) — untuk backward compat
  */
 function isPresetActive(preset, currentColors) {
   if (!preset?.color_scheme || !currentColors) return false
   const cs = preset.color_scheme
+
+  // Format baru: gunakan key yang sama dengan site_theme
+  if (cs.primary_color_dark) {
+    return (
+      currentColors.primary_color_dark    === cs.primary_color_dark   &&
+      currentColors.primary_color_light   === cs.primary_color_light  &&
+      currentColors.secondary_color_dark  === cs.secondary_color_dark &&
+      currentColors.secondary_color_light === cs.secondary_color_light &&
+      currentColors.backdrop_base         === cs.backdrop_base         &&
+      currentColors.backdrop_glow         === cs.backdrop_glow
+    )
+  }
+
+  // Format lama: key pendek
   return (
     currentColors.primary_color_dark    === cs.primary_dark   &&
     currentColors.primary_color_light   === cs.primary_light  &&

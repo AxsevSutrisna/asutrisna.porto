@@ -1,4 +1,5 @@
 import { X } from 'lucide-react'
+import { Button } from './ui/button'
 
 const TOAST_STYLES = {
     success: 'border-emerald-500/25 bg-emerald-500/10 text-emerald-100',
@@ -18,14 +19,16 @@ export default function ToastStack({ toasts = [], onDismiss }) {
                 >
                     <div className="flex items-start justify-between gap-4">
                         <div className="text-sm leading-relaxed">{toast.message}</div>
-                        <button
+                        <Button
                             type="button"
                             onClick={() => onDismiss?.(toast.id)}
-                            className="mt-0.5 text-current/70 hover:text-current transition-colors"
+                            variant="ghost"
+                            size="icon"
+                            className="mt-0.5 rounded-full text-current/70 hover:text-current"
                             aria-label="Dismiss notification"
                         >
                             <X className="w-4 h-4" />
-                        </button>
+                        </Button>
                     </div>
                 </div>
             ))}

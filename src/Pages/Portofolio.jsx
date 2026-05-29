@@ -16,35 +16,15 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import Certificate from "../components/Certificate";
 import { Code, Award, Boxes } from "lucide-react";
+import { Button } from "../components/ui/button";
 
 
 const ToggleButton = ({ onClick, isShowingMore }) => (
-  <button
+  <Button
     onClick={onClick}
-    className="
-      px-3 py-1.5
-      text-slate-300 
-      hover:text-white 
-      text-sm 
-      font-medium 
-      transition-all 
-      duration-300 
-      ease-in-out
-      flex 
-      items-center 
-      gap-2
-      bg-white/5 
-      hover:bg-white/10
-      rounded-xl
-      border 
-      border-white/15
-      hover:border-white/30
-      backdrop-blur-xl
-      shadow-xl
-      group
-      relative
-      overflow-hidden
-    "
+    variant="ghost"
+    size="sm"
+    className="group relative flex items-center gap-2 overflow-hidden rounded-xl px-3 py-1.5 text-sm font-medium"
   >
     <span className="relative z-10 flex items-center gap-2">
       {isShowingMore ? "See Less" : "See More"}
@@ -68,7 +48,7 @@ const ToggleButton = ({ onClick, isShowingMore }) => (
       </svg>
     </span>
     <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-purple-500/50 transition-all duration-300 group-hover:w-full"></span>
-  </button>
+  </Button>
 );
 
 
@@ -209,13 +189,8 @@ export default function FullWidthTabs() {
     <div className="md:px-[10%] px-[5%] w-full sm:mt-0 mt-[3rem] overflow-hidden" id="Portofolio" style={{ backgroundColor: 'var(--color-backdrop-base)' }}>
       {/* Header section - unchanged */}
       <div className="text-center pb-10" data-aos="fade-up" data-aos-duration="1000">
-        <h2 className="inline-block text-3xl md:text-5xl font-bold text-center mx-auto text-transparent bg-clip-text">
-          <span style={{
-            backgroundImage: 'linear-gradient(45deg, var(--color-primary-dark) 10%, var(--color-primary-light) 93%)',
-            WebkitBackgroundClip: 'text',
-            backgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}>
+        <h2 className="inline-block text-3xl md:text-5xl font-display font-bold text-center mx-auto text-white">
+          <span>
             Portfolio Showcase
           </span>
         </h2>
@@ -232,10 +207,11 @@ export default function FullWidthTabs() {
           elevation={0}
           sx={{
             bgcolor: "transparent",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
+            border: "2px solid rgba(255, 255, 255, 0.14)",
             borderRadius: "20px",
             position: "relative",
             overflow: "hidden",
+            boxShadow: "6px 6px 0 var(--color-shadow-primary)",
             "&::before": {
               content: '""',
               position: "absolute",
@@ -262,7 +238,7 @@ export default function FullWidthTabs() {
               "& .MuiTab-root": {
                 fontSize: { xs: "0.9rem", md: "1rem" },
                 fontWeight: "600",
-                color: "#94a3b8",
+                color: "var(--color-text-secondary)",
                 textTransform: "none",
                 transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
                 padding: "20px 0",
@@ -270,7 +246,7 @@ export default function FullWidthTabs() {
                 margin: "8px",
                 borderRadius: "12px",
                 "&:hover": {
-                  color: "#ffffff",
+                  color: "var(--color-text-primary)",
                   backgroundColor: "rgba(255, 255, 255, 0.05)",
                   transform: "translateY(-2px)",
                   "& .lucide": {
@@ -278,12 +254,12 @@ export default function FullWidthTabs() {
                   },
                 },
                 "&.Mui-selected": {
-                  color: "#fff",
-                  background: "rgba(255, 255, 255, 0.1)",
+                  color: "var(--color-text-primary)",
+                  background: "color-mix(in srgb, var(--color-primary-light) 15%, transparent)",
                   boxShadow: "0 4px 15px -3px rgba(0, 0, 0, 0.1)",
-                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  border: "1px solid color-mix(in srgb, var(--color-primary-light) 30%, transparent)",
                   "& .lucide": {
-                    color: "#a78bfa",
+                    color: "inherit",
                   },
                 },
               },
@@ -319,7 +295,7 @@ export default function FullWidthTabs() {
           onChangeIndex={setValue}
         >
           <TabPanel value={value} index={0} dir={theme.direction}>
-            <div className="container mx-auto flex justify-center items-center overflow-hidden">
+            <div className="container mx-auto flex justify-center items-center p-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 gap-5">
                 {displayedProjects.map((project, index) => (
                   <div
@@ -349,7 +325,7 @@ export default function FullWidthTabs() {
           </TabPanel>
 
           <TabPanel value={value} index={1} dir={theme.direction}>
-            <div className="container mx-auto flex justify-center items-center overflow-hidden">
+            <div className="container mx-auto flex justify-center items-center p-4">
               <div className="grid grid-cols-1 md:grid-cols-3 md:gap-5 gap-4">
                 {displayedCertificates.map((certificate, index) => (
                   <div
@@ -373,7 +349,7 @@ export default function FullWidthTabs() {
           </TabPanel>
 
           <TabPanel value={value} index={2} dir={theme.direction}>
-            <div className="container mx-auto flex justify-center items-center overflow-hidden pb-[5%]">
+            <div className="container mx-auto flex justify-center items-center p-4 pb-[5%]">
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 lg:gap-8 gap-5">
                 {displayedTechStacks.map((stack, index) => (
                   <div

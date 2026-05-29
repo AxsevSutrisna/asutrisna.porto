@@ -1,13 +1,10 @@
 import { Home, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Button } from '../components/ui/button';
 
 export default function NotFoundPage() {
   const handleGoBack = () => {
     window.history.back();
-  };
-
-  const handleGoHome = () => {
-    // In a real app, you would use your router's navigation
-    window.location.href = '/';
   };
 
   return (
@@ -40,21 +37,22 @@ export default function NotFoundPage() {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <button
+          <Button
             onClick={handleGoBack}
-            className="flex items-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200 shadow-md hover:shadow-lg"
+            variant="ghost"
+            size="default"
+            className="flex items-center gap-2 px-6 py-3"
           >
             <ArrowLeft size={20} />
             Kembali
-          </button>
+          </Button>
 
-          <button
-            onClick={handleGoHome}
-            className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 shadow-md hover:shadow-lg"
-          >
-            <Home size={20} />
-            Beranda
-          </button>
+          <Button asChild variant="default" size="default" className="flex items-center gap-2 px-6 py-3">
+            <Link to="/">
+              <Home size={20} />
+              Beranda
+            </Link>
+          </Button>
         </div>
 
 

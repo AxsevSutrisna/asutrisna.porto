@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -65,6 +67,15 @@
 }
 
 :root {
+	--font-sans: 'DM Sans', system-ui, sans-serif;
+	--font-display: 'Space Grotesk', system-ui, sans-serif;
+	--font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+	--neo-border-width: 2px;
+	--neo-radius: 1rem;
+	--neo-shadow: 8px 8px 0 var(--color-shadow-primary);
+	--neo-shadow-hover: 10px 10px 0 var(--color-shadow-primary);
+	--neo-shadow-inset: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+
 	/* Primary Colors */
 	--color-primary-dark: #6366f1;
 	--color-primary-light: #a855f7;
@@ -107,7 +118,6 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
-	font-family: "Poppins", system-ui, sans-serif;
 	scroll-behavior: smooth;
 	scrollbar-width: thin;
 	scrollbar-color: rgba(99, 102, 241, 0.3) rgba(12, 5, 53, 0.356);
@@ -117,18 +127,50 @@ html,
 body {
 	overflow-x: hidden;
 	background: radial-gradient(circle at top, rgba(var(--color-backdrop-glow-rgb, 27, 18, 61), 0.6) 0%, var(--color-backdrop-base) 55%);
-	scroll-behavior: smooth !important;
+	font-family: var(--font-sans);
 	color: var(--color-text-primary);
 }
 
 /* Override standard text colors to use CSS variables */
 :not([class*="gradient"]):not([class*="transparent"]) {
+	html {
+		font-family: var(--font-sans);
+		background: var(--color-backdrop-base);
+	}
+
 	--tw-text-opacity: 1;
 }
 
+background: radial-gradient(circle at top, rgba(var(--color-backdrop-glow-rgb, 27, 18, 61), 0.45) 0%, transparent 42%),
+linear-gradient(180deg, color-mix(in srgb, var(--color-backdrop-base) 90%, #000 10%) 0%, var(--color-backdrop-base) 100%);
+font-family: var(--font-sans);
+
 /* Map Tailwind text colors to CSS variables - only for non-gradient text */
 .text-white:where(:not([class*="gradient"]):not([class*="transparent"]):not([class*="bg-clip"])) {
+	line-height: 1.6;
 	color: var(--color-text-primary) !important;
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6,
+	.font-display {
+		font-family: var(--font-display);
+		letter-spacing: -0.03em;
+	}
+
+	code,
+	pre,
+	.font-mono {
+		font-family: var(--font-mono);
+	}
+
+	::selection {
+		background: rgba(168, 85, 247, 0.35);
+		color: var(--color-text-primary);
+	}
 }
 
 .text-gray-300:where(:not([class*="gradient"]):not([class*="transparent"]):not([class*="bg-clip"])) {
@@ -245,6 +287,87 @@ body {
 
 .animate-shine {
 	animation: shine 1.5s ease-in-out infinite;
+}
+
+.neo-section {
+	padding-left: clamp(1rem, 5vw, 6rem);
+	padding-right: clamp(1rem, 5vw, 6rem);
+	padding-top: clamp(4rem, 7vw, 6rem);
+	padding-bottom: clamp(4rem, 7vw, 6rem);
+}
+
+.neo-shell {
+	border: var(--neo-border-width) solid var(--color-border-dark);
+	border-radius: var(--neo-radius);
+	background: rgba(255, 255, 255, 0.04);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+}
+
+.neo-card {
+	border: var(--neo-border-width) solid rgba(255, 255, 255, 0.14);
+	border-radius: var(--neo-radius);
+	background: rgba(255, 255, 255, 0.05);
+	box-shadow: var(--neo-shadow);
+	transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+.neo-card:hover {
+	transform: translate(-2px, -2px);
+	box-shadow: var(--neo-shadow-hover);
+	background: rgba(255, 255, 255, 0.07);
+}
+
+.neo-input {
+	border: var(--neo-border-width) solid rgba(255, 255, 255, 0.2);
+	border-radius: 0.9rem;
+	background: rgba(255, 255, 255, 0.06);
+	box-shadow: var(--neo-shadow-inset);
+	color: var(--color-text-primary);
+	outline: none;
+	transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.neo-input:focus {
+	border-color: var(--color-button-primary-from);
+	transform: translate(-1px, -1px);
+	box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15), var(--neo-shadow-inset);
+}
+
+.neo-button {
+	border: var(--neo-border-width) solid var(--color-border-dark);
+	border-radius: 0.9rem;
+	background: var(--color-text-primary);
+	color: var(--color-backdrop-base);
+	box-shadow: var(--neo-shadow);
+	transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+.neo-button:hover {
+	transform: translate(-2px, -2px);
+	box-shadow: var(--neo-shadow-hover);
+}
+
+.neo-button:active {
+	transform: translate(2px, 2px);
+	box-shadow: 4px 4px 0 var(--color-shadow-primary);
+}
+
+.neo-button-primary {
+	background: var(--color-button-primary-from);
+	color: white;
+}
+
+.neo-button-secondary {
+	background: rgba(255, 255, 255, 0.08);
+	color: var(--color-text-primary);
+}
+
+.neo-chip {
+	border: 2px solid rgba(255, 255, 255, 0.18);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.06);
+	box-shadow: 4px 4px 0 var(--color-shadow-primary);
 }
 
 
@@ -448,4 +571,130 @@ select:disabled option {
 
 .toast.error {
 	border-left: 4px solid #ef4444;
+}
+
+/* ------------------------
+	 Neo Brutalism Utilities
+	 ------------------------ */
+
+.force-solid-text.bg-clip-text,
+.bg-clip-text.force-solid {
+	background-image: none !important;
+	-webkit-background-clip: unset !important;
+	background-clip: unset !important;
+	color: var(--color-text-primary) !important;
+}
+
+.neo-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	padding: 0.6rem 1.1rem;
+	border: var(--neo-border-width) solid var(--color-primary-light);
+	border-radius: 0.75rem;
+	background: var(--color-backdrop-base);
+	box-shadow: var(--neo-shadow);
+	color: var(--color-text-primary);
+	transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+
+/* Pressed-on-hover: remove shadow and shift down to simulate press */
+.neo-btn:hover {
+	transform: translateY(4px);
+	box-shadow: none;
+	border-color: var(--color-primary-dark);
+}
+
+.neo-btn:active {
+	transform: translateY(6px);
+	box-shadow: none;
+}
+
+.neo-btn.ghost {
+	background: transparent;
+}
+
+.neo-btn.small {
+	padding: 0.35rem 0.6rem;
+	border-radius: 0.6rem;
+}
+
+/* Apply Neo-Brutalism pressed behavior to buttons that use rounded* classes
+   This keeps existing button markup but gives them the raised -> pressed interaction */
+button:not([data-slot="button"])[class*="rounded"] {
+	box-shadow: var(--neo-shadow);
+	transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+
+button:not([data-slot="button"])[class*="rounded"]:hover {
+	transform: translateY(4px);
+	box-shadow: none;
+	border-color: var(--color-primary-dark);
+}
+
+button:not([data-slot="button"])[class*="rounded"]:active {
+	transform: translateY(6px);
+	box-shadow: none;
+}
+
+/* Allow opting out by adding class 'no-neo' on buttons */
+button.no-neo {
+	box-shadow: none !important;
+	transform: none !important;
+}
+
+/* Keep dashboard admin buttons in the previous visual style */
+.dashboard-admin button[class*="rounded"] {
+	box-shadow: none !important;
+	transform: none !important;
+}
+
+.dashboard-admin button[class*="rounded"]:hover,
+.dashboard-admin button[class*="rounded"]:active {
+	box-shadow: none !important;
+	transform: none !important;
+}
+
+.neo-tag {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.35rem 0.8rem;
+	border-radius: 999px;
+	border: var(--neo-border-width) solid var(--color-border-light);
+	background: rgba(255, 255, 255, 0.02);
+	color: var(--color-text-secondary);
+	font-size: 0.9rem;
+	box-shadow: 6px 6px 0 var(--color-shadow-primary);
+}
+
+.neo-tag:hover {
+	box-shadow: 8px 8px 0 var(--color-shadow-primary);
+}
+
+.neo-photo {
+	border: 5px solid var(--color-primary-light);
+	border-radius: 9999px;
+}
+
+.neo-photo img {
+	border-radius: 9999px;
+	display: block;
+}
+
+/* Neo-card: use for stat cards, quote blocks, panels */
+.neo-card {
+	background: rgba(255, 255, 255, 0.04);
+	border-radius: 1rem;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	box-shadow: 0 8px 0 var(--color-shadow-primary);
+	backdrop-filter: blur(8px);
+	transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+
+.neo-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 14px 0 var(--color-shadow-primary);
+	border-color: rgba(255, 255, 255, 0.18);
 }

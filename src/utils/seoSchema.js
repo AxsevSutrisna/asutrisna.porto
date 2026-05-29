@@ -1,4 +1,4 @@
-const DEFAULT_ORIGIN = 'https://asutrisna.dev'
+const DEFAULT_ORIGIN = 'https://asutrisna-porto.vercel.app/'
 
 const trimString = (value) => String(value ?? '').trim()
 

@@ -22,12 +22,6 @@ import {
     Globe,
 } from 'lucide-react'
 
-const ABOUT_FALLBACK = {
-    name: 'Asep Sutrisna Suhada Putra',
-    description: 'Saya adalah mahasiswa Teknik Informatika yang berfokus pada pengembangan Front-End.',
-    quote: 'Leveraging AI as a professional tool, not a replacement.',
-}
-
 /* ── Helpers ── */
 const formatDate = (dateStr) => {
     if (!dateStr) return '—'
@@ -128,8 +122,8 @@ const AboutCard = ({ item, onEdit, onDelete, onTogglePublish, onViewCv }) => {
 
                         {/* Published badge on photo */}
                         <div className={`absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold border backdrop-blur-sm ${item.is_published
-                                ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
-                                : 'bg-gray-500/20 border-gray-500/30 text-gray-400'
+                            ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
+                            : 'bg-gray-500/20 border-gray-500/30 text-gray-400'
                             }`}>
                             {item.is_published ? <CheckCircle2 className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
                             {item.is_published ? 'Published' : 'Draft'}
@@ -161,8 +155,8 @@ const AboutCard = ({ item, onEdit, onDelete, onTogglePublish, onViewCv }) => {
                                 onClick={() => onTogglePublish(item)}
                                 title={item.is_published ? 'Unpublish' : 'Publish'}
                                 className={`p-2 rounded-lg border text-xs transition-all duration-200 ${item.is_published
-                                        ? 'border-emerald-500/25 text-emerald-400 hover:bg-emerald-500/15'
-                                        : 'border-white/10 text-gray-500 hover:text-white hover:border-white/20 hover:bg-white/5'
+                                    ? 'border-emerald-500/25 text-emerald-400 hover:bg-emerald-500/15'
+                                    : 'border-white/10 text-gray-500 hover:text-white hover:border-white/20 hover:bg-white/5'
                                     }`}
                             >
                                 {item.is_published ? <Globe className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
@@ -196,7 +190,7 @@ const AboutCard = ({ item, onEdit, onDelete, onTogglePublish, onViewCv }) => {
                                 <Quote className="w-8 h-8" />
                             </div>
                             <p className="text-xs text-indigo-300/90 italic leading-relaxed pr-8">
-                                "{item.quote}"
+                                &ldquo;{item.quote}&rdquo;
                             </p>
                         </div>
                     )}
@@ -388,7 +382,7 @@ const AboutForm = ({ initial, onSubmit, onCancel, uploading, onViewCv }) => {
                     </div>
                     {form.quote && (
                         <div className="rounded-lg bg-indigo-500/8 border border-indigo-500/20 px-3 py-2">
-                            <p className="text-xs text-indigo-300/80 italic">"{form.quote}"</p>
+                            <p className="text-xs text-indigo-300/80 italic">&ldquo;{form.quote}&rdquo;</p>
                         </div>
                     )}
                 </div>

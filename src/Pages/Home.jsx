@@ -3,6 +3,9 @@ import { Helmet } from "react-helmet-async"
 import { Github, Linkedin, Mail, ExternalLink, Instagram, Sparkles } from "lucide-react"
 import AOS from 'aos'
 import 'aos/dist/aos.css'
+import PublicCtaButton from '@/components/ui/public-cta-button'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { supabase } from '../supabase'
 import {
   buildPersonSchema,
@@ -14,41 +17,19 @@ import {
 } from '../utils/seoSchema'
 
 const TechStack = memo(({ tech }) => (
-  <div className="px-4 py-2 hidden sm:flex items-center gap-2 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-sm text-gray-300 hover:bg-white/10 hover:border-white/20 transition-all shadow-lg hover:shadow-indigo-500/10">
-    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+  <Badge variant="default" className="hidden sm:inline-flex">
+    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--color-primary-light)' }} />
     {tech}
-  </div>
+  </Badge>
 ));
 TechStack.displayName = 'TechStack';
 
-const CTAButton = memo(({ href, text, icon: Icon }) => (
-  <a href={href}>
-    <button className="group relative w-[160px]">
-      <div className="absolute -inset-0.5 rounded-xl opacity-40 blur-lg group-hover:opacity-80 transition-all duration-500" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }}></div>
-      <div className="relative h-11 bg-white/5 backdrop-blur-xl rounded-xl border border-white/15 leading-none overflow-hidden hover:bg-white/10 hover:border-white/30 transition-all duration-300 shadow-xl">
-        <div className="absolute inset-0 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500" style={{ background: 'linear-gradient(90deg, rgba(var(--color-primary-dark-rgb),0.15), rgba(var(--color-primary-light-rgb),0.15))' }}></div>
-        <span className="absolute inset-0 flex items-center justify-center gap-2 text-sm group-hover:gap-3 transition-all duration-300">
-          <span className="text-white font-medium z-10">
-            {text}
-          </span>
-          <Icon className={`w-4 h-4 text-indigo-300 ${text === 'Contact' ? 'group-hover:translate-x-1' : 'group-hover:rotate-45'} transform transition-all duration-300 z-10`} />
-        </span>
-      </div>
-    </button>
-  </a>
-));
-CTAButton.displayName = 'CTAButton';
-
 const SocialLink = memo(({ icon: Icon, link, label }) => (
-  <a href={link} target="_blank" rel="noopener noreferrer" aria-label={label}>
-    <button className="group relative p-3"
-      aria-label={label}>
-      <div className="absolute -inset-0.5 rounded-xl blur opacity-20 group-hover:opacity-60 transition duration-300" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }}></div>
-      <div className="relative rounded-xl bg-white/5 backdrop-blur-xl p-3 flex items-center justify-center border border-white/15 group-hover:border-white/30 group-hover:bg-white/10 transition-all duration-300 shadow-xl group-hover:scale-110">
-        <Icon className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors" />
-      </div>
-    </button>
-  </a>
+  <Button asChild variant="neutral" size="icon" className="rounded-xl">
+    <a href={link} target="_blank" rel="noopener noreferrer" aria-label={label}>
+      <Icon className="w-4 h-4" />
+    </a>
+  </Button>
 ));
 SocialLink.displayName = 'SocialLink';
 
@@ -56,6 +37,7 @@ const TYPING_SPEED = 100;
 const ERASING_SPEED = 50;
 const PAUSE_DURATION = 2000;
 const FALLBACK_SITE_ORIGIN = typeof window !== 'undefined' ? window.location.origin : ''
+const ABOUT_FALLBACK = { description: '' }
 
 const normalizeArray = (value) => {
   if (Array.isArray(value)) return value.filter(Boolean)
@@ -377,28 +359,26 @@ const Home = () => {
                   <div className="inline-block animate-float lg:mx-0" data-aos="zoom-in" data-aos-delay="400">
                     <div className="relative group">
                       <div className="absolute -inset-0.5 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-1000" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }}></div>
-                      <div className="relative px-4 sm:px-5 py-2.5 rounded-full bg-white/5 backdrop-blur-xl border border-white/15 shadow-xl hover:bg-white/10 transition-all">
-                        <span className="text-transparent bg-clip-text sm:text-sm text-xs font-semibold flex items-center" style={{ backgroundImage: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))', WebkitBackgroundClip: 'text', backgroundClip: 'text' }}>
-                          <Sparkles className="sm:w-4 sm:h-4 w-3.5 h-3.5 mr-2 text-indigo-400" />
-                          {heroData.badge_text}
-                        </span>
-                      </div>
+                      <Badge variant="default" className="relative px-4 sm:px-5 py-2.5 sm:text-sm text-xs">
+                        <Sparkles className="sm:w-4 sm:h-4 w-3.5 h-3.5" style={{ color: 'var(--color-primary-light)' }} />
+                        {heroData.badge_text}
+                      </Badge>
                     </div>
                   </div>
 
                   {/* Main Title - Dynamic */}
                   <div className="space-y-2" data-aos="fade-up" data-aos-delay="600">
-                    <h1 className="text-5xl sm:text-6xl md:text-6xl lg:text-6xl xl:text-7xl font-bold tracking-tight">
+                    <h1 className="text-5xl sm:text-6xl md:text-6xl lg:text-6xl xl:text-7xl font-display font-bold tracking-tight">
                       <span className="relative inline-block">
                         <span className="absolute -inset-2 blur-2xl opacity-20" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }}></span>
-                        <span className="relative bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(90deg, var(--color-text-primary), var(--color-text-secondary))', WebkitBackgroundClip: 'text', backgroundClip: 'text' }}>
+                        <span className="relative text-white">
                           {heroData.title_line_1}
                         </span>
                       </span>
                       <br />
                       <span className="relative inline-block mt-2">
                         <span className="absolute -inset-2 blur-2xl opacity-20" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }}></span>
-                        <span className="relative bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))', WebkitBackgroundClip: 'text', backgroundClip: 'text' }}>
+                        <span className="relative text-[var(--color-text-secondary)]">
                           {heroData.title_line_2}
                         </span>
                       </span>
@@ -407,7 +387,7 @@ const Home = () => {
 
                   {/* Typing Effect */}
                   <div className="h-8 flex items-center" data-aos="fade-up" data-aos-delay="800">
-                    <span className="text-xl md:text-2xl bg-gradient-to-r from-gray-100 to-gray-300 bg-clip-text text-transparent font-light">
+                    <span className="text-xl md:text-2xl text-white font-light">
                       {text}
                     </span>
                     <span className="w-[3px] h-6 ml-1 animate-blink" style={{ background: 'linear-gradient(180deg, var(--color-primary-dark), var(--color-primary-light))' }}></span>
@@ -429,10 +409,10 @@ const Home = () => {
                   </div>
 
                   {/* CTA Buttons */}
-                  <div className="flex flex-wrap gap-3 w-full justify-center sm:justify-start" data-aos="fade-up" data-aos-delay="1400">
+                  <div className="flex flex-wrap gap-3 w-full justify-start" data-aos="fade-up" data-aos-delay="1400">
                     {Array.isArray(heroData.cta_buttons) && heroData.cta_buttons.map((btn, index) => (
                       <div key={index} className={`${index >= 2 ? 'hidden sm:inline-block' : 'block sm:inline-block'}`}>
-                        <CTAButton
+                        <PublicCtaButton
                           href={btn.url}
                           text={btn.label}
                           icon={btn.label === 'Contact' ? Mail : ExternalLink}

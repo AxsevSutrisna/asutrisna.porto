@@ -48,7 +48,7 @@ function MenubarContent({ className, align = "start", alignOffset = -4, sideOffs
         alignOffset={alignOffset}
         sideOffset={sideOffset}
         className={cn(
-          "z-50 min-w-[12rem] overflow-hidden rounded-xl border-2 border-[color:var(--color-border-light)] bg-[color:var(--color-backdrop-base)] p-1 text-[color:var(--color-text-primary)] shadow-[4px_4px_0_rgba(0,0,0,0.3)] data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 origin-[var(--radix-menubar-content-transform-origin)]",
+          "z-50 min-w-[12rem] overflow-hidden rounded-xl border-2 border-[color:var(--color-border-light)] bg-[color:var(--color-backdrop-base)] p-1 text-[color:var(--color-text-primary)] shadow-[4px_4px_0_var(--color-shadow-primary)] data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 origin-[var(--radix-menubar-content-transform-origin)]",
           className
         )}
         {...props}
@@ -186,7 +186,7 @@ function MenubarSubContent({ className, ...props }) {
     <MenubarPrimitive.SubContent
       data-slot="menubar-sub-content"
       className={cn(
-        "z-50 min-w-[8rem] overflow-hidden rounded-xl border-2 border-[color:var(--color-border-light)] bg-[color:var(--color-backdrop-base)] p-1 font-medium text-[color:var(--color-text-primary)] shadow-[4px_4px_0_rgba(0,0,0,0.3)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[var(--radix-menubar-content-transform-origin)]",
+        "z-50 min-w-[8rem] overflow-hidden rounded-xl border-2 border-[color:var(--color-border-light)] bg-[color:var(--color-backdrop-base)] p-1 font-medium text-[color:var(--color-text-primary)] shadow-[4px_4px_0_var(--color-shadow-primary)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[var(--radix-menubar-content-transform-origin)]",
         className
       )}
       {...props}

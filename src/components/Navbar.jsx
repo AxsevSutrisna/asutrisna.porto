@@ -104,7 +104,7 @@ const Navbar = () => {
                                     <MenubarTrigger
                                         asChild
                                         className={`cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 ${activeSection === item.href.substring(1)
-                                            ? "bg-white text-black hover:bg-white hover:text-black focus:bg-white focus:text-black data-[state=open]:bg-white data-[state=open]:text-black shadow-[4px_4px_0_rgba(0,0,0,0.55)]"
+                                            ? "bg-white text-black hover:bg-white hover:text-black focus:bg-white focus:text-black data-[state=open]:bg-white data-[state=open]:text-black shadow-[4px_4px_0_var(--color-shadow-primary)]"
                                             : "text-[color:var(--color-text-secondary)] hover:text-white hover:bg-white/10"
                                             }`}
                                     >

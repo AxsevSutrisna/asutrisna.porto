@@ -3,6 +3,8 @@ import { supabase } from "../supabase";
 import { useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { Mail, Lock, LogIn, Sparkles, Eye, EyeOff } from 'lucide-react'
+import { Card } from "../components/ui/card"
+import { Button } from "../components/ui/button"
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -40,7 +42,7 @@ export default function Login() {
         <div className="w-full max-w-md">
           <div className="relative group">
             <div className="absolute -inset-0.5 rounded-2xl blur opacity-30 group-hover:opacity-50 transition duration-700" style={{ background: 'linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-light))' }} />
-            <div className="neo-card relative p-8 space-y-7">
+            <Card className="relative p-8 space-y-7 bg-[color:var(--color-backdrop-base)]">
 
               {/* Header */}
               <div className="text-center space-y-3">
@@ -95,21 +97,18 @@ export default function Login() {
                   </div>
                 </div>
 
-                <button type="submit" disabled={loading} className="neo-button neo-button-primary relative group/btn w-full mt-1">
-                  <div className="relative h-11 rounded-[0.85rem] flex items-center justify-center gap-2 overflow-hidden" style={{ backgroundColor: 'transparent' }}>
-                    <div className="absolute inset-0 scale-x-0 group-hover/btn:scale-x-100 origin-left transition-transform duration-500" style={{ background: 'linear-gradient(90deg, rgba(var(--color-primary-dark-rgb, 99, 102, 241), 0.2), rgba(var(--color-primary-light-rgb, 168, 85, 247), 0.2))' }} />
+                <Button type="submit" disabled={loading} className="w-full mt-1 group/btn h-12">
                     {loading ? (
                       <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                     ) : (
                       <>
-                        <span className="relative text-sm font-medium text-white">Sign In</span>
-                        <LogIn className="relative w-4 h-4 text-white group-hover/btn:translate-x-1 transition-transform duration-300" />
+                        <span>Sign In</span>
+                        <LogIn className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300" />
                       </>
                     )}
-                  </div>
-                </button>
+                </Button>
               </form>
-            </div>
+            </Card>
           </div>
         </div>
       </div>

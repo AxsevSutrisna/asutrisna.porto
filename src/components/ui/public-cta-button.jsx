@@ -6,7 +6,7 @@ export default function PublicCtaButton({
     href,
     text,
     icon: Icon,
-    iconClassName = 'w-4 h-4 text-indigo-300',
+    iconClassName = 'w-4 h-4 text-current',
     onClick,
     target,
     rel,
@@ -17,7 +17,7 @@ export default function PublicCtaButton({
 }) {
     if (href) {
         return (
-            <Button asChild variant="default" size="default" className={`${HERO_CTA_CLASS} ${className}`.trim()} {...props}>
+            <Button asChild variant="neutral" size="default" className={`${HERO_CTA_CLASS} ${className}`.trim()} {...props}>
                 <a href={href} aria-label={text} onClick={onClick} target={target} rel={rel}>
                     <span className="font-medium">{text}</span>
                     <Icon className={iconClassName} />
@@ -28,7 +28,7 @@ export default function PublicCtaButton({
 
     return (
         <Button
-            variant="default"
+            variant="neutral"
             size="default"
             type={type}
             disabled={disabled}

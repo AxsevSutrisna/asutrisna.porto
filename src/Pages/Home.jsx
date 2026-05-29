@@ -27,7 +27,7 @@ TechStack.displayName = 'TechStack';
 const SocialLink = memo(({ icon: Icon, link, label }) => (
   <Button asChild variant="neutral" size="icon" className="rounded-xl">
     <a href={link} target="_blank" rel="noopener noreferrer" aria-label={label}>
-      <Icon className="w-4 h-4 text-gray-300" />
+      <Icon className="w-4 h-4" />
     </a>
   </Button>
 ));
@@ -409,7 +409,7 @@ const Home = () => {
                   </div>
 
                   {/* CTA Buttons */}
-                  <div className="flex flex-wrap gap-3 w-full justify-center sm:justify-start" data-aos="fade-up" data-aos-delay="1400">
+                  <div className="flex flex-wrap gap-3 w-full justify-start" data-aos="fade-up" data-aos-delay="1400">
                     {Array.isArray(heroData.cta_buttons) && heroData.cta_buttons.map((btn, index) => (
                       <div key={index} className={`${index >= 2 ? 'hidden sm:inline-block' : 'block sm:inline-block'}`}>
                         <PublicCtaButton

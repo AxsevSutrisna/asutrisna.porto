@@ -204,7 +204,7 @@ const ContactPage = () => {
               </div>
               <div data-aos="fade-up" data-aos-delay="400">
                 <Button
-                  variant="default"
+                  variant="neutral"
                   size="default"
                   type="submit"
                   disabled={isSubmitting}

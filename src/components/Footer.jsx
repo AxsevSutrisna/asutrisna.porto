@@ -9,9 +9,9 @@ const Footer = () => {
         <span className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>
           © {currentYear} Asep Sutrisna Suhada Putra. All Rights Reserved.
         </span>
-        <Button asChild variant="default" size="sm" className="px-4 text-sm font-semibold">
-          <a href="https://asutrisna.dev" target="_blank" rel="noreferrer">
-            asutrisna.dev
+        <Button asChild variant="neutral" size="sm" className="px-4 text-sm font-semibold">
+          <a href="https://asutrisna-porto.vercel.app/" target="_blank" rel="noreferrer">
+            asutrisnadev
           </a>
         </Button>
       </div>

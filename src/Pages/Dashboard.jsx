@@ -58,7 +58,7 @@ export default function Dashboard() {
       </div>
 
       {/* Nav */}
-      <nav className="flex flex-col gap-1 flex-1 min-h-0">
+      <nav className="flex flex-col gap-3 flex-1 min-h-0">
         <p className="text-[10px] text-gray-600 uppercase tracking-widest px-3 mb-2 shrink-0">Menu</p>
         {NAV_ITEMS.map(({ to, label, icon: Icon }) => {
           const active = location.pathname.includes(to)
@@ -68,8 +68,8 @@ export default function Dashboard() {
               to={to}
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-sm font-medium shrink-0 border ${active
-                ? 'bg-white text-black border-black shadow-[4px_4px_0_rgba(0,0,0,0.55)]'
-                : 'text-gray-400 hover:text-gray-200 hover:bg-white/5 border-transparent'
+                ? 'bg-white text-black border-black shadow-[4px_4px_0_var(--color-shadow-primary)]'
+                : 'text-gray-400 border-white/10 hover:text-white hover:bg-white/5'
                 }`}
             >
               <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-black' : ''}`} />

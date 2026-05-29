@@ -49,7 +49,7 @@ const CardProject = ({ Img, Title, Description, Link: ProjectLink, id }) => {
 
       <CardFooter className="p-0 pt-4 flex items-center justify-between mt-auto">
         {ProjectLink ? (
-          <Button asChild variant="default" size="sm" className="px-4 py-2 text-sm">
+          <Button asChild variant="neutral" size="sm" className="px-4 py-2 text-sm">
             <a
               href={ProjectLink || "#"}
               target="_blank"
@@ -67,7 +67,7 @@ const CardProject = ({ Img, Title, Description, Link: ProjectLink, id }) => {
         )}
 
         {id ? (
-          <Button asChild variant="default" size="sm" className="px-4 py-2 text-sm">
+          <Button asChild variant="neutral" size="sm" className="px-4 py-2 text-sm">
             <Link
               to={`/project/${toSlug(Title)}`}
               onClick={handleDetails}

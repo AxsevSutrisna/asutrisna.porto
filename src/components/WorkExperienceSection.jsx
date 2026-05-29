@@ -43,24 +43,24 @@ const ExperienceCard = ({ experience }) => {
                                 {experience.position}
                             </h3>
                             {experience.is_current && (
-                                <span className="px-2.5 py-1 rounded-full bg-theme-primary-light/20 border border-theme-primary-light/30 text-theme-primary-light text-[10px] uppercase tracking-[0.2em]">
+                                <Badge variant="primary" className="text-[10px] uppercase tracking-[0.2em] px-2 py-0.5">
                                     Current
-                                </span>
+                                </Badge>
                             )}
                         </div>
 
                         <p className="text-gray-300 text-sm sm:text-base flex flex-wrap items-center gap-2">
                             <span className="font-medium text-white">{experience.company}</span>
                             <span className="text-gray-600">•</span>
-                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] border ${getEmploymentTypeBadgeClasses(experience.employment_type)}`}>
+                            <Badge variant="neutral" className="text-[10px] uppercase tracking-[0.1em] px-2 py-0.5 font-normal">
                                 {experience.employment_type}
-                            </span>
+                            </Badge>
                         </p>
                     </div>
 
                     <div className="flex flex-col items-start sm:items-end gap-2 shrink-0">
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-gray-300 text-xs hover:bg-white/10 transition-colors shadow-sm">
-                            <CalendarDays className="w-3.5 h-3.5 text-theme-primary-light" />
+                        <Badge variant="neutral" className="text-xs font-normal hover:bg-[color:var(--color-backdrop-base)] cursor-default transition-colors">
+                            <CalendarDays className="text-theme-primary-light" />
                             {formatDateRange(
                                 experience.start_month,
                                 experience.start_year,
@@ -68,19 +68,19 @@ const ExperienceCard = ({ experience }) => {
                                 experience.end_year,
                                 experience.is_current,
                             )}
-                        </div>
+                        </Badge>
 
                         {experience.location && (
-                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-gray-400 text-xs hover:bg-white/10 transition-colors shadow-sm">
-                                <MapPin className="w-3.5 h-3.5 text-theme-primary-light" />
+                            <Badge variant="neutral" className="text-xs font-normal hover:bg-[color:var(--color-backdrop-base)] cursor-default transition-colors">
+                                <MapPin className="text-theme-primary-light" />
                                 {experience.location}
-                            </div>
+                            </Badge>
                         )}
                     </div>
                 </div>
 
                 {experience.description && (
-                    <p className="mt-5 text-sm sm:text-base text-gray-400 leading-relaxed">
+                    <p className="mt-5 text-sm sm:text-base text-gray-200 leading-relaxed">
                         {experience.description}
                     </p>
                 )}
@@ -88,12 +88,13 @@ const ExperienceCard = ({ experience }) => {
                 {techStack.length > 0 && (
                     <div className="mt-5 flex flex-wrap gap-2">
                         {techStack.map((tech) => (
-                            <span
+                            <Badge
                                 key={tech}
-                                className="px-3 py-1.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-gray-300 text-xs hover:bg-white/10 hover:border-white/20 transition-colors shadow-sm"
+                                variant="neutral"
+                                className="text-xs font-normal hover:bg-[color:var(--color-backdrop-base)] cursor-default transition-colors"
                             >
                                 {tech}
-                            </span>
+                            </Badge>
                         ))}
                     </div>
                 )}

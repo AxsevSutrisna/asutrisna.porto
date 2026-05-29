@@ -72,8 +72,8 @@
 	--font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 	--neo-border-width: 2px;
 	--neo-radius: 1rem;
-	--neo-shadow: 8px 8px 0 rgba(0, 0, 0, 0.45);
-	--neo-shadow-hover: 10px 10px 0 rgba(0, 0, 0, 0.55);
+	--neo-shadow: 8px 8px 0 var(--color-shadow-primary);
+	--neo-shadow-hover: 10px 10px 0 var(--color-shadow-primary);
 	--neo-shadow-inset: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
 
 	/* Primary Colors */
@@ -300,7 +300,6 @@ font-family: var(--font-sans);
 	border: var(--neo-border-width) solid var(--color-border-dark);
 	border-radius: var(--neo-radius);
 	background: rgba(255, 255, 255, 0.04);
-	box-shadow: var(--neo-shadow);
 	backdrop-filter: blur(8px);
 	-webkit-backdrop-filter: blur(8px);
 }
@@ -351,7 +350,7 @@ font-family: var(--font-sans);
 
 .neo-button:active {
 	transform: translate(2px, 2px);
-	box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.35);
+	box-shadow: 4px 4px 0 var(--color-shadow-primary);
 }
 
 .neo-button-primary {
@@ -368,7 +367,7 @@ font-family: var(--font-sans);
 	border: 2px solid rgba(255, 255, 255, 0.18);
 	border-radius: 999px;
 	background: rgba(255, 255, 255, 0.06);
-	box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.25);
+	box-shadow: 4px 4px 0 var(--color-shadow-primary);
 }
 
 
@@ -667,17 +666,16 @@ button.no-neo {
 	background: rgba(255, 255, 255, 0.02);
 	color: var(--color-text-secondary);
 	font-size: 0.9rem;
-	box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.35);
+	box-shadow: 6px 6px 0 var(--color-shadow-primary);
 }
 
 .neo-tag:hover {
-	box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.45);
+	box-shadow: 8px 8px 0 var(--color-shadow-primary);
 }
 
 .neo-photo {
 	border: 5px solid var(--color-primary-light);
 	border-radius: 9999px;
-	box-shadow: 0 12px 0 rgba(0, 0, 0, 0.45);
 }
 
 .neo-photo img {
@@ -690,13 +688,13 @@ button.no-neo {
 	background: rgba(255, 255, 255, 0.04);
 	border-radius: 1rem;
 	border: 1px solid rgba(255, 255, 255, 0.12);
-	box-shadow: 0 8px 0 rgba(0, 0, 0, 0.18);
+	box-shadow: 0 8px 0 var(--color-shadow-primary);
 	backdrop-filter: blur(8px);
 	transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
 }
 
 .neo-card:hover {
 	transform: translateY(-4px);
-	box-shadow: 0 14px 0 rgba(0, 0, 0, 0.24);
+	box-shadow: 0 14px 0 var(--color-shadow-primary);
 	border-color: rgba(255, 255, 255, 0.18);
 }

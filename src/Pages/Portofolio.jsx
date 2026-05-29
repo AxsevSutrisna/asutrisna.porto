@@ -211,7 +211,7 @@ export default function FullWidthTabs() {
             borderRadius: "20px",
             position: "relative",
             overflow: "hidden",
-            boxShadow: "8px 8px 0 rgba(0, 0, 0, 0.45)",
+            boxShadow: "6px 6px 0 var(--color-shadow-primary)",
             "&::before": {
               content: '""',
               position: "absolute",
@@ -238,7 +238,7 @@ export default function FullWidthTabs() {
               "& .MuiTab-root": {
                 fontSize: { xs: "0.9rem", md: "1rem" },
                 fontWeight: "600",
-                color: "#94a3b8",
+                color: "var(--color-text-secondary)",
                 textTransform: "none",
                 transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
                 padding: "20px 0",
@@ -246,7 +246,7 @@ export default function FullWidthTabs() {
                 margin: "8px",
                 borderRadius: "12px",
                 "&:hover": {
-                  color: "#ffffff",
+                  color: "var(--color-text-primary)",
                   backgroundColor: "rgba(255, 255, 255, 0.05)",
                   transform: "translateY(-2px)",
                   "& .lucide": {
@@ -254,12 +254,12 @@ export default function FullWidthTabs() {
                   },
                 },
                 "&.Mui-selected": {
-                  color: "#fff",
-                  background: "rgba(255, 255, 255, 0.1)",
+                  color: "var(--color-text-primary)",
+                  background: "color-mix(in srgb, var(--color-primary-light) 15%, transparent)",
                   boxShadow: "0 4px 15px -3px rgba(0, 0, 0, 0.1)",
-                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  border: "1px solid color-mix(in srgb, var(--color-primary-light) 30%, transparent)",
                   "& .lucide": {
-                    color: "#a78bfa",
+                    color: "inherit",
                   },
                 },
               },

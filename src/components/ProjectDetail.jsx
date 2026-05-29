@@ -15,6 +15,7 @@ import {
   Package,
   Cpu,
   Code,
+  X,
 } from "lucide-react";
 import Swal from "sweetalert2";
 import { toSlug } from "../utils/slug";
@@ -36,6 +37,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "./ui/breadcrumb";
+import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 
 const TECH_ICONS = {
   React: Globe,
@@ -51,18 +53,18 @@ const TECH_ICONS = {
 const TechBadge = ({ tech }) => {
   const Icon = TECH_ICONS[tech] || TECH_ICONS["default"];
   return (
-    <div 
+    <div
       className="group relative overflow-hidden px-3 py-2 md:px-4 md:py-2.5 rounded-xl border hover:border-[color:var(--color-primary-light)] transition-all duration-300 cursor-default"
       style={{
-         background: 'linear-gradient(to right, rgba(var(--color-primary-dark-rgb), 0.1), rgba(var(--color-primary-light-rgb), 0.1))',
-         borderColor: 'rgba(var(--color-primary-light-rgb), 0.2)'
+        background: 'linear-gradient(to right, rgba(var(--color-primary-dark-rgb), 0.1), rgba(var(--color-primary-light-rgb), 0.1))',
+        borderColor: 'rgba(var(--color-primary-light-rgb), 0.2)'
       }}
     >
-      <div 
-         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-500" 
-         style={{
-            background: 'linear-gradient(to right, rgba(var(--color-primary-dark-rgb), 0.15), rgba(var(--color-primary-light-rgb), 0.15))'
-         }}
+      <div
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-500"
+        style={{
+          background: 'linear-gradient(to right, rgba(var(--color-primary-dark-rgb), 0.15), rgba(var(--color-primary-light-rgb), 0.15))'
+        }}
       />
       <div className="relative flex items-center gap-1.5 md:gap-2">
         <Icon className="w-3.5 h-3.5 md:w-4 md:h-4 transition-colors" style={{ color: 'var(--color-primary-light)' }} />
@@ -78,13 +80,11 @@ const FeatureItem = ({ feature }) => {
   return (
     <li className="group flex items-start space-x-3 p-2.5 md:p-3.5 rounded-xl hover:bg-white/5 transition-all duration-300 border border-transparent hover:border-[color:var(--color-border-light)]">
       <div className="relative mt-2">
-        <div 
-           className="absolute -inset-1 rounded-full blur group-hover:opacity-100 opacity-0 transition-opacity duration-300"
-           style={{ background: 'linear-gradient(to right, rgba(var(--color-primary-dark-rgb), 0.3), rgba(var(--color-primary-light-rgb), 0.3))' }}
+        <div
+          className="absolute -inset-1 rounded-full blur group-hover:opacity-30 opacity-0 transition-opacity duration-300 bg-[color:var(--color-text-secondary)]"
         />
-        <div 
-           className="relative w-1.5 h-1.5 md:w-2 md:h-2 rounded-full group-hover:scale-125 transition-transform duration-300" 
-           style={{ background: 'linear-gradient(to right, var(--color-primary-dark), var(--color-primary-light))' }}
+        <div
+          className="relative w-1.5 h-1.5 md:w-2 md:h-2 rounded-full group-hover:scale-125 transition-transform duration-300 bg-[color:var(--color-text-secondary)]"
         />
       </div>
       <span className="text-sm md:text-base transition-colors group-hover:text-white" style={{ color: 'var(--color-text-secondary)' }}>
@@ -99,13 +99,13 @@ const ProjectStats = ({ project }) => {
   const featuresCount = project?.Features?.length || 0;
 
   return (
-    <div 
-      className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 p-3 md:p-4 rounded-xl overflow-hidden relative" 
+    <div
+      className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 p-3 md:p-4 rounded-xl overflow-hidden relative"
       style={{ backgroundColor: 'var(--color-backdrop-glow)' }}
     >
-      <div 
-         className="absolute inset-0 opacity-50 blur-2xl z-0" 
-         style={{ background: 'linear-gradient(to bottom right, rgba(var(--color-primary-dark-rgb), 0.2), rgba(var(--color-primary-light-rgb), 0.2))' }}
+      <div
+        className="absolute inset-0 opacity-50 blur-2xl z-0"
+        style={{ background: 'linear-gradient(to bottom right, rgba(var(--color-primary-dark-rgb), 0.2), rgba(var(--color-primary-light-rgb), 0.2))' }}
       />
       <div className="relative z-10 flex items-center space-x-2 md:space-x-3 bg-white/5 p-2 md:p-3 rounded-lg border border-[color:var(--color-border-light)] transition-all duration-300 hover:scale-105 hover:border-[color:var(--color-primary-light)] hover:shadow-lg">
         <div className="p-1.5 md:p-2 rounded-full" style={{ backgroundColor: 'rgba(var(--color-primary-dark-rgb), 0.2)' }}>
@@ -167,7 +167,8 @@ const ProjectDetails = () => {
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
   const [isResolved, setIsResolved] = useState(false);
-  const [siteOrigin, setSiteOrigin] = useState(typeof window !== 'undefined' ? window.location.origin : 'https://asutrisna.dev');
+  const [siteOrigin, setSiteOrigin] = useState(typeof window !== 'undefined' ? window.location.origin : 'https://asutrisna-porto.vercel.app/');
+  const [fullScreenImage, setFullScreenImage] = useState(null);
 
 
   useEffect(() => {
@@ -413,6 +414,27 @@ const ProjectDetails = () => {
         ))}
       </Helmet>
 
+      {/* Full Screen Image Modal */}
+      {fullScreenImage && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-fadeIn"
+          onClick={() => setFullScreenImage(null)}
+        >
+          <button
+            className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors no-neo"
+            onClick={() => setFullScreenImage(null)}
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <img
+            src={fullScreenImage}
+            alt="Full View"
+            className="max-w-full max-h-[90vh] object-contain rounded-xl border border-white/20 shadow-2xl animate-zoomIn"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+
       <div className="min-h-screen px-[2%] sm:px-0 relative overflow-hidden" style={{ backgroundColor: 'var(--color-backdrop-base)' }}>
         <div className="fixed inset-0">
           <div className="absolute -inset-[10px] opacity-20">
@@ -428,7 +450,7 @@ const ProjectDetails = () => {
             <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-8 md:mb-12 animate-fadeIn min-w-0">
               <Button
                 onClick={() => navigate(-1)}
-                variant="ghost"
+                variant="neutral"
                 size="sm"
                 className="group inline-flex items-center justify-center space-x-1.5 md:space-x-2 px-3 md:px-5 py-2 md:py-2.5 text-sm md:text-base w-fit shrink-0"
               >
@@ -455,9 +477,9 @@ const ProjectDetails = () => {
             <div className="grid lg:grid-cols-2 gap-8 md:gap-16">
               <div className="space-y-6 md:space-y-10 animate-slideInLeft">
                 <div className="space-y-4 md:space-y-6">
-                  <h1 
-                     className="text-3xl md:text-6xl font-bold leading-tight" 
-                     style={{ color: 'var(--color-text-primary)' }}
+                  <h1
+                    className="text-3xl md:text-6xl font-bold leading-tight"
+                    style={{ color: 'var(--color-text-primary)' }}
                   >
                     {project.Title}
                   </h1>
@@ -478,7 +500,7 @@ const ProjectDetails = () => {
                 <div className="flex flex-wrap gap-3 md:gap-4">
                   <Button
                     asChild
-                    variant="default"
+                    variant="neutral"
                     size="default"
                     className="group relative inline-flex items-center space-x-1.5 md:space-x-2 px-4 md:px-8 py-2.5 md:py-4 text-sm md:text-base overflow-hidden"
                   >
@@ -532,7 +554,10 @@ const ProjectDetails = () => {
 
               <div className="space-y-6 md:space-y-10 animate-slideInRight">
                 <div className="space-y-4">
-                  <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl group bg-white/5">
+                  <div
+                    className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl group bg-white/5 cursor-pointer"
+                    onClick={() => heroImage && setFullScreenImage(heroImage)}
+                  >
                     <div className="absolute inset-0 bg-gradient-to-t from-[#030014] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     {heroImage ? (
                       <img
@@ -551,12 +576,10 @@ const ProjectDetails = () => {
                   {projectImages.length > 1 && (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                       {projectImages.slice(1).map((image, index) => (
-                        <a
+                        <div
                           key={`${image}-${index}`}
-                          href={image}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/5 aspect-[16/10] min-w-0"
+                          onClick={() => setFullScreenImage(image)}
+                          className="group relative cursor-pointer overflow-hidden rounded-xl border border-white/10 bg-white/5 aspect-[16/10] min-w-0"
                         >
                           <img
                             src={image}
@@ -564,29 +587,33 @@ const ProjectDetails = () => {
                             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                           />
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
-                        </a>
+                        </div>
                       ))}
                     </div>
                   )}
                 </div>
 
-                <div className="bg-white/[0.02] backdrop-blur-xl rounded-2xl p-8 border border-white/10 space-y-6 hover:border-white/20 transition-colors duration-300 group">
-                  <h3 className="text-xl font-semibold text-white/90 flex items-center gap-3">
-                    <Star className="w-5 h-5 text-yellow-400 group-hover:rotate-[20deg] transition-transform duration-300" />
-                    Key Features
-                  </h3>
-                  {project.Features?.length > 0 ? (
-                    <ul className="list-none space-y-2">
-                      {(project.Features || []).map((feature, index) => (
-                        <FeatureItem key={index} feature={feature} />
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-gray-400 opacity-50">
-                      No features added.
-                    </p>
-                  )}
-                </div>
+                <Card className="group">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                      <Star className="w-5 h-5 text-yellow-400 group-hover:rotate-[20deg] transition-transform duration-300" />
+                      Key Features
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {project.Features?.length > 0 ? (
+                      <ul className="list-none space-y-2">
+                        {(project.Features || []).map((feature, index) => (
+                          <FeatureItem key={index} feature={feature} />
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-[color:var(--color-text-secondary)] opacity-50">
+                        No features added.
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </div>
@@ -652,6 +679,19 @@ const ProjectDetails = () => {
               opacity: 1;
               transform: translateX(0);
             }
+          }
+          @keyframes zoomIn {
+            from {
+              opacity: 0;
+              transform: scale(0.95);
+            }
+            to {
+              opacity: 1;
+              transform: scale(1);
+            }
+          }
+          .animate-zoomIn {
+            animation: zoomIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
           }
         `}</style>
       </div>

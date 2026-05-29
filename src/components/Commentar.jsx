@@ -186,7 +186,7 @@ const CommentForm = memo(({ onSubmit, isSubmitting }) => {
                             <Button
                                 type="button"
                                 onClick={() => fileInputRef.current?.click()}
-                                variant="default"
+                                variant="neutral"
                                 size="default"
                                 className="w-full justify-center gap-2 rounded-xl text-indigo-100"
                             >
@@ -205,7 +205,7 @@ const CommentForm = memo(({ onSubmit, isSubmitting }) => {
                 <Button
                     type="submit"
                     disabled={isSubmitting}
-                    variant="default"
+                    variant="neutral"
                     size="default"
                     className="h-11 px-5 w-full justify-center disabled:cursor-not-allowed"
                 >

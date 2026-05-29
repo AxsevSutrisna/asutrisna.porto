@@ -19,7 +19,6 @@ const CSS_VAR_MAP = {
     background_blob_three: '--color-background-blob-three',
     background_blob_four: '--color-background-blob-four',
     background_grid_line: '--color-grid-line',
-    background_grid_line_soft: '--color-grid-line-soft',
     background_gradient_from: '--color-background-gradient-from',
     background_gradient_to: '--color-background-gradient-to',
 

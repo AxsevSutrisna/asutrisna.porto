@@ -181,15 +181,20 @@ export const fetchTheme = async () => {
 
 export const updateTheme = async (colors) => {
     try {
+        const {
+            background_grid_line_soft: _soft,
+            ...validColors
+        } = colors
+
         const { data, error } = await supabase
             .from('site_theme')
-            .upsert({ id: 1, ...colors }, { onConflict: 'id' })
+            .upsert({ id: 1, ...validColors }, { onConflict: 'id' })
             .select()
             .maybeSingle();
 
         if (error) throw error;
 
-        return data || { id: 1, ...colors };
+        return data || { id: 1, ...validColors };
     } catch (error) {
         console.error('Error updating theme:', error);
         throw error;

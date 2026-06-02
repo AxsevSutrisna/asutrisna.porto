@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, memo } from 'react'
+import { useEffect, useMemo, useState, memo, useRef } from 'react'
 import { Briefcase, Sparkles, MapPin, CalendarDays } from 'lucide-react'
 import { supabase } from '../supabase'
 import {
@@ -95,7 +95,19 @@ function renderDescription(text) {
 }
 
 const ExperienceCard = ({ experience }) => {
+    const [isExpanded, setIsExpanded] = useState(false)
+    const [isTruncated, setIsTruncated] = useState(false)
+    const contentRef = useRef(null)
     const techStack = Array.isArray(experience.tech_stack) ? experience.tech_stack : []
+
+    useEffect(() => {
+        if (contentRef.current) {
+            // Check if the scroll height exceeds our collapsed max-height
+            if (contentRef.current.scrollHeight > 180) {
+                setIsTruncated(true)
+            }
+        }
+    }, [experience.description])
 
     return (
         <div className="relative group">
@@ -145,8 +157,28 @@ const ExperienceCard = ({ experience }) => {
                 </div>
 
                 {experience.description && (
-                    <div className="mt-5">
-                        {renderDescription(experience.description)}
+                    <div className="mt-5 relative">
+                        <div 
+                            ref={contentRef}
+                            className={`transition-all duration-500 overflow-hidden ${
+                                isExpanded ? 'max-h-[2000px]' : 'max-h-[150px]'
+                            }`}
+                        >
+                            {renderDescription(experience.description)}
+                            
+                            {!isExpanded && isTruncated && (
+                                <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[color:var(--color-backdrop-base)] to-transparent pointer-events-none" />
+                            )}
+                        </div>
+                        
+                        {isTruncated && (
+                            <button
+                                onClick={() => setIsExpanded(!isExpanded)}
+                                className="mt-3 text-sm text-theme-primary-light hover:text-white transition-colors flex items-center gap-1 font-medium focus:outline-none relative z-10"
+                            >
+                                {isExpanded ? 'Show less' : 'Read more'}
+                            </button>
+                        )}
                     </div>
                 )}
 

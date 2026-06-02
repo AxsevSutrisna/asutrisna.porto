@@ -29,11 +29,12 @@ const formatDate = (dateStr) => {
     return new Date(dateStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-const validateAboutForm = (form, photoFile, cvFile, initial) => {
+const validateAboutForm = (form, photoFile, cvFileEn, cvFileId, initial) => {
     const errors = {}
 
     const hasPhoto = Boolean(photoFile || initial?.photo_url)
-    const hasCv = Boolean(cvFile || initial?.cv_url)
+    const hasCvEn = Boolean(cvFileEn || initial?.cv_en_url)
+    const hasCvId = Boolean(cvFileId || initial?.cv_id_url)
 
     if (!hasPhoto) {
         errors.photo = 'Photo profile wajib diisi.'
@@ -47,8 +48,8 @@ const validateAboutForm = (form, photoFile, cvFile, initial) => {
         errors.description = 'Bio wajib diisi.'
     }
 
-    if (!hasCv) {
-        errors.cv = 'CV / Resume wajib diisi.'
+    if (!hasCvEn && !hasCvId) {
+        errors.cv = 'Minimal satu CV / Resume wajib diisi.'
     }
 
     return errors
@@ -200,13 +201,25 @@ const AboutCard = ({ item, onEdit, onDelete, onTogglePublish, onViewCv }) => {
 
                     {/* Footer: CV link */}
                     <div className="mt-auto flex items-center gap-3">
-                        {item.cv_url ? (
-                            <button
-                                onClick={() => onViewCv(item.cv_url)}
-                                className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-indigo-300 bg-white/5 hover:bg-indigo-500/10 border border-white/8 hover:border-indigo-500/25 rounded-lg px-3 py-1.5 transition-all duration-200"
-                            >
-                                <Download className="w-3 h-3" /> View CV
-                            </button>
+                        {item.cv_en_url || item.cv_id_url ? (
+                            <div className="flex gap-2">
+                                {item.cv_en_url && (
+                                    <button
+                                        onClick={() => onViewCv(item.cv_en_url)}
+                                        className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-indigo-300 bg-white/5 hover:bg-indigo-500/10 border border-white/8 hover:border-indigo-500/25 rounded-lg px-3 py-1.5 transition-all duration-200"
+                                    >
+                                        <Download className="w-3 h-3" /> CV (EN)
+                                    </button>
+                                )}
+                                {item.cv_id_url && (
+                                    <button
+                                        onClick={() => onViewCv(item.cv_id_url)}
+                                        className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-indigo-300 bg-white/5 hover:bg-indigo-500/10 border border-white/8 hover:border-indigo-500/25 rounded-lg px-3 py-1.5 transition-all duration-200"
+                                    >
+                                        <Download className="w-3 h-3" /> CV (ID)
+                                    </button>
+                                )}
+                            </div>
                         ) : (
                             <span className="flex items-center gap-1.5 text-xs text-gray-600 bg-white/3 border border-white/6 rounded-lg px-3 py-1.5">
                                 <FileText className="w-3 h-3" /> No CV attached
@@ -229,9 +242,11 @@ const AboutForm = ({ initial, onSubmit, onCancel, uploading, onViewCv }) => {
         is_published: initial?.is_published ?? true,
     })
     const [photoFile, setPhotoFile] = useState(null)
-    const [cvFile, setCvFile] = useState(null)
+    const [cvFileEn, setCvFileEn] = useState(null)
+    const [cvFileId, setCvFileId] = useState(null)
     const [photoPreview, setPhotoPreview] = useState(isEditing ? (initial?.photo_url || null) : null)
-    const [cvLabel, setCvLabel] = useState(isEditing && initial?.cv_url ? initial.cv_url.split('/').pop() : null)
+    const [cvLabelEn, setCvLabelEn] = useState(isEditing && initial?.cv_en_url ? initial.cv_en_url.split('/').pop() : null)
+    const [cvLabelId, setCvLabelId] = useState(isEditing && initial?.cv_id_url ? initial.cv_id_url.split('/').pop() : null)
     const [errors, setErrors] = useState({})
 
     const set = (key) => (e) => {
@@ -258,11 +273,24 @@ const AboutForm = ({ initial, onSubmit, onCancel, uploading, onViewCv }) => {
         })
     }
 
-    const handleCvChange = (e) => {
+    const handleCvEnChange = (e) => {
         const file = e.target.files[0]
         if (!file) return
-        setCvFile(file)
-        setCvLabel(file.name)
+        setCvFileEn(file)
+        setCvLabelEn(file.name)
+        setErrors((current) => {
+            if (!current.cv) return current
+            const next = { ...current }
+            delete next.cv
+            return next
+        })
+    }
+
+    const handleCvIdChange = (e) => {
+        const file = e.target.files[0]
+        if (!file) return
+        setCvFileId(file)
+        setCvLabelId(file.name)
         setErrors((current) => {
             if (!current.cv) return current
             const next = { ...current }
@@ -285,12 +313,12 @@ const AboutForm = ({ initial, onSubmit, onCancel, uploading, onViewCv }) => {
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        const nextErrors = validateAboutForm(form, photoFile, cvFile, initial)
+        const nextErrors = validateAboutForm(form, photoFile, cvFileEn, cvFileId, initial)
         setErrors(nextErrors)
 
         if (Object.keys(nextErrors).length > 0) return
 
-        onSubmit(form, photoFile, cvFile)
+        onSubmit(form, photoFile, cvFileEn, cvFileId)
     }
 
     return (
@@ -399,31 +427,59 @@ const AboutForm = ({ initial, onSubmit, onCancel, uploading, onViewCv }) => {
                     <div className="flex-1 h-px bg-white/6" />
                 </div>
 
-                {/* CV Upload */}
+                {/* CV Upload - English */}
                 <div className="space-y-1.5">
-                    <label className={labelCls}>CV / Resume</label>
+                    <label className={labelCls}>CV / Resume (English)</label>
                     <label className={getUploadClass('cv')}>
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border transition-all ${cvLabel ? 'bg-emerald-500/15 border-emerald-500/30' : 'bg-white/5 border-white/10 group-hover/cv:border-indigo-500/30'}`}>
-                            <FileText className={`w-5 h-5 ${cvLabel ? 'text-emerald-300' : 'text-gray-600'}`} />
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border transition-all ${cvLabelEn ? 'bg-emerald-500/15 border-emerald-500/30' : 'bg-white/5 border-white/10 group-hover/cv:border-indigo-500/30'}`}>
+                            <FileText className={`w-5 h-5 ${cvLabelEn ? 'text-emerald-300' : 'text-gray-600'}`} />
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-300 truncate">
-                                {cvLabel || (isEditing ? 'Replace current CV' : 'Upload CV / Resume')}
+                                {cvLabelEn || (isEditing ? 'Replace English CV' : 'Upload English CV')}
                             </p>
                             <p className="text-xs text-gray-600 mt-0.5">PDF recommended · Max 10MB</p>
                         </div>
-                        {cvLabel && (
+                        {cvLabelEn && (
                             <div className="shrink-0 w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center">
                                 <CheckCircle2 className="w-3 h-3 text-white" />
                             </div>
                         )}
-                        <input type="file" accept="application/pdf,.doc,.docx" onChange={handleCvChange} className="hidden" />
+                        <input type="file" accept="application/pdf,.doc,.docx" onChange={handleCvEnChange} className="hidden" />
+                    </label>
+                    {isEditing && initial?.cv_en_url && !cvFileEn && (
+                        <button type="button" onClick={() => onViewCv(initial.cv_en_url)}
+                            className="inline-flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 transition-colors mt-1">
+                            <Eye className="w-3 h-3" /> View current EN CV
+                        </button>
+                    )}
+                </div>
+
+                {/* CV Upload - Indonesian */}
+                <div className="space-y-1.5 mt-4">
+                    <label className={labelCls}>CV / Resume (Bahasa Indonesia)</label>
+                    <label className={getUploadClass('cv')}>
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border transition-all ${cvLabelId ? 'bg-emerald-500/15 border-emerald-500/30' : 'bg-white/5 border-white/10 group-hover/cv:border-indigo-500/30'}`}>
+                            <FileText className={`w-5 h-5 ${cvLabelId ? 'text-emerald-300' : 'text-gray-600'}`} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm text-gray-300 truncate">
+                                {cvLabelId || (isEditing ? 'Replace Indonesian CV' : 'Upload Indonesian CV')}
+                            </p>
+                            <p className="text-xs text-gray-600 mt-0.5">PDF recommended · Max 10MB</p>
+                        </div>
+                        {cvLabelId && (
+                            <div className="shrink-0 w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center">
+                                <CheckCircle2 className="w-3 h-3 text-white" />
+                            </div>
+                        )}
+                        <input type="file" accept="application/pdf,.doc,.docx" onChange={handleCvIdChange} className="hidden" />
                     </label>
                     <FieldError message={errors.cv} />
-                    {isEditing && initial?.cv_url && !cvFile && (
-                        <button type="button" onClick={() => onViewCv(initial.cv_url)}
+                    {isEditing && initial?.cv_id_url && !cvFileId && (
+                        <button type="button" onClick={() => onViewCv(initial.cv_id_url)}
                             className="inline-flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 transition-colors mt-1">
-                            <Eye className="w-3 h-3" /> View current CV
+                            <Eye className="w-3 h-3" /> View current ID CV
                         </button>
                     )}
                 </div>
@@ -529,17 +585,18 @@ export default function About() {
         return data.publicUrl
     }
 
-    const handleCreate = async (form, photoFile, cvFile) => {
+    const handleCreate = async (form, photoFile, cvFileEn, cvFileId) => {
         setUploading(true)
         try {
             const photoUrl = photoFile ? await uploadPhoto(photoFile) : ''
-            const cvUrl = cvFile ? await uploadCv(cvFile) : ''
+            const cvUrlEn = cvFileEn ? await uploadCv(cvFileEn) : ''
+            const cvUrlId = cvFileId ? await uploadCv(cvFileId) : ''
             if (form.is_published) {
                 await supabase.from('about_contents').update({ is_published: false }).eq('is_published', true)
             }
             await supabase.from('about_contents').insert({
                 name: form.name, description: form.description, quote: form.quote,
-                photo_url: photoUrl, cv_url: cvUrl, is_published: form.is_published, version: 1,
+                photo_url: photoUrl, cv_en_url: cvUrlEn, cv_id_url: cvUrlId, is_published: form.is_published, version: 1,
             })
             setShowCreate(false)
             pushToast('success', 'About content created successfully!')
@@ -552,18 +609,19 @@ export default function About() {
         }
     }
 
-    const handleEdit = async (form, photoFile, cvFile) => {
+    const handleEdit = async (form, photoFile, cvFileEn, cvFileId) => {
         if (!editItem) return
         setUploading(true)
         try {
             const photoUrl = photoFile ? await uploadPhoto(photoFile) : (editItem.photo_url || '')
-            const cvUrl = cvFile ? await uploadCv(cvFile) : (editItem.cv_url || '')
+            const cvUrlEn = cvFileEn ? await uploadCv(cvFileEn) : (editItem.cv_en_url || '')
+            const cvUrlId = cvFileId ? await uploadCv(cvFileId) : (editItem.cv_id_url || '')
             if (form.is_published) {
                 await supabase.from('about_contents').update({ is_published: false }).neq('id', editItem.id).eq('is_published', true)
             }
             await supabase.from('about_contents').update({
                 name: form.name, description: form.description, quote: form.quote,
-                photo_url: photoUrl, cv_url: cvUrl, is_published: form.is_published,
+                photo_url: photoUrl, cv_en_url: cvUrlEn, cv_id_url: cvUrlId, is_published: form.is_published,
                 version: (editItem.version || 1) + 1,
             }).eq('id', editItem.id)
             setEditItem(null)

@@ -275,46 +275,7 @@ const AboutPage = () => {
     })
   }
 
-  const handleCvDownload = async (event, cvValue) => {
-    event.preventDefault()
-    if (!cvValue) return
 
-    const storageLocation = parseSupabaseStorageUrl(cvValue)
-    if (!storageLocation) {
-      window.open(cvValue, '_blank', 'noopener,noreferrer')
-      return
-    }
-
-    try {
-      const { data, error } = await supabase.storage
-        .from(storageLocation.bucket)
-        .createSignedUrl(storageLocation.filePath, 60)
-
-      if (error || !data?.signedUrl) {
-        throw error || new Error('Failed to create CV download URL')
-      }
-
-      const response = await fetch(data.signedUrl)
-      if (!response.ok) {
-        throw new Error('Failed to fetch CV file')
-      }
-
-      const blob = await response.blob()
-      const objectUrl = URL.createObjectURL(blob)
-      const fileName = storageLocation.filePath.split('/').pop() || 'cv.pdf'
-
-      const link = document.createElement('a')
-      link.href = objectUrl
-      link.download = fileName
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      URL.revokeObjectURL(objectUrl)
-    } catch (error) {
-      console.error('Failed to download CV:', error)
-      window.open(cvValue, '_blank', 'noopener,noreferrer')
-    }
-  }
 
   useEffect(() => {
     initAOS();
@@ -438,19 +399,17 @@ const AboutPage = () => {
                     </div>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-[14rem] mt-2">
-                    <DropdownMenuItem
-                      onClick={(e) => handleCvDownload(e, content.cv_en_url || ABOUT_FALLBACK.cv_url)}
-                      className="cursor-pointer py-3"
-                    >
-                      <Download className="w-4 h-4 text-indigo-400" />
-                      <span>Bahasa Inggris</span>
+                    <DropdownMenuItem asChild className="cursor-pointer py-3">
+                      <a href={content.cv_en_url || ABOUT_FALLBACK.cv_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                        <Download className="w-4 h-4 text-indigo-400" />
+                        <span>Bahasa Inggris</span>
+                      </a>
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={(e) => handleCvDownload(e, content.cv_id_url || ABOUT_FALLBACK.cv_url)}
-                      className="cursor-pointer py-3"
-                    >
-                      <Download className="w-4 h-4 text-emerald-400" />
-                      <span>Bahasa Indonesia</span>
+                    <DropdownMenuItem asChild className="cursor-pointer py-3">
+                      <a href={content.cv_id_url || ABOUT_FALLBACK.cv_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                        <Download className="w-4 h-4 text-emerald-400" />
+                        <span>Bahasa Indonesia</span>
+                      </a>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

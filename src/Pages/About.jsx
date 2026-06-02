@@ -1,10 +1,16 @@
-import { useEffect, useState, memo, useMemo } from "react"
-import { FileText, Code, Award, Globe, ArrowUpRight, Sparkles } from "lucide-react"
+import { useEffect, useState, memo, useMemo, useRef } from "react"
+import { FileText, Code, Award, Globe, ArrowUpRight, Sparkles, ChevronDown, Download } from "lucide-react"
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 import { supabase } from "../supabase"
 import PublicCtaButton from "../components/ui/public-cta-button"
 import { Badge } from "@/components/ui/badge"
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu"
 
 const ABOUT_FALLBACK = {
   name: "Asep Sutrisna Suhada Putra",
@@ -269,15 +275,15 @@ const AboutPage = () => {
     })
   }
 
-  const handleCvDownload = async (event) => {
-    const cvValue = content.cv_url || ABOUT_FALLBACK.cv_url
-
+  const handleCvDownload = async (event, cvValue) => {
+    event.preventDefault()
     if (!cvValue) return
 
     const storageLocation = parseSupabaseStorageUrl(cvValue)
-    if (!storageLocation) return
-
-    event.preventDefault()
+    if (!storageLocation) {
+      window.open(cvValue, '_blank', 'noopener,noreferrer')
+      return
+    }
 
     try {
       const { data, error } = await supabase.storage
@@ -421,15 +427,33 @@ const AboutPage = () => {
 
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 w-full">
               <div data-aos="fade-up" data-aos-duration="800" className="w-full sm:w-auto">
-                <PublicCtaButton
-                  href={content.cv_url || ABOUT_FALLBACK.cv_url}
-                  text="Download CV"
-                  icon={FileText}
-                  onClick={handleCvDownload}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full sm:w-auto"
-                />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <div className="w-full sm:w-auto">
+                      <PublicCtaButton
+                        text="Download CV"
+                        icon={ChevronDown}
+                        className="w-full sm:w-auto"
+                      />
+                    </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-[14rem] mt-2">
+                    <DropdownMenuItem
+                      onClick={(e) => handleCvDownload(e, content.cv_en_url || ABOUT_FALLBACK.cv_url)}
+                      className="cursor-pointer py-3"
+                    >
+                      <Download className="w-4 h-4 text-indigo-400" />
+                      <span>Bahasa Inggris</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={(e) => handleCvDownload(e, content.cv_id_url || ABOUT_FALLBACK.cv_url)}
+                      className="cursor-pointer py-3"
+                    >
+                      <Download className="w-4 h-4 text-emerald-400" />
+                      <span>Bahasa Indonesia</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
               <div data-aos="fade-up" data-aos-duration="1000" className="w-full sm:w-auto">
                 <PublicCtaButton

@@ -17,7 +17,7 @@ import {
 } from '../utils/seoSchema'
 
 const TechStack = memo(({ tech }) => (
-  <Badge variant="default" className="hidden sm:inline-flex">
+  <Badge variant="default" className="inline-flex text-xs sm:text-sm px-2 py-1 sm:px-3 sm:py-1">
     <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--color-primary-light)' }} />
     {tech}
   </Badge>
@@ -402,7 +402,7 @@ const Home = () => {
                   </p>
 
                   {/* Tech Stack */}
-                  <div className="flex flex-wrap gap-3 justify-start" data-aos="fade-up" data-aos-delay="1200">
+                  <div className="flex flex-wrap gap-2 sm:gap-3 justify-start" data-aos="fade-up" data-aos-delay="1200">
                     {heroData.tech_badges.map((tech, index) => (
                       <TechStack key={index} tech={tech} />
                     ))}

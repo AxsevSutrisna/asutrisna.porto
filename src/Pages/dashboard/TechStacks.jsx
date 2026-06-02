@@ -295,7 +295,7 @@ const TechStackForm = ({ initial, onSubmit, onCancel, uploading }) => {
             </div>
 
             <div className="flex justify-end gap-2 pt-1">
-                <button type="button" onClick={onCancel} className="px-4 py-2 rounded-xl border border-white/10 text-gray-400 hover:text-white text-sm transition-colors">
+                <button type="button" onClick={onCancel} className="px-4 py-2 rounded-xl border border-white/10 text-gray-400 hover:text-white text-sm transition-colors no-neo">
                     Cancel
                 </button>
                 <button type="submit" disabled={uploading} className="relative group/s">

@@ -274,8 +274,13 @@ const AboutPage = () => {
       once: false,
     })
   }
-
-
+  const getDownloadUrl = (url) => {
+    if (!url) return ''
+    if (url.includes('supabase.co')) {
+      return url.includes('?') ? `${url}&download=CV.pdf` : `${url}?download=CV.pdf`
+    }
+    return url
+  }
 
   useEffect(() => {
     initAOS();
@@ -400,13 +405,13 @@ const AboutPage = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-[14rem] mt-2">
                     <DropdownMenuItem asChild className="cursor-pointer py-3">
-                      <a href={content.cv_en_url || ABOUT_FALLBACK.cv_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                      <a href={getDownloadUrl(content.cv_en_url || ABOUT_FALLBACK.cv_url)} download target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
                         <Download className="w-4 h-4 text-indigo-400" />
                         <span>Bahasa Inggris</span>
                       </a>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild className="cursor-pointer py-3">
-                      <a href={content.cv_id_url || ABOUT_FALLBACK.cv_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                      <a href={getDownloadUrl(content.cv_id_url || ABOUT_FALLBACK.cv_url)} download target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
                         <Download className="w-4 h-4 text-emerald-400" />
                         <span>Bahasa Indonesia</span>
                       </a>

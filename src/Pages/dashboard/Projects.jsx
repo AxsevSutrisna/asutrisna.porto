@@ -713,7 +713,7 @@ const ProjectForm = ({
                     <button
                       type="button"
                       onClick={() => removeImage(item.id)}
-                      className="absolute right-2 top-2 w-7 h-7 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-white flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                      className="absolute right-2 top-2 w-7 h-7 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-white flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm no-neo"
                       aria-label="Remove image"
                     >
                       <X className="w-4 h-4" />

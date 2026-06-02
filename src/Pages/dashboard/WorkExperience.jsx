@@ -347,7 +347,7 @@ const ExperienceForm = ({ initial = null, onSubmit, onCancel, submitting }) => {
                 {Object.keys(errors).length > 0 && (
                     <p className="mr-auto self-center text-sm text-red-400">Masih ada field wajib yang belum diisi.</p>
                 )}
-                <button type="button" onClick={onCancel} className="px-4 py-2 rounded-xl border border-white/10 text-gray-400 hover:text-white text-sm transition-colors">
+                <button type="button" onClick={onCancel} className="px-4 py-2 rounded-xl border border-white/10 text-gray-400 hover:text-white text-sm transition-colors no-neo">
                     Cancel
                 </button>
                 <button type="submit" disabled={submitting} className="relative group/s">

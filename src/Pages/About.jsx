@@ -274,10 +274,11 @@ const AboutPage = () => {
       once: false,
     })
   }
-  const getDownloadUrl = (url) => {
+  const getDownloadUrl = (url, suffix = '') => {
     if (!url) return ''
+    const fileName = `CV_AsepSutrisna_FullStackDeveloper${suffix}.pdf`
     if (url.includes('supabase.co')) {
-      return url.includes('?') ? `${url}&download=CV.pdf` : `${url}?download=CV.pdf`
+      return url.includes('?') ? `${url}&download=${fileName}` : `${url}?download=${fileName}`
     }
     return url
   }
@@ -405,13 +406,13 @@ const AboutPage = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-[14rem] mt-2">
                     <DropdownMenuItem asChild className="cursor-pointer py-3">
-                      <a href={getDownloadUrl(content.cv_en_url || ABOUT_FALLBACK.cv_url)} download target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                      <a href={getDownloadUrl(content.cv_en_url || ABOUT_FALLBACK.cv_url, '_EN')} download="CV_AsepSutrisna_FullStackDeveloper_EN.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
                         <Download className="w-4 h-4 text-indigo-400" />
                         <span>Bahasa Inggris</span>
                       </a>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild className="cursor-pointer py-3">
-                      <a href={getDownloadUrl(content.cv_id_url || ABOUT_FALLBACK.cv_url)} download target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                      <a href={getDownloadUrl(content.cv_id_url || ABOUT_FALLBACK.cv_url, '_ID')} download="CV_AsepSutrisna_FullStackDeveloper_ID.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
                         <Download className="w-4 h-4 text-emerald-400" />
                         <span>Bahasa Indonesia</span>
                       </a>
